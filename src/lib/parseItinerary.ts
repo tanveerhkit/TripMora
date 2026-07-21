@@ -10,10 +10,12 @@
 import { z } from 'zod'
 import {
   STOP_CATEGORIES,
+  packingItem,
   uid,
   type BudgetItem,
   type Day,
   type Itinerary,
+  type PackingItem,
   type Stop,
   type StopCategory,
   type TripMeta,
@@ -182,6 +184,10 @@ function normalizeBudget(raw: unknown): BudgetItem[] {
   return items.slice(0, 24)
 }
 
+function normalizePacking(raw: unknown): PackingItem[] {
+  return normalizeStringList(raw, 40).map((text) => packingItem(text))
+}
+
 function normalizeStringList(raw: unknown, max: number): string[] {
   return asArr(raw)
     .map((v) => {
@@ -277,7 +283,7 @@ export function parseItinerary(text: string): ParseResult {
     meta: normalizeMeta(root, days.length),
     days,
     budget: normalizeBudget(root.budget ?? root.costs ?? root.estimatedBudget),
-    packing: normalizeStringList(root.packing ?? root.packingList ?? root.pack, 40),
+    packing: normalizePacking(root.packing ?? root.packingList ?? root.pack),
     tips: normalizeStringList(root.tips ?? root.notes ?? root.advice ?? root.safety, 12),
   }
 

@@ -47,6 +47,12 @@ export interface BudgetItem {
   amount: number
 }
 
+export interface PackingItem {
+  id: string
+  text: string
+  done: boolean
+}
+
 export interface TripMeta {
   destination: string
   durationDays: number
@@ -65,7 +71,7 @@ export interface Itinerary {
   meta: TripMeta
   days: Day[]
   budget: BudgetItem[]
-  packing: string[]
+  packing: PackingItem[]
   tips: string[]
 }
 
@@ -97,4 +103,8 @@ export function emptyDay(index: number): Day {
     summary: '',
     stops: [],
   }
+}
+
+export function packingItem(text: string): PackingItem {
+  return { id: uid(), text, done: false }
 }
