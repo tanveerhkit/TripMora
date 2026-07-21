@@ -1,9 +1,6 @@
 .wrap {
   display: grid;
   gap: var(--sp-2);
-  position: sticky;
-  top: 8px;
-  z-index: 20;
 }
 
 .bar {

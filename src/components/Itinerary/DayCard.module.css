@@ -72,7 +72,6 @@
   display: flex;
   margin-right: 2px;
 }
-.up :global(svg),
 .up svg {
   transform: rotate(180deg);
 }
