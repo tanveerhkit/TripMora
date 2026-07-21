@@ -1,0 +1,50 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.main {
+  display: grid;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.daysTitle {
+  font-size: 1.15rem;
+}
+.toolbarActions {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.days {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.side {
+  display: grid;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+/* two columns on wide screens; sidebar sticks alongside the days */
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+  .side {
+    position: sticky;
+    top: 76px;
+  }
+}
