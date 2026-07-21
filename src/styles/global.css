@@ -1,0 +1,265 @@
+/* ============================================================
+   TripMora — design tokens + global styles
+   Light is the default; `:root[data-theme="dark"]` overrides it,
+   and the media query handles first paint before JS runs.
+   ============================================================ */
+
+:root {
+  /* brand */
+  --brand-1: #5b8cff;
+  --brand-2: #8a5bff;
+  --brand-grad: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+
+  /* neutrals (light) */
+  --bg: #f6f7fb;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f1f3f9;
+  --surface-hover: #eef1f8;
+  --border: #e2e6f0;
+  --border-strong: #cdd3e2;
+
+  --text: #171a21;
+  --text-muted: #5b6172;
+  --text-faint: #8a90a2;
+
+  --accent: #4f6bff;
+  --accent-soft: rgba(79, 107, 255, 0.12);
+
+  --danger: #e5484d;
+  --danger-soft: rgba(229, 72, 77, 0.12);
+  --success: #2f9e63;
+  --success-soft: rgba(47, 158, 99, 0.14);
+  --warning: #d98a1f;
+  --warning-soft: rgba(217, 138, 31, 0.14);
+
+  /* category accents */
+  --cat-sightseeing: #4f6bff;
+  --cat-food: #e8843c;
+  --cat-nature: #2f9e63;
+  --cat-culture: #a05bd6;
+  --cat-relax: #16a3a3;
+  --cat-nightlife: #d6478f;
+  --cat-shopping: #d9a521;
+  --cat-transport: #6b7280;
+  --cat-adventure: #d9542b;
+
+  /* elevation */
+  --shadow-sm: 0 1px 2px rgba(20, 25, 40, 0.06), 0 1px 3px rgba(20, 25, 40, 0.05);
+  --shadow-md: 0 4px 12px rgba(20, 25, 40, 0.08), 0 2px 4px rgba(20, 25, 40, 0.05);
+  --shadow-lg: 0 12px 32px rgba(20, 25, 40, 0.14);
+  --shadow-focus: 0 0 0 3px var(--accent-soft);
+
+  /* geometry */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+
+  /* spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+
+  --maxw: 1080px;
+
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0e1116;
+  --bg-elevated: #161a22;
+  --surface: #171b23;
+  --surface-2: #1e232d;
+  --surface-hover: #222834;
+  --border: #262c38;
+  --border-strong: #333b4a;
+
+  --text: #eef1f7;
+  --text-muted: #9aa2b4;
+  --text-faint: #6c7488;
+
+  --accent: #6d86ff;
+  --accent-soft: rgba(109, 134, 255, 0.16);
+
+  --danger: #ff6369;
+  --danger-soft: rgba(255, 99, 105, 0.16);
+  --success: #45c07f;
+  --success-soft: rgba(69, 192, 127, 0.16);
+  --warning: #e6a53d;
+  --warning-soft: rgba(230, 165, 61, 0.16);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
+/* respect OS preference before the user toggles anything */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #0e1116;
+    --bg-elevated: #161a22;
+    --surface: #171b23;
+    --surface-2: #1e232d;
+    --surface-hover: #222834;
+    --border: #262c38;
+    --border-strong: #333b4a;
+    --text: #eef1f7;
+    --text-muted: #9aa2b4;
+    --text-faint: #6c7488;
+    --accent: #6d86ff;
+    --accent-soft: rgba(109, 134, 255, 0.16);
+    --danger: #ff6369;
+    --danger-soft: rgba(255, 99, 105, 0.16);
+    --success: #45c07f;
+    --success-soft: rgba(69, 192, 127, 0.16);
+    --warning: #e6a53d;
+    --warning-soft: rgba(230, 165, 61, 0.16);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+  }
+}
+
+/* ---------- reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100dvh;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* thin, themed scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* ---------- motion ---------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* screen-reader-only helper */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
