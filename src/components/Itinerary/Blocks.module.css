@@ -1,0 +1,207 @@
+.panel {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  display: grid;
+  gap: var(--sp-3);
+  box-shadow: var(--shadow-sm);
+  animation: fadeInUp 0.3s ease both;
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.panelHead h3 {
+  font-size: 1.02rem;
+}
+.panelIcon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  background: var(--accent-soft);
+  flex: none;
+}
+.panelCount {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+
+/* ---------------- budget ---------------- */
+.budgetList {
+  display: grid;
+  gap: var(--sp-3);
+}
+.budgetRow {
+  display: grid;
+  gap: 5px;
+}
+.budgetRowTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+.budgetLabel {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.budgetAmount {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+.bar {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.barFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--brand-grad);
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.budgetTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--border);
+  padding-top: var(--sp-3);
+  font-weight: 800;
+}
+.budgetTotal span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- packing ---------------- */
+.progress {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  background: var(--success);
+  border-radius: var(--radius-full);
+  transition: width 0.35s ease;
+}
+
+.checkList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.checkItem {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px 6px 6px 4px;
+  border-radius: var(--radius-sm);
+}
+.checkItem:hover {
+  background: var(--surface-2);
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: left;
+}
+.box {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.8px solid var(--border-strong);
+  color: transparent;
+  flex: none;
+  transition: all 0.15s ease;
+}
+.boxOn {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+.checkText {
+  word-break: break-word;
+}
+.done .checkText {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+.removeItem {
+  color: var(--text-faint);
+  opacity: 0;
+  padding: 3px;
+  border-radius: 5px;
+  flex: none;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+.checkItem:hover .removeItem,
+.removeItem:focus-visible {
+  opacity: 1;
+}
+.removeItem:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.addRow {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-1);
+}
+.addInput {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  outline: none;
+}
+.addInput:focus {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ---------------- tips ---------------- */
+.tips {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tipRow {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.tipRow svg {
+  color: var(--warning);
+  flex: none;
+  margin-top: 2px;
+}
