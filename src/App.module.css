@@ -1,0 +1,177 @@
+.app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.headerInner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 10px var(--sp-4);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+.logo {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--brand-grad);
+  color: #fff;
+  flex: none;
+}
+.brandName b {
+  background: var(--brand-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.headerActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-4);
+  flex: 1;
+}
+
+/* ---------- hero / idle ---------- */
+.hero {
+  max-width: 620px;
+  margin: clamp(var(--sp-4), 6vh, var(--sp-7)) auto 0;
+  display: grid;
+  gap: var(--sp-5);
+}
+.heroCopy {
+  text-align: center;
+  display: grid;
+  gap: var(--sp-3);
+}
+.heroTitle {
+  font-size: clamp(1.9rem, 6vw, 2.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+.heroTitle b {
+  background: var(--brand-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.heroSub {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  max-width: 46ch;
+  margin: 0 auto;
+}
+
+.recent {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+.recentLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+.recentGrid {
+  display: grid;
+  gap: var(--sp-2);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+.recentCard {
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+  display: grid;
+  gap: 3px;
+  transition: border-color 0.15s ease, transform 0.05s ease;
+}
+.recentCard:hover {
+  border-color: var(--accent);
+}
+.recentCard:active {
+  transform: translateY(1px);
+}
+.recentTitle {
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recentMeta {
+  font-size: 0.74rem;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+
+/* ---------- refine error banner ---------- */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: var(--sp-3) var(--sp-4);
+}
+.banner svg {
+  color: var(--danger);
+  flex: none;
+}
+.bannerText {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+}
+
+/* ---------- footer ---------- */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: var(--sp-4);
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.8rem;
+}
+.footer a {
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .brandName span {
+    display: none;
+  }
+}
