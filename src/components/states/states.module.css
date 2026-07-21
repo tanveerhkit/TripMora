@@ -1,0 +1,134 @@
+/* ---------- skeleton loading ---------- */
+.loading {
+  display: grid;
+  gap: var(--sp-4);
+  animation: fadeInUp 0.3s ease both;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: var(--sp-1) var(--sp-1) var(--sp-2);
+}
+
+.dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--accent);
+  border-top-color: transparent;
+  animation: spin 0.7s linear infinite;
+  flex: none;
+}
+
+.skelCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--surface-hover) 70%, transparent),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+.line {
+  height: 12px;
+}
+.lineLg {
+  height: 20px;
+}
+
+.skelRow {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+}
+.skelBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  flex: none;
+}
+.skelRowBody {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+
+/* ---------- error / empty ---------- */
+.state {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--sp-4);
+  padding: var(--sp-7) var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  animation: fadeInUp 0.3s ease both;
+}
+
+.stateIcon {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+.stateIcon.err {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.stateIcon.neutral {
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+.state h3 {
+  font-size: 1.25rem;
+}
+.state p {
+  color: var(--text-muted);
+  max-width: 42ch;
+  margin: 0 auto;
+}
+
+.actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.kindTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+  background: var(--surface-2);
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+}
