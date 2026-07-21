@@ -1,0 +1,222 @@
+.stop {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  list-style: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.stop:hover {
+  border-color: var(--border-strong);
+}
+.dragging {
+  opacity: 0.85;
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+  z-index: 5;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: none;
+}
+
+.grip {
+  color: var(--text-faint);
+  cursor: grab;
+  padding: 2px;
+  border-radius: 6px;
+  touch-action: none;
+}
+.grip:hover {
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+.grip:active {
+  cursor: grabbing;
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.headline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+
+.titleWrap {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.time {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 650;
+  word-break: break-word;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+}
+
+.disclosure {
+  color: var(--text-muted);
+  padding: 5px;
+  border-radius: 6px;
+  transition: transform 0.2s ease, background 0.15s ease;
+}
+.disclosure:hover {
+  background: var(--surface-2);
+}
+.disclosure.open {
+  transform: rotate(180deg);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+}
+
+.tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.details {
+  display: grid;
+  gap: var(--sp-2);
+  animation: fadeInUp 0.2s ease both;
+}
+
+.desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.tip {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--warning-soft);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+}
+.tip svg {
+  color: var(--warning);
+  flex: none;
+  margin-top: 1px;
+}
+
+/* ------------------------- editor ------------------------- */
+.editor {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.editGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-2);
+}
+
+.editField {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.editField > span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+}
+.editField input,
+.editField select,
+.editField textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.editField input:focus,
+.editField select:focus,
+.editField textarea:focus {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-focus);
+}
+.editField textarea {
+  resize: vertical;
+}
+
+.editActions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+@media (max-width: 560px) {
+  .editGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .editGrid > label {
+    grid-column: span 2 !important;
+  }
+}
