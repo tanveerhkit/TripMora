@@ -189,7 +189,6 @@ function StopEditor({
         </label>
         <label className={styles.editField} style={{ gridColumn: 'span 3' }}>
           <span>Title</span>
-          {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
           <input value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
         </label>
         <label className={styles.editField} style={{ gridColumn: 'span 2' }}>

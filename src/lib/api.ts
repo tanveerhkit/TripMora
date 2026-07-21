@@ -100,8 +100,7 @@ export async function requestItineraryText(
   maxRetries = 1,
 ): Promise<string> {
   let attempt = 0
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  for (;;) {
     try {
       return await requestOnce(args)
     } catch (err) {
