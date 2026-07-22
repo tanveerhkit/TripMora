@@ -69,7 +69,7 @@ There are two ways in:
 | Styling  | Hand-written CSS with design tokens + CSS Modules (no UI kit) |
 | Drag/drop| `@dnd-kit` (accessible, keyboard-friendly)                    |
 | Parsing  | `zod` for the structural gate + a custom normalizer           |
-| AI       | **Groq** free tier (JSON mode), with **Gemini** as an automatic fallback |
+| AI       | Google **Gemini** free tier, OpenAI-compatible chat API, JSON mode |
 | Backend  | Vercel serverless function (`/api/generate`) — keeps the key server-side |
 | Tests    | Vitest + Testing Library                                      |
 
@@ -82,9 +82,7 @@ Everything here is free. No paid services are required.
 ### 1. Prerequisites
 
 - Node.js 18+ and npm
-- A free Groq API key → <https://console.groq.com/keys>
-- _(recommended)_ A free Gemini API key → <https://aistudio.google.com/apikey> —
-  used as an automatic fallback when Groq is rate-limited
+- A free Gemini API key → <https://aistudio.google.com/apikey>
 
 ### 2. Install
 
@@ -103,10 +101,8 @@ cp .env.example .env
 Then edit `.env`:
 
 ```env
-GROQ_API_KEY=your_groq_api_key_here
-# recommended fallback when Groq is rate-limited:
 GEMINI_API_KEY=your_gemini_api_key_here
-# optional: GROQ_MODEL=llama-3.3-70b-versatile
+# optional: GEMINI_MODEL=gemini-flash-latest
 ```
 
 The key is only ever read by the serverless function — it is **never** exposed
@@ -138,9 +134,8 @@ npm run build        # type-check + production build
    Vercel auto-detects Vite and treats `/api` as serverless functions — no extra
    config needed.
 3. In **Settings → Environment Variables**, add:
-   - `GROQ_API_KEY` = your key
-   - _(recommended)_ `GEMINI_API_KEY` = your key — fallback when Groq is rate-limited
-   - _(optional)_ `GROQ_MODEL`
+   - `GEMINI_API_KEY` = your key
+   - _(optional)_ `GEMINI_MODEL`
 4. **Deploy.** That’s it — the frontend is static and the AI call runs on Vercel’s
    serverless runtime.
 
@@ -151,7 +146,7 @@ npm run build        # type-check + production build
 **How the app uses the model**
 
 - The browser sends the trip description to `POST /api/generate`. The serverless
-  function adds the Groq API key server-side and calls Groq’s OpenAI-compatible
+  function adds the Gemini API key server-side and calls Gemini’s OpenAI-compatible
   Chat Completions API with `response_format: { type: "json_object" }` (JSON mode).
 - A carefully written system prompt asks for a **fixed JSON schema**: trip meta,
   days, timed stops (with category, duration, cost and a local-guide tip), a
@@ -166,15 +161,11 @@ npm run build        # type-check + production build
   returns a separate destinations schema, validated by
   [`parseDream`](src/lib/parseDream.ts) into interactive match cards.
 
-**Model**: default `llama-3.3-70b-versatile` on Groq (configurable via
-`GROQ_MODEL`). Chosen for being fast, free, and good at following JSON schemas.
-
-**Fallback**: Groq's free tier has a small per-minute token budget, so if a
-request is rate-limited (429) or Groq errors (5xx), the same request is retried
-against Google **Gemini** (`gemini-flash-latest` by default, configurable via
-`GEMINI_MODEL`) using its OpenAI-compatible endpoint — no change to the parsing
-code, since the response shape is identical. Set `GEMINI_API_KEY` to enable it;
-without it, the app falls back to a smaller Groq model instead.
+**Model**: default `gemini-flash-latest` (configurable via `GEMINI_MODEL`) — an
+alias that always tracks Google's current Gemini Flash model, so it stays fast,
+free, and good at following JSON schemas without breaking when a pinned version
+is retired. The generous free-tier per-minute limits keep the app responsive
+under load.
 
 ---
 

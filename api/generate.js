@@ -1,42 +1,25 @@
 /**
- * POST /api/generate — the only place the AI keys are ever used.
+ * POST /api/generate — the only place the AI key is ever used.
  *
  * Runs as a Vercel serverless function (Node runtime). The browser sends a
  * trip description (or a refinement instruction + the current itinerary); we
- * call Groq's free, OpenAI-compatible chat API in JSON mode and hand the raw
- * model text back to the client, which parses/validates it.
- *
- * Groq is fast but its free tier has a small per-minute token budget, so when a
- * request is rate-limited (429) we transparently fall back to Google Gemini,
- * whose free tier allows far more tokens per minute. Gemini exposes an
- * OpenAI-compatible endpoint, so the same request/response shape works for both.
+ * call Google Gemini's free, OpenAI-compatible chat API in JSON mode and hand
+ * the raw model text back to the client, which parses/validates it.
  *
  * Env:
- *   GROQ_API_KEY        (required) — from https://console.groq.com/keys
- *   GROQ_MODEL          (optional) — primary Groq model, defaults to a capable one
- *   GROQ_FALLBACK_MODEL (optional) — smaller Groq model, used only when no
- *                                    GEMINI_API_KEY is set
- *   GEMINI_API_KEY      (optional) — from https://aistudio.google.com/apikey;
- *                                    the preferred fallback when Groq is
- *                                    rate-limited or erroring
- *   GEMINI_MODEL        (optional) — Gemini fallback model, defaults to gemini-2.5-flash
+ *   GEMINI_API_KEY  (required) — from https://aistudio.google.com/apikey
+ *   GEMINI_MODEL    (optional) — chat model, defaults to gemini-flash-latest
  */
 
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-// Gemini's OpenAI-compatibility layer — same body/response shape as Groq.
+// Gemini's OpenAI-compatibility layer: standard Chat Completions request/response.
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
-const DEFAULT_MODEL = 'llama-3.3-70b-versatile'
-// A smaller/faster Groq model — only used as a fallback if no Gemini key is set.
-const FALLBACK_MODEL = 'llama-3.1-8b-instant'
-// Gemini's fast, capable free-tier fallback. "gemini-flash-latest" is an alias
-// that always tracks the current flash model, so it won't 404 when Google
-// retires a specific pinned version.
-const DEFAULT_GEMINI_MODEL = 'gemini-flash-latest'
+// "gemini-flash-latest" is an alias that always tracks the current flash model,
+// so it won't 404 when Google retires a specific pinned version. Fast, generous
+// on the free tier, and good at following JSON schemas.
+const DEFAULT_MODEL = 'gemini-flash-latest'
 const UPSTREAM_TIMEOUT_MS = 30_000
 const MAX_PROMPT_CHARS = 2000
-// Cap on generated tokens. Groq reserves this against its per-minute budget up
-// front (not just what's actually used), so keeping it lean eases rate limits
-// while still leaving room for a full multi-day itinerary.
+// Cap on generated tokens — enough for a full multi-day itinerary.
 const MAX_OUTPUT_TOKENS = 3000
 
 export const config = { maxDuration: 30 }
@@ -190,11 +173,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' })
   }
 
-  const apiKey = process.env.GROQ_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     return res.status(500).json({
       error:
-        'The server is missing GROQ_API_KEY. Add it in your environment (see README) and redeploy.',
+        'The server is missing GEMINI_API_KEY. Add it in your environment (see README) and redeploy.',
     })
   }
 
@@ -212,70 +195,34 @@ export default async function handler(req, res) {
   const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS)
 
   const messages = buildMessages(body)
-  const primary = process.env.GROQ_MODEL || DEFAULT_MODEL
-  const groqFallback = process.env.GROQ_FALLBACK_MODEL || FALLBACK_MODEL
-  const geminiKey = process.env.GEMINI_API_KEY
-  const geminiModel = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL
+  const model = process.env.GEMINI_MODEL || DEFAULT_MODEL
 
-  // Groq and Gemini share the same OpenAI-compatible request body.
-  const requestBody = (model) =>
-    JSON.stringify({
-      model,
-      messages,
-      temperature: 0.6,
-      max_tokens: MAX_OUTPUT_TOKENS,
-      response_format: { type: 'json_object' },
-    })
-
-  const callModel = (url, key, model) =>
-    fetch(url, {
+  try {
+    const upstream = await fetch(GEMINI_URL, {
       method: 'POST',
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${key}`,
+        Authorization: `Bearer ${apiKey}`,
       },
-      body: requestBody(model),
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: 0.6,
+        max_tokens: MAX_OUTPUT_TOKENS,
+        response_format: { type: 'json_object' },
+      }),
     })
 
-  const callGroq = (model) => callModel(GROQ_URL, apiKey, model)
-  const callGemini = (model) => callModel(GEMINI_URL, geminiKey, model)
-
-  try {
-    // Primary: Groq (fast, but a small free per-minute token budget). Catch
-    // network-level throws here so a transient Groq failure still falls back
-    // instead of erroring out. A real abort (timeout) is re-thrown.
-    let upstream = null
-    try {
-      upstream = await callGroq(primary)
-    } catch (err) {
-      if (err?.name === 'AbortError') throw err
-      console.warn(`Groq ${primary} request failed: ${err?.message}`)
-    }
-
-    // Fall back when Groq is rate-limited (429), erroring (5xx), or unreachable
-    // — preferring Gemini (far larger free per-minute budget); otherwise drop to
-    // a smaller Groq model as a last resort.
-    const groqFailed = !upstream || upstream.status === 429 || upstream.status >= 500
-    if (groqFailed) {
-      if (geminiKey) {
-        console.warn(`Groq ${primary} unavailable (${upstream?.status ?? 'network error'}); falling back to Gemini ${geminiModel}`)
-        upstream = await callGemini(geminiModel)
-      } else if (groqFallback && groqFallback !== primary) {
-        console.warn(`Groq ${primary} unavailable (${upstream?.status ?? 'network error'}); falling back to ${groqFallback}`)
-        upstream = await callGroq(groqFallback)
-      }
-    }
-
-    if (!upstream || !upstream.ok) {
-      const status = upstream?.status === 429 ? 429 : 502
-      const detail = upstream ? await upstream.text().catch(() => '') : ''
+    if (!upstream.ok) {
+      const detail = await upstream.text().catch(() => '')
+      const status = upstream.status === 429 ? 429 : 502
       const message =
-        upstream?.status === 429
+        upstream.status === 429
           ? 'The AI is rate-limited right now. Wait a moment and retry.'
           : 'The AI service returned an error. Please try again.'
       // Log detail server-side only; never leak keys or raw upstream to client.
-      console.error('Upstream error', upstream?.status ?? 'no response', detail.slice(0, 500))
+      console.error('Gemini upstream error', upstream.status, detail.slice(0, 500))
       return res.status(status).json({ error: message })
     }
 

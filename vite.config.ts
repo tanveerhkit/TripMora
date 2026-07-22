@@ -17,15 +17,9 @@ function apiDevServer(env: Record<string, string>): PluginOption {
     apply: 'serve',
     configureServer(server) {
       // Mirror the AI env vars the serverless handler reads into process.env so
-      // the exact same code path (Groq primary + Gemini fallback) runs in dev.
-      // loadEnv gives us the .env values here, but the handler reads process.env.
-      for (const key of [
-        'GROQ_API_KEY',
-        'GROQ_MODEL',
-        'GROQ_FALLBACK_MODEL',
-        'GEMINI_API_KEY',
-        'GEMINI_MODEL',
-      ]) {
+      // the same code path runs in dev. loadEnv gives us the .env values here,
+      // but the handler reads process.env.
+      for (const key of ['GEMINI_API_KEY', 'GEMINI_MODEL']) {
         if (env[key]) process.env[key] = env[key]
       }
 

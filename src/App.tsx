@@ -260,7 +260,7 @@ export default function App() {
       </main>
 
       <footer className={styles.footer}>
-        Built with React + Groq · your trips are saved in this browser only
+        Built with React + Gemini · your trips are saved in this browser only
       </footer>
 
       <SessionSidebar
