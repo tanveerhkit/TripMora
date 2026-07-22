@@ -31,6 +31,7 @@ import {
   str,
   titleCase,
 } from './safe'
+import { classifyBudget, defaultOptionId, getOption } from './budgetOptions'
 
 export { extractJson }
 
@@ -142,7 +143,22 @@ function normalizeBudget(raw: unknown): BudgetItem[] {
       .filter((b): b is BudgetItem => b !== null)
   }
 
-  return items.slice(0, 24)
+  return items.slice(0, 24).map(enrichBudgetItem)
+}
+
+/** Attach an interactive option set to a plain budget line. */
+function enrichBudgetItem(b: BudgetItem): BudgetItem {
+  const kind = classifyBudget(b.label)
+  const option = defaultOptionId(kind)
+  const opt = getOption(kind, option)
+  const baseAmount = b.amount
+  return {
+    label: b.label,
+    baseAmount,
+    kind,
+    option,
+    amount: opt ? Math.round(baseAmount * opt.mult) : baseAmount,
+  }
 }
 
 function normalizePacking(raw: unknown): PackingItem[] {

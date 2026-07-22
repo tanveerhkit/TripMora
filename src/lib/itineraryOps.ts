@@ -12,6 +12,7 @@ import {
   type PackingItem,
   type Stop,
 } from '../types/itinerary'
+import { classifyBudget, getOption } from './budgetOptions'
 
 function touch(it: Itinerary): Itinerary {
   return { ...it, updatedAt: Date.now() }
@@ -108,6 +109,27 @@ export function addPacking(it: Itinerary, text: string): Itinerary {
 
 export function deletePacking(it: Itinerary, itemId: string): Itinerary {
   return touch({ ...it, packing: it.packing.filter((p) => p.id !== itemId) })
+}
+
+/* ---------------------------- budget ----------------------------- */
+
+/**
+ * Choose an option (e.g. flight vs train) for a budget line and recompute its
+ * amount from the AI's base estimate. Keyed by index so it also works for
+ * itineraries saved before this feature existed.
+ */
+export function setBudgetOption(it: Itinerary, index: number, optionId: string): Itinerary {
+  return touch({
+    ...it,
+    budget: it.budget.map((b, i) => {
+      if (i !== index) return b
+      const kind = b.kind ?? classifyBudget(b.label)
+      const base = b.baseAmount ?? b.amount
+      const opt = getOption(kind, optionId)
+      if (!opt) return b
+      return { ...b, kind, baseAmount: base, option: optionId, amount: Math.round(base * opt.mult) }
+    }),
+  })
 }
 
 /* --------------------------- refinement -------------------------- */
