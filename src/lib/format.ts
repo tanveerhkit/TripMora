@@ -15,6 +15,15 @@ export function formatDuration(min: number | null): string {
   return rem ? `${hours}h ${rem}m` : `${hours}h`
 }
 
+/** A Google Images search URL for a place (opens real photos in a new tab). */
+export function googleImagesUrl(...parts: string[]): string {
+  const query = parts
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .join(' ')
+  return `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`
+}
+
 export function relativeTime(ts: number): string {
   const diff = Date.now() - ts
   const min = Math.round(diff / 60000)
