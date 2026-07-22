@@ -8,7 +8,13 @@
     "moduleResolution": "bundler",
     "types": ["node"],
     "allowSyntheticDefaultImports": true,
-    "strict": true
+    "strict": true,
+    // This project is `composite` (required by `tsc -b`), which forces emit.
+    // Send that emit into node_modules/.tmp so a compiled vite.config.js never
+    // lands in the project root — where Vite would load it INSTEAD of
+    // vite.config.ts and silently run a stale config.
+    "outDir": "./node_modules/.tmp/tsc-node",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsc-node/tsconfig.node.tsbuildinfo"
   },
   "include": ["vite.config.ts"]
 }
