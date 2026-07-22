@@ -161,11 +161,12 @@ npm run build        # type-check + production build
   returns a separate destinations schema, validated by
   [`parseDream`](src/lib/parseDream.ts) into interactive match cards.
 
-**Model**: default `gemini-flash-latest` (configurable via `GEMINI_MODEL`) — an
-alias that always tracks Google's current Gemini Flash model, so it stays fast,
-free, and good at following JSON schemas without breaking when a pinned version
-is retired. The generous free-tier per-minute limits keep the app responsive
-under load.
+**Model**: default `gemini-flash-lite-latest` (configurable via `GEMINI_MODEL`) —
+fast, free, and good at following JSON schemas, with a generous free-tier daily
+limit. The request sends `reasoning_effort: 'low'` (no chain-of-thought is needed
+to fill a fixed schema, and leaving it on can consume the token budget and
+truncate the JSON). If your key has quota for a stronger model you can set e.g.
+`GEMINI_MODEL=gemini-2.5-flash`.
 
 ---
 

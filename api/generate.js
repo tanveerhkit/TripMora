@@ -13,10 +13,12 @@
 
 // Gemini's OpenAI-compatibility layer: standard Chat Completions request/response.
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
-// "gemini-flash-latest" is an alias that always tracks the current flash model,
-// so it won't 404 when Google retires a specific pinned version. Fast, generous
-// on the free tier, and good at following JSON schemas.
-const DEFAULT_MODEL = 'gemini-flash-latest'
+// On the free tier the plain "gemini-flash-latest" alias resolves to the newest
+// *preview* flash (e.g. gemini-3.6-flash) whose free quota is tiny (~20 req/day).
+// The flash-lite alias gets a much higher free daily limit and is more than
+// capable of filling this JSON schema. Override with GEMINI_MODEL (e.g.
+// gemini-2.5-flash) if your key has quota for a stronger model.
+const DEFAULT_MODEL = 'gemini-flash-lite-latest'
 const UPSTREAM_TIMEOUT_MS = 55_000
 const MAX_PROMPT_CHARS = 2000
 // Cap on generated tokens. Gemini Flash is a "thinking" model and its hidden
