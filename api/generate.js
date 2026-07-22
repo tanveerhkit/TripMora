@@ -74,6 +74,44 @@ Rules:
 - Preserve unrelated days, stops, wording, costs and order.
 - Output valid JSON only. Do not wrap it in code fences.`
 
+const DREAM_SCHEMA_HINT = `Return ONLY a single minified JSON object (no markdown, no prose) with this exact shape:
+{
+  "summary": string,               // 1-2 sentences framing your picks for this traveler
+  "currency": string,              // a single currency symbol used for cost comparison, e.g. "$"
+  "destinations": [
+    {
+      "name": string,              // city or region
+      "country": string,
+      "matchReason": string,       // why it fits THIS traveler's answers (concrete, 1-2 sentences)
+      "bestSeason": string,        // best time to visit
+      "estCost": number,           // approx total per person for a typical trip, in the chosen currency
+      "costLevel": string,         // one of: Budget, Moderate, Premium
+      "safety": string,            // one short sentence
+      "safetyLevel": string,       // one of: High, Moderate, Caution
+      "visa": string,              // visa requirement (use the traveler's home country if given)
+      "currency": string,          // the destination's local currency
+      "weather": string,           // expected weather around the chosen time
+      "internet": string,          // one of: Fast, Good, Patchy
+      "crowdLevel": string,        // one of: Low, Moderate, High (for the chosen time)
+      "festivals": string[],       // 0-3 notable events around that time
+      "suggestedDays": number,     // a sensible trip length
+      "tags": string[]             // 2-4 short interest tags
+    }
+  ]
+}`
+
+const DREAM_SYSTEM = `You are TripMora, a destination advisor for travelers who haven't decided where to go.
+From the traveler's answers, suggest where they should travel.
+
+Rules:
+- ${DREAM_SCHEMA_HINT}
+- Return 4 to 6 real destinations, ranked best-fit first.
+- Genuinely respect their budget, who's travelling (kids/elderly), style, visa needs,
+  food preference, temperature and terrain preferences.
+- Use the SAME comparison currency for every "estCost" so they can be compared.
+- Be realistic and specific; avoid generic filler. Never return an empty list.
+- Output valid JSON only. Do not wrap it in code fences.`
+
 async function readJsonBody(req) {
   if (req.body && typeof req.body === 'object') return req.body
   if (typeof req.body === 'string') {
@@ -95,7 +133,8 @@ async function readJsonBody(req) {
 }
 
 function buildMessages(body) {
-  const mode = body.mode === 'refine' ? 'refine' : 'generate'
+  const mode =
+    body.mode === 'refine' ? 'refine' : body.mode === 'dream' ? 'dream' : 'generate'
   const prompt = String(body.prompt || '').slice(0, MAX_PROMPT_CHARS).trim()
 
   if (mode === 'refine') {
@@ -106,6 +145,13 @@ function buildMessages(body) {
         role: 'user',
         content: `Current itinerary:\n${current}\n\nChange request:\n${prompt}`,
       },
+    ]
+  }
+
+  if (mode === 'dream') {
+    return [
+      { role: 'system', content: DREAM_SYSTEM },
+      { role: 'user', content: `Traveler's answers:\n${prompt}` },
     ]
   }
 

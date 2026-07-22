@@ -7,7 +7,7 @@
  */
 import type { Itinerary } from '../types/itinerary'
 
-export type GenerateMode = 'generate' | 'refine'
+export type GenerateMode = 'generate' | 'refine' | 'dream'
 
 export interface GenerateArgs {
   prompt: string
@@ -95,7 +95,7 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
  * Calls the route with up to `maxRetries` extra attempts on transient errors,
  * using a short exponential-ish backoff. Aborts are never retried.
  */
-export async function requestItineraryText(
+export async function requestModelText(
   args: GenerateArgs,
   maxRetries = 1,
 ): Promise<string> {
