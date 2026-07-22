@@ -159,17 +159,22 @@ function StopThumb({
   category: StopCategory
 }) {
   const meta = CATEGORY_META[category]
-  const { url } = useLocationImage(`${title}, ${destination}`, {
+  // Prefer a confident photo of the exact place; otherwise fall back to a photo
+  // of the destination city so every stop still shows a real, relevant image
+  // (never a wrong best-guess). The city lookup is shared/cached across stops.
+  const place = useLocationImage(`${title}, ${destination}`, {
     matchTerm: title,
     context: destination,
   })
-  const [loaded, setLoaded] = useState(false)
+  const city = useLocationImage(destination)
+  const url = place.url ?? city.url
 
+  const [loaded, setLoaded] = useState(false)
   useEffect(() => setLoaded(false), [url])
 
   return (
     <span className={styles.badge} style={{ color: `var(${meta.colorVar})` }} title={meta.label}>
-      <Icon name={meta.icon} size={18} />
+      <Icon name={meta.icon} size={26} />
       {url && (
         <img
           src={url}
