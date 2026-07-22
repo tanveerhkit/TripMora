@@ -24,8 +24,9 @@ const MAX_PROMPT_CHARS = 2000
 // Cap on generated tokens. Gemini Flash is a "thinking" model and its hidden
 // reasoning tokens count against this budget, so it must be generous — 3000 was
 // enough thinking to truncate even a 2-day itinerary mid-JSON. We also set
-// reasoning_effort: 'low' below to minimize that overhead.
-const MAX_OUTPUT_TOKENS = 8000
+// reasoning_effort: 'low' below to minimize that overhead. Bumped to give the
+// per-stop "watchOuts" room without risking truncation on longer trips.
+const MAX_OUTPUT_TOKENS = 9500
 
 // Large itineraries can take ~30s+ to generate; Vercel Hobby allows up to 60s.
 export const config = { maxDuration: 60 }
@@ -53,7 +54,8 @@ const SCHEMA_HINT = `Return ONLY a single minified JSON object (no markdown, no 
           "category": string,    // one of: sightseeing, food, nature, culture, relax, nightlife, shopping, transport, adventure
           "durationMin": number, // minutes spent here
           "cost": number,        // approx per-person cost in the chosen currency (0 if free)
-          "tip": string          // a smart local tip: best time, how to skip a queue, a scam to avoid
+          "tip": string,         // a smart local tip: best time, how to skip a queue, a scam to avoid
+          "watchOuts": string[]  // 1-3 short, honest heads-ups on problems travelers commonly hit here (crowds, queues, scams, seasonal closures, pickpockets, altitude, need to pre-book). [] only if genuinely none.
         }
       ]
     }
@@ -71,6 +73,10 @@ Rules:
 - 3 to 6 stops per day, in a sensible order (group by area, respect opening hours, avoid backtracking).
 - Give realistic times that flow through the day, and honest approximate costs.
 - Add a genuinely useful "tip" to most stops (e.g. "go by 8am, queues triple after 10").
+- For each stop, add 1-3 honest "watchOuts": real problems a traveler might hit there
+  (crowds, long queues, tourist scams, pickpockets, seasonal closures, altitude, must
+  pre-book). Be specific and concise; don't invent fake quotes or ratings. Use [] only
+  if there is truly nothing to flag.
 - If the user didn't say how many days, pick a sensible 3-5.
 - Infer the traveler type and interests from their words and reflect them.
 - Keep each day achievable; don't cram. Never leave "days" empty.
