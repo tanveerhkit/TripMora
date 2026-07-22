@@ -1,40 +1,57 @@
 /* ============================================================
    TripMora — design tokens + global styles
-   Light is the default; `:root[data-theme="dark"]` overrides it,
-   and the media query handles first paint before JS runs.
+   Minimal glassmorphism. Light = bright greens on white glass;
+   dark = deep greens on near-black glass. Light is the default;
+   `:root[data-theme="dark"]` overrides it, and the media query
+   handles first paint before JS runs.
    ============================================================ */
 
 :root {
-  /* brand */
-  --brand-1: #5b8cff;
-  --brand-2: #8a5bff;
+  /* brand — fresh emerald greens */
+  --brand-1: #34d399;
+  --brand-2: #059669;
   --brand-grad: linear-gradient(135deg, var(--brand-1), var(--brand-2));
 
-  /* neutrals (light) */
-  --bg: #f6f7fb;
-  --bg-elevated: #ffffff;
+  /* base + ambient wash the frosted panels blur against */
+  --bg: #e9f6ef;
+  --app-bg:
+    radial-gradient(1100px 760px at 6% -14%, rgba(52, 211, 153, 0.34), transparent 58%),
+    radial-gradient(940px 700px at 110% 4%, rgba(5, 150, 105, 0.2), transparent 55%),
+    radial-gradient(820px 640px at 50% 122%, rgba(16, 185, 129, 0.18), transparent 60%);
+
+  /* frosted glass — elevated panels/cards */
+  --bg-elevated: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.72);
+  --blur: 16px;
+
+  /* solid control surfaces */
   --surface: #ffffff;
-  --surface-2: #f1f3f9;
-  --surface-hover: #eef1f8;
-  --border: #e2e6f0;
-  --border-strong: #cdd3e2;
+  --surface-2: #e8f4ed;
+  --surface-hover: #ddefe5;
+  --border: rgba(6, 78, 47, 0.12);
+  --border-strong: rgba(6, 78, 47, 0.22);
 
-  --text: #171a21;
-  --text-muted: #5b6172;
-  --text-faint: #8a90a2;
+  /* inset glass — translucent inner layer that sits on a frosted panel */
+  --inset: rgba(255, 255, 255, 0.5);
+  --inset-hover: rgba(255, 255, 255, 0.72);
+  --inset-border: rgba(6, 78, 47, 0.1);
 
-  --accent: #4f6bff;
-  --accent-soft: rgba(79, 107, 255, 0.12);
+  --text: #0d2018;
+  --text-muted: #466a5b;
+  --text-faint: #6f8c7e;
+
+  --accent: #0f9d58;
+  --accent-soft: rgba(15, 157, 88, 0.13);
 
   --danger: #e5484d;
   --danger-soft: rgba(229, 72, 77, 0.12);
-  --success: #2f9e63;
-  --success-soft: rgba(47, 158, 99, 0.14);
+  --success: #16a34a;
+  --success-soft: rgba(22, 163, 74, 0.14);
   --warning: #d98a1f;
   --warning-soft: rgba(217, 138, 31, 0.14);
 
   /* category accents */
-  --cat-sightseeing: #4f6bff;
+  --cat-sightseeing: #0f9d58;
   --cat-food: #e8843c;
   --cat-nature: #2f9e63;
   --cat-culture: #a05bd6;
@@ -44,10 +61,10 @@
   --cat-transport: #6b7280;
   --cat-adventure: #d9542b;
 
-  /* elevation */
-  --shadow-sm: 0 1px 2px rgba(20, 25, 40, 0.06), 0 1px 3px rgba(20, 25, 40, 0.05);
-  --shadow-md: 0 4px 12px rgba(20, 25, 40, 0.08), 0 2px 4px rgba(20, 25, 40, 0.05);
-  --shadow-lg: 0 12px 32px rgba(20, 25, 40, 0.14);
+  /* elevation — soft, green-tinted */
+  --shadow-sm: 0 1px 2px rgba(6, 60, 38, 0.05), 0 2px 6px rgba(6, 60, 38, 0.05);
+  --shadow-md: 0 6px 18px rgba(6, 60, 38, 0.1), 0 2px 6px rgba(6, 60, 38, 0.06);
+  --shadow-lg: 0 18px 44px rgba(6, 60, 38, 0.16);
   --shadow-focus: 0 0 0 3px var(--accent-soft);
 
   /* geometry */
@@ -74,20 +91,34 @@
 }
 
 :root[data-theme='dark'] {
-  --bg: #0e1116;
-  --bg-elevated: #161a22;
-  --surface: #171b23;
-  --surface-2: #1e232d;
-  --surface-hover: #222834;
-  --border: #262c38;
-  --border-strong: #333b4a;
+  --brand-1: #34d399;
+  --brand-2: #10b981;
 
-  --text: #eef1f7;
-  --text-muted: #9aa2b4;
-  --text-faint: #6c7488;
+  --bg: #05100a;
+  --app-bg:
+    radial-gradient(1100px 760px at 6% -14%, rgba(16, 185, 129, 0.22), transparent 58%),
+    radial-gradient(940px 700px at 110% 4%, rgba(6, 95, 70, 0.3), transparent 55%),
+    radial-gradient(820px 640px at 50% 122%, rgba(4, 120, 87, 0.2), transparent 60%);
 
-  --accent: #6d86ff;
-  --accent-soft: rgba(109, 134, 255, 0.16);
+  --bg-elevated: rgba(17, 39, 27, 0.55);
+  --glass-border: rgba(52, 211, 153, 0.16);
+
+  --surface: #0c1c13;
+  --surface-2: #12281b;
+  --surface-hover: #173222;
+  --border: rgba(52, 211, 153, 0.13);
+  --border-strong: rgba(52, 211, 153, 0.24);
+
+  --inset: rgba(255, 255, 255, 0.04);
+  --inset-hover: rgba(255, 255, 255, 0.08);
+  --inset-border: rgba(52, 211, 153, 0.12);
+
+  --text: #e6f5ec;
+  --text-muted: #9bb8a9;
+  --text-faint: #6f8f7e;
+
+  --accent: #34d399;
+  --accent-soft: rgba(52, 211, 153, 0.16);
 
   --danger: #ff6369;
   --danger-soft: rgba(255, 99, 105, 0.16);
@@ -97,8 +128,8 @@
   --warning-soft: rgba(230, 165, 61, 0.16);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.6);
 
   color-scheme: dark;
 }
@@ -106,18 +137,28 @@
 /* respect OS preference before the user toggles anything */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg: #0e1116;
-    --bg-elevated: #161a22;
-    --surface: #171b23;
-    --surface-2: #1e232d;
-    --surface-hover: #222834;
-    --border: #262c38;
-    --border-strong: #333b4a;
-    --text: #eef1f7;
-    --text-muted: #9aa2b4;
-    --text-faint: #6c7488;
-    --accent: #6d86ff;
-    --accent-soft: rgba(109, 134, 255, 0.16);
+    --brand-1: #34d399;
+    --brand-2: #10b981;
+    --bg: #05100a;
+    --app-bg:
+      radial-gradient(1100px 760px at 6% -14%, rgba(16, 185, 129, 0.22), transparent 58%),
+      radial-gradient(940px 700px at 110% 4%, rgba(6, 95, 70, 0.3), transparent 55%),
+      radial-gradient(820px 640px at 50% 122%, rgba(4, 120, 87, 0.2), transparent 60%);
+    --bg-elevated: rgba(17, 39, 27, 0.55);
+    --glass-border: rgba(52, 211, 153, 0.16);
+    --surface: #0c1c13;
+    --surface-2: #12281b;
+    --surface-hover: #173222;
+    --border: rgba(52, 211, 153, 0.13);
+    --border-strong: rgba(52, 211, 153, 0.24);
+    --inset: rgba(255, 255, 255, 0.04);
+    --inset-hover: rgba(255, 255, 255, 0.08);
+    --inset-border: rgba(52, 211, 153, 0.12);
+    --text: #e6f5ec;
+    --text-muted: #9bb8a9;
+    --text-faint: #6f8f7e;
+    --accent: #34d399;
+    --accent-soft: rgba(52, 211, 153, 0.16);
     --danger: #ff6369;
     --danger-soft: rgba(255, 99, 105, 0.16);
     --success: #45c07f;
@@ -125,8 +166,8 @@
     --warning: #e6a53d;
     --warning-soft: rgba(230, 165, 61, 0.16);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+    --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.6);
     color-scheme: dark;
   }
 }
@@ -154,6 +195,16 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   min-height: 100dvh;
+}
+
+/* fixed ambient colour field — what the frosted glass blurs against */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--app-bg);
+  pointer-events: none;
 }
 
 img,
