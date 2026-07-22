@@ -2,7 +2,9 @@
   position: relative;
   overflow: hidden;
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(var(--blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(150%);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   display: grid;
   box-shadow: var(--shadow-sm);
@@ -28,7 +30,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #d3ddff;
+  color: #c7f5dd;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 

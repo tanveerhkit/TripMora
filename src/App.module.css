@@ -8,9 +8,10 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(10px);
-  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  backdrop-filter: saturate(160%) blur(var(--blur));
+  -webkit-backdrop-filter: saturate(160%) blur(var(--blur));
+  border-bottom: 1px solid var(--glass-border);
 }
 .headerInner {
   max-width: var(--maxw);
@@ -122,16 +123,20 @@
 }
 .recentCard {
   text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  backdrop-filter: blur(var(--blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(150%);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: var(--sp-3);
   display: grid;
   gap: 3px;
-  transition: border-color 0.15s ease, transform 0.05s ease;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
 }
 .recentCard:hover {
   border-color: var(--accent);
+  box-shadow: var(--shadow-md);
 }
 .recentCard:active {
   transform: translateY(1px);

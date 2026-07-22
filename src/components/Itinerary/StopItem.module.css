@@ -2,13 +2,14 @@
   display: flex;
   gap: var(--sp-3);
   padding: var(--sp-3);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--inset);
+  border: 1px solid var(--inset-border);
   border-radius: var(--radius);
   list-style: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 .stop:hover {
+  background: var(--inset-hover);
   border-color: var(--border-strong);
 }
 .dragging {
