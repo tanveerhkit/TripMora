@@ -8,6 +8,7 @@ import {
   deleteStop,
   reorderDays,
   reorderStops,
+  setBudgetOption,
   togglePacking,
   updateDay,
   updateStop,
@@ -119,7 +120,13 @@ export function ItineraryView({ itinerary, mutate, onRefine, refining }: Props) 
       </div>
 
       <aside className={styles.side}>
-        <BudgetBlock items={itinerary.budget} currency={itinerary.meta.currency} />
+        <BudgetBlock
+          items={itinerary.budget}
+          currency={itinerary.meta.currency}
+          onSelectOption={(index, optionId) =>
+            mutate((it) => setBudgetOption(it, index, optionId))
+          }
+        />
         <PackingChecklist
           items={itinerary.packing}
           onToggle={(id) => mutate((it) => togglePacking(it, id))}
