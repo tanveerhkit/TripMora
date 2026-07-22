@@ -69,6 +69,69 @@ export function extractJson(text: string): string {
   return t
 }
 
+/**
+ * Best-effort repair of the two ways an LLM most often breaks otherwise-valid
+ * JSON: a trailing comma before a closing brace/bracket, and truncation (the
+ * response was cut off mid-object). A single string-aware pass drops trailing
+ * commas, closes a dangling string, and appends any unclosed brackets. It never
+ * throws; if it can't help, the result simply won't parse and the caller fails
+ * gracefully.
+ */
+export function repairJson(s: string): string {
+  const stack: string[] = []
+  let inStr = false
+  let esc = false
+  let out = ''
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i]
+    if (inStr) {
+      out += ch
+      if (esc) esc = false
+      else if (ch === '\\') esc = true
+      else if (ch === '"') inStr = false
+      continue
+    }
+    if (ch === '"') {
+      inStr = true
+      out += ch
+    } else if (ch === '{' || ch === '[') {
+      stack.push(ch)
+      out += ch
+    } else if (ch === '}' || ch === ']') {
+      stack.pop()
+      out += ch
+    } else if (ch === ',') {
+      // Drop the comma if the next non-whitespace char closes the container.
+      let j = i + 1
+      while (j < s.length && /\s/.test(s[j])) j++
+      if (j >= s.length || s[j] === '}' || s[j] === ']') continue
+      out += ch
+    } else {
+      out += ch
+    }
+  }
+
+  if (inStr) out += '"' // truncated mid-string
+  out = out.replace(/[,\s]+$/, '') // stray trailing comma at the cut point
+  for (let i = stack.length - 1; i >= 0; i--) out += stack[i] === '{' ? '}' : ']'
+  return out
+}
+
+/**
+ * Parse model output into an object, tolerating fences/prose and — if the first
+ * attempt fails — a trailing comma or truncation. Throws only if even the
+ * repaired text is unparseable.
+ */
+export function parseModelJson(text: string): unknown {
+  const extracted = extractJson(text)
+  try {
+    return JSON.parse(extracted)
+  } catch {
+    return JSON.parse(repairJson(extracted))
+  }
+}
+
 export function normalizeStringList(raw: unknown, max: number): string[] {
   return asArr(raw)
     .map((v) => {

@@ -173,6 +173,25 @@ function buildMessages(body) {
   ]
 }
 
+// Quick check that the model returned something the client can parse (mirrors
+// the client's fence/prose stripping). Lets us catch a rare malformed
+// generation and retry before the user ever sees an error.
+function looksLikeJson(content) {
+  if (!content) return false
+  let t = content.trim()
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i)
+  if (fence) t = fence[1].trim()
+  const first = t.indexOf('{')
+  const last = t.lastIndexOf('}')
+  if (first !== -1 && last > first) t = t.slice(first, last + 1)
+  try {
+    JSON.parse(t)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -203,8 +222,8 @@ export default async function handler(req, res) {
   const messages = buildMessages(body)
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL
 
-  try {
-    const upstream = await fetch(GEMINI_URL, {
+  const callGemini = () =>
+    fetch(GEMINI_URL, {
       method: 'POST',
       signal: controller.signal,
       headers: {
@@ -223,25 +242,43 @@ export default async function handler(req, res) {
       }),
     })
 
-    if (!upstream.ok) {
-      const detail = await upstream.text().catch(() => '')
-      const status = upstream.status === 429 ? 429 : 502
-      const message =
-        upstream.status === 429
-          ? 'The AI is rate-limited right now. Wait a moment and retry.'
-          : 'The AI service returned an error. Please try again.'
-      // Log detail server-side only; never leak keys or raw upstream to client.
-      console.error('Gemini upstream error', upstream.status, detail.slice(0, 500))
-      return res.status(status).json({ error: message })
+  try {
+    // The model very occasionally emits malformed JSON (a trailing comma, or a
+    // truncated object). Generation is non-deterministic, so a fresh attempt
+    // almost always succeeds — retry once before handing anything back.
+    const MAX_ATTEMPTS = 2
+    let content = ''
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      const upstream = await callGemini()
+
+      if (!upstream.ok) {
+        const detail = await upstream.text().catch(() => '')
+        const status = upstream.status === 429 ? 429 : 502
+        const message =
+          upstream.status === 429
+            ? 'The AI is rate-limited right now. Wait a moment and retry.'
+            : 'The AI service returned an error. Please try again.'
+        // Log detail server-side only; never leak keys or raw upstream to client.
+        console.error('Gemini upstream error', upstream.status, detail.slice(0, 500))
+        return res.status(status).json({ error: message })
+      }
+
+      const data = await upstream.json()
+      content = data?.choices?.[0]?.message?.content || ''
+
+      if (looksLikeJson(content)) {
+        return res.status(200).json({ content })
+      }
+      console.warn(
+        `Gemini returned unparseable JSON (attempt ${attempt}/${MAX_ATTEMPTS})` +
+          (attempt < MAX_ATTEMPTS ? ' — retrying' : ' — giving up'),
+      )
     }
 
-    const data = await upstream.json()
-    const content = data?.choices?.[0]?.message?.content
-    if (!content) {
-      return res.status(502).json({ error: 'The AI returned an empty response.' })
-    }
-
-    return res.status(200).json({ content })
+    // Both attempts were unparseable. Hand the last one back anyway so the
+    // client's repair pass gets a shot; if that also fails it shows a clean error.
+    if (content) return res.status(200).json({ content })
+    return res.status(502).json({ error: 'The AI returned an empty response.' })
   } catch (err) {
     if (err?.name === 'AbortError') {
       return res.status(504).json({ error: 'The AI took too long to respond. Try again.' })

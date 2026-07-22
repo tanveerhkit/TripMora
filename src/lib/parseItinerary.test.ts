@@ -43,9 +43,22 @@ describe('parseItinerary — happy path', () => {
 })
 
 describe('parseItinerary — bad output', () => {
-  it('flags malformed JSON without throwing', () => {
-    const res = parseItinerary('{ "days": [ {')
+  it('flags unrecoverable non-JSON without throwing', () => {
+    const res = parseItinerary('Sorry, I could not plan that trip.')
     expect(res).toMatchObject({ ok: false, kind: 'json' })
+  })
+
+  it('recovers a truncated itinerary by closing it off', () => {
+    // The response was cut off mid-stop; the repair pass should salvage the
+    // stops that did arrive rather than throwing the whole trip away.
+    const truncated =
+      '{"meta":{"destination":"Rome"},"days":[{"title":"Day 1","stops":' +
+      '[{"time":"09:00","title":"Colosseum","category":"culture"},' +
+      '{"time":"13:00","title":"Trastevere lunch'
+    const res = parseItinerary(truncated)
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    expect(res.itinerary.days[0].stops[0].title).toBe('Colosseum')
   })
 
   it('flags a valid-JSON-but-wrong-shape response', () => {
