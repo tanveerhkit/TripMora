@@ -105,6 +105,7 @@ export function ItineraryView({ itinerary, mutate, onRefine, refining }: Props) 
               index={index}
               total={itinerary.days.length}
               currency={itinerary.meta.currency}
+              destination={itinerary.meta.destination}
               collapsed={collapsed.has(day.id)}
               onToggleCollapse={() => toggleCollapse(day.id)}
               onStopChange={(stopId, patch) => handleStopChange(day.id, stopId, patch)}
