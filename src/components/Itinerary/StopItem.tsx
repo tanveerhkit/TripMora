@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CATEGORY_META, CATEGORY_OPTIONS } from '../../lib/categories'
 import { formatDuration, formatMoney } from '../../lib/format'
+import { useLocationImage } from '../../hooks/useLocationImage'
 import type { Stop, StopCategory } from '../../types/itinerary'
 import { Icon } from '../ui/Icon'
 import { Button } from '../ui/Button'
@@ -11,11 +12,13 @@ import styles from './StopItem.module.css'
 interface Props {
   stop: Stop
   currency: string
+  /** the trip destination, used as context for the stop's location photo */
+  destination: string
   onChange: (patch: Partial<Stop>) => void
   onDelete: () => void
 }
 
-export function StopItem({ stop, currency, onChange, onDelete }: Props) {
+export function StopItem({ stop, currency, destination, onChange, onDelete }: Props) {
   const [expanded, setExpanded] = useState(true)
   const [editing, setEditing] = useState(false)
 
@@ -54,13 +57,7 @@ export function StopItem({ stop, currency, onChange, onDelete }: Props) {
         >
           <Icon name="grip" size={18} />
         </button>
-        <span
-          className={styles.badge}
-          style={{ color: `var(${meta.colorVar})` }}
-          title={meta.label}
-        >
-          <Icon name={meta.icon} size={18} />
-        </span>
+        <StopThumb title={stop.title} destination={destination} category={stop.category} />
       </div>
 
       {editing ? (
@@ -142,6 +139,48 @@ export function StopItem({ stop, currency, onChange, onDelete }: Props) {
         </div>
       )}
     </li>
+  )
+}
+
+/* --------------------- location thumbnail ------------------------ */
+
+/**
+ * The stop's badge: a real photo of the place when Wikipedia has a confident
+ * match, otherwise the category icon. The relevance guard in useLocationImage
+ * keeps a generic stop ("lunch at a local eatery") from borrowing a random photo.
+ */
+function StopThumb({
+  title,
+  destination,
+  category,
+}: {
+  title: string
+  destination: string
+  category: StopCategory
+}) {
+  const meta = CATEGORY_META[category]
+  const { url } = useLocationImage(`${title}, ${destination}`, {
+    matchTerm: title,
+    context: destination,
+  })
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => setLoaded(false), [url])
+
+  return (
+    <span className={styles.badge} style={{ color: `var(${meta.colorVar})` }} title={meta.label}>
+      <Icon name={meta.icon} size={18} />
+      {url && (
+        <img
+          src={url}
+          alt=""
+          loading="lazy"
+          className={`${styles.thumb} ${loaded ? styles.thumbOn : ''}`}
+          onLoad={() => setLoaded(true)}
+          onError={() => setLoaded(false)}
+        />
+      )}
+    </span>
   )
 }
 

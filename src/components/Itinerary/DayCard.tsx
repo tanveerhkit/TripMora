@@ -24,6 +24,7 @@ interface Props {
   index: number
   total: number
   currency: string
+  destination: string
   collapsed: boolean
   onToggleCollapse: () => void
   onStopChange: (stopId: string, patch: Partial<Stop>) => void
@@ -40,6 +41,7 @@ export function DayCard({
   index,
   total,
   currency,
+  destination,
   collapsed,
   onToggleCollapse,
   onStopChange,
@@ -173,6 +175,7 @@ export function DayCard({
                       key={stop.id}
                       stop={stop}
                       currency={currency}
+                      destination={destination}
                       onChange={(patch) => onStopChange(stop.id, patch)}
                       onDelete={() => onStopDelete(stop.id)}
                     />
