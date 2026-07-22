@@ -17,17 +17,20 @@ const cache = new Map<string, string | null>()
 const inflight = new Map<string, Promise<string | null>>()
 
 function cacheKey(query: string): string {
-  return query.split(',')[0].trim().toLowerCase()
+  return query.trim().toLowerCase()
 }
 
 async function fetchFromWikipedia(query: string, signal: AbortSignal): Promise<string | null> {
-  const title = query.split(',')[0].trim()
-  if (!title) return null
+  const q = query.trim()
+  if (!q) return null
 
+  // Use the search generator so "Bali Indonesia", "Kyoto, Japan" and "The
+  // Algarve" all resolve to the right page — not just exact title matches.
   const url =
     'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*' +
-    '&prop=pageimages&piprop=thumbnail&pithumbsize=800&redirects=1&titles=' +
-    encodeURIComponent(title)
+    '&generator=search&gsrlimit=1&gsrnamespace=0' +
+    '&prop=pageimages&piprop=thumbnail&pithumbsize=800&gsrsearch=' +
+    encodeURIComponent(q)
 
   const res = await fetch(url, { signal })
   if (!res.ok) return null

@@ -56,7 +56,7 @@ export function DestinationCard({ dest, currency, maxCost, rank, onPlan }: Props
     <article className={styles.card}>
       <div className={styles.imageWrap}>
         <LocationImage
-          query={`${dest.name} ${dest.country}`.trim()}
+          query={[dest.name, dest.country].filter(Boolean).join(', ')}
           alt={`Photo of ${dest.name}`}
         />
         <span className={styles.rank} aria-hidden="true">
