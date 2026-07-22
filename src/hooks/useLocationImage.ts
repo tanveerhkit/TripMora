@@ -3,6 +3,11 @@
  * Free, no API key, and CORS-enabled — the browser calls it directly, so there
  * is nothing to route through the backend. Results (including "no image") are
  * cached in memory so a place is only ever looked up once per session.
+ *
+ * Optional relevance guard: for ambiguous queries (itinerary stops like "Old
+ * Quarter Walking Tour") the best search hit can be unrelated (Heathrow Airport).
+ * Pass `matchTerm` (+ `context` to ignore the destination name) and the image is
+ * only used when the matched page title actually overlaps the term.
  */
 import { useEffect, useState } from 'react'
 
@@ -13,16 +18,52 @@ interface ImageState {
   url: string | null
 }
 
-const cache = new Map<string, string | null>()
-const inflight = new Map<string, Promise<string | null>>()
+interface Hit {
+  url: string | null
+  title: string | null
+}
+
+interface Options {
+  /** the thing the image should actually depict, e.g. a stop title */
+  matchTerm?: string
+  /** words to ignore when matching (usually the destination) */
+  context?: string
+}
+
+const cache = new Map<string, Hit>()
+const inflight = new Map<string, Promise<Hit>>()
+
+const STOPWORDS = new Set(['the', 'of', 'at', 'a', 'an', 'in', 'and', 'de', 'la', 'le', 'to'])
+
+function tokenize(s: string): string[] {
+  return s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // strip diacritics
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+}
+
+/** Does the matched page title genuinely correspond to the term we searched? */
+export function isRelevant(pageTitle: string, term: string, context: string): boolean {
+  const ctx = new Set(tokenize(context))
+  const termTokens = new Set(tokenize(term))
+  const pageTokens = tokenize(pageTitle).filter(
+    (t) => t.length >= 3 && !STOPWORDS.has(t) && !ctx.has(t),
+  )
+  if (pageTokens.length === 0) return false
+  const matched = pageTokens.filter((t) => termTokens.has(t))
+  return matched.length / pageTokens.length >= 0.6
+}
 
 function cacheKey(query: string): string {
   return query.trim().toLowerCase()
 }
 
-async function fetchFromWikipedia(query: string, signal: AbortSignal): Promise<string | null> {
+async function fetchFromWikipedia(query: string, signal: AbortSignal): Promise<Hit> {
   const q = query.trim()
-  if (!q) return null
+  if (!q) return { url: null, title: null }
 
   // Use the search generator so "Bali Indonesia", "Kyoto, Japan" and "The
   // Algarve" all resolve to the right page — not just exact title matches.
@@ -33,30 +74,31 @@ async function fetchFromWikipedia(query: string, signal: AbortSignal): Promise<s
     encodeURIComponent(q)
 
   const res = await fetch(url, { signal })
-  if (!res.ok) return null
+  if (!res.ok) return { url: null, title: null }
 
   const data = (await res.json()) as {
-    query?: { pages?: Record<string, { thumbnail?: { source?: string } }> }
+    query?: { pages?: Record<string, { title?: string; thumbnail?: { source?: string } }> }
   }
   const pages = data.query?.pages
-  if (!pages) return null
+  if (!pages) return { url: null, title: null }
 
   const first = Object.values(pages)[0]
-  return first?.thumbnail?.source ?? null
+  return { url: first?.thumbnail?.source ?? null, title: first?.title ?? null }
 }
 
-function lookup(query: string, signal: AbortSignal): Promise<string | null> {
+function lookup(query: string, signal: AbortSignal): Promise<Hit> {
   const key = cacheKey(query)
-  if (cache.has(key)) return Promise.resolve(cache.get(key) ?? null)
+  const cached = cache.get(key)
+  if (cached) return Promise.resolve(cached)
 
   const existing = inflight.get(key)
   if (existing) return existing
 
   const promise = fetchFromWikipedia(query, signal)
-    .then((url) => {
-      cache.set(key, url)
+    .then((hit) => {
+      cache.set(key, hit)
       inflight.delete(key)
-      return url
+      return hit
     })
     .catch((err) => {
       inflight.delete(key)
@@ -67,17 +109,32 @@ function lookup(query: string, signal: AbortSignal): Promise<string | null> {
   return promise
 }
 
-export function useLocationImage(query: string): ImageState {
+function resolveUrl(hit: Hit, opts?: Options): string | null {
+  if (!hit.url) return null
+  if (opts?.matchTerm) {
+    if (!hit.title || !isRelevant(hit.title, opts.matchTerm, opts.context ?? '')) {
+      return null
+    }
+  }
+  return hit.url
+}
+
+export function useLocationImage(query: string, opts?: Options): ImageState {
+  const matchTerm = opts?.matchTerm
+  const context = opts?.context
+
   const [state, setState] = useState<ImageState>({ status: 'idle', url: null })
 
   useEffect(() => {
+    const options = matchTerm ? { matchTerm, context } : undefined
     const key = cacheKey(query)
     if (!key) {
       setState({ status: 'none', url: null })
       return
     }
-    if (cache.has(key)) {
-      const url = cache.get(key) ?? null
+    const cached = cache.get(key)
+    if (cached) {
+      const url = resolveUrl(cached, options)
       setState({ status: url ? 'loaded' : 'none', url })
       return
     }
@@ -86,8 +143,9 @@ export function useLocationImage(query: string): ImageState {
     setState({ status: 'loading', url: null })
 
     lookup(query, controller.signal)
-      .then((url) => {
+      .then((hit) => {
         if (controller.signal.aborted) return
+        const url = resolveUrl(hit, options)
         setState({ status: url ? 'loaded' : 'none', url })
       })
       .catch(() => {
@@ -96,7 +154,7 @@ export function useLocationImage(query: string): ImageState {
       })
 
     return () => controller.abort()
-  }, [query])
+  }, [query, matchTerm, context])
 
   return state
 }
