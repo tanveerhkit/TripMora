@@ -1,0 +1,230 @@
+.wrap {
+  display: grid;
+  gap: var(--sp-4);
+  animation: fadeInUp 0.3s ease both;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+.title {
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  margin-top: 4px;
+}
+.summary {
+  color: var(--text-muted);
+  margin-top: 6px;
+  max-width: 60ch;
+}
+
+.compareNote {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+}
+.compareNote svg {
+  color: var(--text-faint);
+  flex: none;
+}
+
+.grid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr;
+}
+
+/* ---------------- card ---------------- */
+.card {
+  display: grid;
+  gap: var(--sp-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.rank {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-grad);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  flex: none;
+}
+.nameWrap {
+  flex: 1;
+  min-width: 0;
+}
+.name {
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+.country {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.costLevel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  flex: none;
+}
+
+.reason {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2) var(--sp-3);
+  margin: 0;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.fact {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.factLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+}
+.factLabel svg {
+  color: var(--text-faint);
+}
+.factValue {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+.good {
+  background: var(--success);
+}
+.mid {
+  background: var(--warning);
+}
+.bad {
+  background: var(--danger);
+}
+
+.costRow {
+  display: grid;
+  gap: 6px;
+}
+.costTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.costLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.costValue {
+  font-size: 1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.costBar {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.costFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--brand-grad);
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.festivals {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text);
+  background: var(--warning-soft);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+}
+.festivals svg {
+  color: var(--warning);
+  flex: none;
+  margin-top: 2px;
+}
+
+.planBtn {
+  justify-self: start;
+}
+
+@media (min-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
