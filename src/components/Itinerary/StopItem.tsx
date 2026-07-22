@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CATEGORY_META, CATEGORY_OPTIONS } from '../../lib/categories'
-import { formatDuration, formatMoney, googleImagesUrl } from '../../lib/format'
+import { formatDuration, formatMoney, googleImagesUrl, googleMapsUrl } from '../../lib/format'
 import type { Stop, StopCategory } from '../../types/itinerary'
 import { Icon } from '../ui/Icon'
 import { Button } from '../ui/Button'
@@ -37,7 +37,9 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
   }
 
   const meta = CATEGORY_META[stop.category]
-  const hasDetails = Boolean(stop.description || stop.tip)
+  // Older saved trips (pre-watchOuts) load straight from storage without it.
+  const watchOuts = stop.watchOuts ?? []
+  const hasDetails = Boolean(stop.description || stop.tip || watchOuts.length)
 
   return (
     <li
@@ -130,22 +132,48 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
                 </span>
               ) : null}
             </div>
-            <a
-              className={styles.photosLink}
-              href={googleImagesUrl(stop.title, destination)}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={`See photos of ${stop.title} on Google`}
-            >
-              <Icon name="image" size={14} />
-              Photos
-              <Icon name="external" size={11} />
-            </a>
+            <div className={styles.stopLinks}>
+              <a
+                className={styles.stopLink}
+                href={googleMapsUrl(stop.title, destination)}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`Read real reviews of ${stop.title} on Google Maps`}
+              >
+                <Icon name="map" size={14} />
+                Reviews
+                <Icon name="external" size={11} />
+              </a>
+              <a
+                className={styles.stopLink}
+                href={googleImagesUrl(stop.title, destination)}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`See photos of ${stop.title} on Google`}
+              >
+                <Icon name="image" size={14} />
+                Photos
+                <Icon name="external" size={11} />
+              </a>
+            </div>
           </div>
 
           {hasDetails && expanded && (
             <div className={styles.details}>
               {stop.description && <p className={styles.desc}>{stop.description}</p>}
+              {watchOuts.length > 0 && (
+                <div className={styles.watchOuts}>
+                  <span className={styles.watchHead}>
+                    <Icon name="warning" size={14} />
+                    Watch-outs
+                  </span>
+                  <ul className={styles.watchList}>
+                    {watchOuts.map((w, i) => (
+                      <li key={i}>{w}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {stop.tip && (
                 <p className={styles.tip}>
                   <Icon name="bulb" size={15} />

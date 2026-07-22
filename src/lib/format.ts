@@ -24,6 +24,18 @@ export function googleImagesUrl(...parts: string[]): string {
   return `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`
 }
 
+/**
+ * A Google Maps search URL for a place — lands on its listing where the real,
+ * up-to-date star ratings and traveler reviews live.
+ */
+export function googleMapsUrl(...parts: string[]): string {
+  const query = parts
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .join(' ')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+}
+
 export function relativeTime(ts: number): string {
   const diff = Date.now() - ts
   const min = Math.round(diff / 60000)

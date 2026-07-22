@@ -140,9 +140,16 @@
   color: var(--text-muted);
 }
 
-.photosLink {
+.stopLinks {
   flex: none;
   align-self: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.stopLink {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -155,11 +162,11 @@
   padding: 3px 10px;
   transition: filter 0.15s ease, border-color 0.15s ease;
 }
-.photosLink:hover {
+.stopLink:hover {
   filter: brightness(1.05);
   border-color: var(--accent);
 }
-.photosLink svg:last-child {
+.stopLink svg:last-child {
   opacity: 0.7;
 }
 
@@ -189,6 +196,41 @@
   color: var(--warning);
   flex: none;
   margin-top: 1px;
+}
+
+/* honest "things to watch for" — AI guidance, distinct from the pro tip */
+.watchOuts {
+  display: grid;
+  gap: 5px;
+  background: var(--warning-soft);
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+  border-radius: var(--radius);
+  padding: 8px 11px;
+}
+.watchHead {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--warning);
+}
+.watchHead svg {
+  flex: none;
+}
+.watchList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 3px;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.watchList li::marker {
+  color: var(--warning);
 }
 
 /* ------------------------- editor ------------------------- */
