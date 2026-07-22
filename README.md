@@ -171,7 +171,7 @@ npm run build        # type-check + production build
 
 **Fallback**: Groq's free tier has a small per-minute token budget, so if a
 request is rate-limited (429) or Groq errors (5xx), the same request is retried
-against Google **Gemini** (`gemini-2.5-flash` by default, configurable via
+against Google **Gemini** (`gemini-flash-latest` by default, configurable via
 `GEMINI_MODEL`) using its OpenAI-compatible endpoint — no change to the parsing
 code, since the response shape is identical. Set `GEMINI_API_KEY` to enable it;
 without it, the app falls back to a smaller Groq model instead.

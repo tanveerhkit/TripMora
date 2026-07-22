@@ -28,8 +28,10 @@ const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat
 const DEFAULT_MODEL = 'llama-3.3-70b-versatile'
 // A smaller/faster Groq model — only used as a fallback if no Gemini key is set.
 const FALLBACK_MODEL = 'llama-3.1-8b-instant'
-// Gemini's fast, capable free-tier model with a very generous per-minute budget.
-const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash'
+// Gemini's fast, capable free-tier fallback. "gemini-flash-latest" is an alias
+// that always tracks the current flash model, so it won't 404 when Google
+// retires a specific pinned version.
+const DEFAULT_GEMINI_MODEL = 'gemini-flash-latest'
 const UPSTREAM_TIMEOUT_MS = 30_000
 const MAX_PROMPT_CHARS = 2000
 // Cap on generated tokens. Groq reserves this against its per-minute budget up
@@ -240,31 +242,40 @@ export default async function handler(req, res) {
   const callGemini = (model) => callModel(GEMINI_URL, geminiKey, model)
 
   try {
-    let upstream = await callGroq(primary)
+    // Primary: Groq (fast, but a small free per-minute token budget). Catch
+    // network-level throws here so a transient Groq failure still falls back
+    // instead of erroring out. A real abort (timeout) is re-thrown.
+    let upstream = null
+    try {
+      upstream = await callGroq(primary)
+    } catch (err) {
+      if (err?.name === 'AbortError') throw err
+      console.warn(`Groq ${primary} request failed: ${err?.message}`)
+    }
 
-    // Groq's free tier is fast but has a small per-minute token budget. If it's
-    // rate-limited (429) or having a server-side error (5xx), fall back —
-    // preferring Gemini (far larger free per-minute budget); otherwise drop to
+    // Fall back when Groq is rate-limited (429), erroring (5xx), or unreachable
+    // — preferring Gemini (far larger free per-minute budget); otherwise drop to
     // a smaller Groq model as a last resort.
-    if (upstream.status === 429 || upstream.status >= 500) {
+    const groqFailed = !upstream || upstream.status === 429 || upstream.status >= 500
+    if (groqFailed) {
       if (geminiKey) {
-        console.warn(`Groq ${primary} unavailable (${upstream.status}); falling back to Gemini ${geminiModel}`)
+        console.warn(`Groq ${primary} unavailable (${upstream?.status ?? 'network error'}); falling back to Gemini ${geminiModel}`)
         upstream = await callGemini(geminiModel)
       } else if (groqFallback && groqFallback !== primary) {
-        console.warn(`Groq ${primary} unavailable (${upstream.status}); falling back to ${groqFallback}`)
+        console.warn(`Groq ${primary} unavailable (${upstream?.status ?? 'network error'}); falling back to ${groqFallback}`)
         upstream = await callGroq(groqFallback)
       }
     }
 
-    if (!upstream.ok) {
-      const detail = await upstream.text().catch(() => '')
-      const status = upstream.status === 429 ? 429 : 502
+    if (!upstream || !upstream.ok) {
+      const status = upstream?.status === 429 ? 429 : 502
+      const detail = upstream ? await upstream.text().catch(() => '') : ''
       const message =
-        upstream.status === 429
+        upstream?.status === 429
           ? 'The AI is rate-limited right now. Wait a moment and retry.'
-          : `The AI service returned an error (${upstream.status}).`
+          : 'The AI service returned an error. Please try again.'
       // Log detail server-side only; never leak keys or raw upstream to client.
-      console.error('Groq upstream error', upstream.status, detail.slice(0, 500))
+      console.error('Upstream error', upstream?.status ?? 'no response', detail.slice(0, 500))
       return res.status(status).json({ error: message })
     }
 
