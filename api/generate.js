@@ -7,12 +7,16 @@
  * model text back to the client, which parses/validates it.
  *
  * Env:
- *   GROQ_API_KEY  (required) — from https://console.groq.com/keys
- *   GROQ_MODEL    (optional) — defaults to a capable free model
+ *   GROQ_API_KEY        (required) — from https://console.groq.com/keys
+ *   GROQ_MODEL          (optional) — primary model, defaults to a capable one
+ *   GROQ_FALLBACK_MODEL (optional) — used if the primary is rate-limited (429)
  */
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const DEFAULT_MODEL = 'llama-3.3-70b-versatile'
+// A smaller/faster model with a much higher free daily token limit — used
+// automatically when the primary model hits its rate limit.
+const FALLBACK_MODEL = 'llama-3.1-8b-instant'
 const UPSTREAM_TIMEOUT_MS = 30_000
 const MAX_PROMPT_CHARS = 2000
 
@@ -188,8 +192,12 @@ export default async function handler(req, res) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS)
 
-  try {
-    const upstream = await fetch(GROQ_URL, {
+  const messages = buildMessages(body)
+  const primary = process.env.GROQ_MODEL || DEFAULT_MODEL
+  const fallback = process.env.GROQ_FALLBACK_MODEL || FALLBACK_MODEL
+
+  const callGroq = (model) =>
+    fetch(GROQ_URL, {
       method: 'POST',
       signal: controller.signal,
       headers: {
@@ -197,13 +205,23 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: process.env.GROQ_MODEL || DEFAULT_MODEL,
-        messages: buildMessages(body),
+        model,
+        messages,
         temperature: 0.6,
         max_tokens: 4000,
         response_format: { type: 'json_object' },
       }),
     })
+
+  try {
+    let upstream = await callGroq(primary)
+
+    // If the primary model is rate-limited, transparently retry once with a
+    // smaller model that has a higher free daily limit.
+    if (upstream.status === 429 && fallback && fallback !== primary) {
+      console.warn(`Primary model ${primary} rate-limited; falling back to ${fallback}`)
+      upstream = await callGroq(fallback)
+    }
 
     if (!upstream.ok) {
       const detail = await upstream.text().catch(() => '')
