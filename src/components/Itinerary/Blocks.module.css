@@ -41,23 +41,52 @@
 }
 .budgetRow {
   display: grid;
-  gap: 5px;
+  gap: 6px;
 }
 .budgetRowTop {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: var(--sp-2);
+  width: 100%;
+  text-align: left;
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  margin: -2px;
+  transition: background 0.12s ease;
+}
+.budgetRowTop:hover {
+  background: var(--surface-2);
 }
 .budgetLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-size: 0.88rem;
   font-weight: 600;
+  min-width: 0;
+}
+.budgetLabel svg {
+  color: var(--text-muted);
+  flex: none;
+}
+.budgetRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
 }
 .budgetAmount {
   font-size: 0.88rem;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
-  flex: none;
+}
+.budgetChev {
+  color: var(--text-faint);
+  transition: transform 0.2s ease;
+}
+.budgetChevOpen {
+  transform: rotate(180deg);
 }
 .bar {
   height: 8px;
@@ -69,7 +98,82 @@
   height: 100%;
   border-radius: var(--radius-full);
   background: var(--brand-grad);
-  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.budgetDetail {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0 var(--sp-1);
+  animation: fadeInUp 0.18s ease both;
+}
+.budgetCovers {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.optionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: all 0.14s ease;
+  min-width: 0;
+}
+.option:hover {
+  border-color: var(--border-strong);
+}
+.optionOn {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.optionName {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.optionName svg {
+  color: var(--accent);
+}
+.optionPrice {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.optionOn .optionPrice {
+  color: var(--accent);
+  font-weight: 600;
+}
+.optionNote {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.booking {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: var(--text);
+  background: var(--warning-soft);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.booking svg {
+  color: var(--warning);
+  flex: none;
+  margin-top: 2px;
 }
 .budgetTotal {
   display: flex;
