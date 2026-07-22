@@ -1,6 +1,9 @@
 import { defineConfig, loadEnv, type Connect, type PluginOption } from 'vite'
 import react from '@vitejs/plugin-react'
 import type { ServerResponse } from 'node:http'
+import { statSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 /**
  * Dev-only plugin: run the exact same /api/generate serverless handler inside
@@ -17,8 +20,9 @@ function apiDevServer(env: Record<string, string>): PluginOption {
       if (env.GROQ_MODEL) process.env.GROQ_MODEL = env.GROQ_MODEL
 
       type ApiModule = { default: (req: unknown, res: unknown) => Promise<void> }
+      const handlerFile = resolve(process.cwd(), 'api/generate.js')
       let handlerPromise: Promise<ApiModule> | null = null
-      const handlerPath = './api/generate.js'
+      let lastMtime = 0
 
       const middleware: Connect.NextHandleFunction = async (req, res) => {
         // Adapt the raw Node response to the Vercel-style helpers the handler uses.
@@ -36,7 +40,16 @@ function apiDevServer(env: Record<string, string>): PluginOption {
           return r
         }
         try {
-          handlerPromise ??= import(/* @vite-ignore */ handlerPath)
+          // Re-import when api/generate.js changes so edits hot-reload without a
+          // full dev-server restart (the module URL is busted with its mtime).
+          // The specifier is a plain variable + absolute file URL so esbuild
+          // leaves it as a runtime import instead of trying to bundle it.
+          const mtime = statSync(handlerFile).mtimeMs
+          if (!handlerPromise || mtime !== lastMtime) {
+            lastMtime = mtime
+            const specifier = `${pathToFileURL(handlerFile).href}?t=${mtime}`
+            handlerPromise = import(/* @vite-ignore */ specifier)
+          }
           const mod = await handlerPromise
           await mod.default(req, r)
         } catch (err) {
