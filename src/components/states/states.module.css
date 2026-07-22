@@ -1,91 +1,160 @@
-/* ---------- skeleton loading ---------- */
-.loading {
+/* ---------- traveler loader ---------- */
+.travelWrap {
   display: grid;
+  justify-items: center;
   gap: var(--sp-4);
+  padding: var(--sp-7) var(--sp-4);
   animation: fadeInUp 0.3s ease both;
 }
 
-.status {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
+.scene {
+  width: min(300px, 78%);
+  height: auto;
+  overflow: visible;
+}
+
+.travelMsg {
   color: var(--text-muted);
   font-weight: 600;
-  padding: var(--sp-1) var(--sp-1) var(--sp-2);
+  font-size: 1rem;
 }
 
-.dot {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2.5px solid var(--accent);
-  border-top-color: transparent;
-  animation: spin 0.7s linear infinite;
-  flex: none;
+/* the whole figure bounces twice per full stride */
+.runner {
+  animation: tl-bob 0.34s ease-in-out infinite;
 }
 
-.skelCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-5);
-  display: grid;
-  gap: var(--sp-4);
+.head {
+  fill: var(--accent);
+}
+.torso,
+.limb {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.armBack,
+.legBack {
+  stroke: var(--text-muted);
+}
+.pack {
+  fill: color-mix(in srgb, var(--accent) 28%, var(--surface));
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+.packStrap {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  opacity: 0.7;
 }
 
-.dreamGrid {
-  display: grid;
-  gap: var(--sp-4);
-  grid-template-columns: 1fr;
+/* limbs swing like pendulums from their joint (top-centre of each path) */
+.limb {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
 }
-@media (min-width: 720px) {
-  .dreamGrid {
-    grid-template-columns: 1fr 1fr;
+.legFront,
+.armBack {
+  animation: tl-swingA 0.68s ease-in-out infinite;
+}
+.legBack,
+.armFront {
+  animation: tl-swingB 0.68s ease-in-out infinite;
+}
+
+.road {
+  stroke: var(--border-strong, var(--border));
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 9 13;
+  animation: tl-road 0.5s linear infinite;
+}
+
+.shadow {
+  fill: var(--text-faint);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tl-shadow 0.34s ease-in-out infinite;
+}
+
+.cloud1,
+.cloud2 {
+  fill: var(--surface-2);
+}
+.cloud1 {
+  animation: tl-drift 7s linear infinite;
+}
+.cloud2 {
+  animation: tl-drift 9s linear infinite;
+  animation-delay: -3s;
+}
+
+@keyframes tl-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes tl-swingA {
+  0%,
+  100% {
+    transform: rotate(34deg);
+  }
+  50% {
+    transform: rotate(-34deg);
+  }
+}
+@keyframes tl-swingB {
+  0%,
+  100% {
+    transform: rotate(-34deg);
+  }
+  50% {
+    transform: rotate(34deg);
+  }
+}
+@keyframes tl-road {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+@keyframes tl-shadow {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scaleX(0.72);
+    opacity: 0.22;
+  }
+}
+@keyframes tl-drift {
+  from {
+    transform: translateX(150px);
+  }
+  to {
+    transform: translateX(-200px);
   }
 }
 
-.shimmer {
-  position: relative;
-  overflow: hidden;
-  background: var(--surface-2);
-  border-radius: var(--radius-sm);
-}
-.shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--surface-hover) 70%, transparent),
-    transparent
-  );
-  animation: shimmer 1.4s infinite;
-}
-
-.line {
-  height: 12px;
-}
-.lineLg {
-  height: 20px;
-}
-
-.skelRow {
-  display: flex;
-  gap: var(--sp-3);
-  align-items: center;
-}
-.skelBadge {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius);
-  flex: none;
-}
-.skelRowBody {
-  flex: 1;
-  display: grid;
-  gap: 8px;
+@media (prefers-reduced-motion: reduce) {
+  .runner,
+  .limb,
+  .shadow,
+  .road,
+  .cloud1,
+  .cloud2 {
+    animation: none;
+  }
 }
 
 /* ---------- error / empty ---------- */
