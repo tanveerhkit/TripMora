@@ -147,10 +147,6 @@ npm run build        # type-check + production build
 **Model**: default `llama-3.3-70b-versatile` on Groq (configurable via
 `GROQ_MODEL`). Chosen for being fast, free, and good at following JSON schemas.
 
-**AI tooling during development**: an AI coding assistant was used to help scaffold
-and write parts of this project; all code was reviewed, tested and integrated
-deliberately.
-
 ---
 
 ## How bad AI output is handled
