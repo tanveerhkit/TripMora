@@ -2,6 +2,7 @@ import { countStops, estimatedTotal } from '../../lib/itineraryOps'
 import { formatMoney } from '../../lib/format'
 import type { Itinerary } from '../../types/itinerary'
 import { Icon } from '../ui/Icon'
+import { LocationImage } from '../ui/LocationImage'
 import styles from './OverviewCard.module.css'
 
 interface Props {
@@ -20,38 +21,44 @@ export function OverviewCard({ itinerary }: Props) {
 
   return (
     <section className={styles.card}>
-      <div className={styles.top}>
-        <div className={styles.headings}>
-          <span className={styles.eyebrow}>
-            <Icon name="map" size={15} /> Your itinerary
-          </span>
-          <h2 className={styles.destination}>{meta.destination}</h2>
-          {meta.summary && <p className={styles.summary}>{meta.summary}</p>}
-        </div>
-      </div>
+      <LocationImage
+        className={styles.hero}
+        query={meta.destination}
+        alt={`Photo of ${meta.destination}`}
+      >
+        <span className={styles.eyebrow}>
+          <Icon name="map" size={15} /> Your itinerary
+        </span>
+        <h2 className={styles.destination}>{meta.destination}</h2>
+      </LocationImage>
 
-      {(chips.length > 0 || meta.tags.length > 0) && (
-        <div className={styles.chips}>
-          {chips.map((c) => (
-            <span key={c.text} className={styles.chip}>
-              <Icon name={c.icon} size={13} />
-              {c.text}
-            </span>
-          ))}
-          {meta.tags.map((t) => (
-            <span key={t} className={`${styles.chip} ${styles.tagChip}`}>
-              {t}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className={styles.content}>
+        {meta.summary && <p className={styles.summary}>{meta.summary}</p>}
 
-      <div className={styles.stats}>
-        <Stat label={itinerary.days.length === 1 ? 'Day' : 'Days'} value={itinerary.days.length} />
-        <Stat label="Stops" value={stops} />
-        {total > 0 && (
-          <Stat label="Est. / person" value={formatMoney(total, meta.currency)} />
+        {(chips.length > 0 || meta.tags.length > 0) && (
+          <div className={styles.chips}>
+            {chips.map((c) => (
+              <span key={c.text} className={styles.chip}>
+                <Icon name={c.icon} size={13} />
+                {c.text}
+              </span>
+            ))}
+            {meta.tags.map((t) => (
+              <span key={t} className={`${styles.chip} ${styles.tagChip}`}>
+                {t}
+              </span>
+            ))}
+          </div>
         )}
+
+        <div className={styles.stats}>
+          <Stat
+            label={itinerary.days.length === 1 ? 'Day' : 'Days'}
+            value={itinerary.days.length}
+          />
+          <Stat label="Stops" value={stops} />
+          {total > 0 && <Stat label="Est. / person" value={formatMoney(total, meta.currency)} />}
+        </div>
       </div>
     </section>
   )
