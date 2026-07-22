@@ -83,10 +83,13 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  backdrop-filter: blur(var(--blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(150%);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: var(--sp-3) var(--sp-4);
+  box-shadow: var(--shadow-sm);
 }
 .toggleLabel {
   font-weight: 600;
