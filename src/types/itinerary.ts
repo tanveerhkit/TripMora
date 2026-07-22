@@ -42,9 +42,23 @@ export interface Day {
   stops: Stop[]
 }
 
+export type BudgetKind =
+  | 'transport'
+  | 'accommodation'
+  | 'food'
+  | 'activities'
+  | 'shopping'
+  | 'misc'
+
 export interface BudgetItem {
   label: string
+  /** the current (possibly re-chosen) amount that counts toward the total */
   amount: number
+  /** the AI's original estimate, which options scale from */
+  baseAmount?: number
+  kind?: BudgetKind
+  /** id of the currently selected option for this category */
+  option?: string
 }
 
 export interface PackingItem {

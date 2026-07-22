@@ -7,6 +7,7 @@ import {
   mergeRefined,
   reorderDays,
   reorderStops,
+  setBudgetOption,
   togglePacking,
   updateStop,
 } from './itineraryOps'
@@ -86,6 +87,28 @@ describe('itineraryOps', () => {
     const id = it.packing[0].id
     const next = togglePacking(it, id)
     expect(next.packing[0].done).toBe(true)
+  })
+
+  it('classifies budget lines and recalculates when an option is chosen', () => {
+    const parsed = parseItinerary(
+      JSON.stringify({
+        days: [{ stops: [{ title: 'x' }] }],
+        budget: { items: [{ label: 'Transportation', amount: 4000 }] },
+      }),
+    )
+    if (!parsed.ok) throw new Error('expected ok')
+    const it = parsed.itinerary
+    // default option is "train" (1.0x) so amount stays at the AI estimate
+    expect(it.budget[0].kind).toBe('transport')
+    expect(it.budget[0].baseAmount).toBe(4000)
+    expect(it.budget[0].amount).toBe(4000)
+
+    const flight = setBudgetOption(it, 0, 'flight')
+    expect(flight.budget[0].option).toBe('flight')
+    expect(flight.budget[0].amount).toBe(7600) // 4000 * 1.9
+
+    const bus = setBudgetOption(it, 0, 'bus')
+    expect(bus.budget[0].amount).toBe(2200) // 4000 * 0.55
   })
 
   it('mergeRefined keeps id/createdAt and preserves checked packing', () => {

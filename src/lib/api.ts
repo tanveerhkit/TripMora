@@ -45,7 +45,7 @@ function itineraryForServer(itinerary: Itinerary): unknown {
         tip: s.tip,
       })),
     })),
-    budget: itinerary.budget,
+    budget: itinerary.budget.map((b) => ({ label: b.label, amount: b.amount })),
     packing: itinerary.packing.map((p) => p.text),
     tips: itinerary.tips,
   }
