@@ -1,0 +1,66 @@
+.wrap {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-2);
+}
+
+.img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.imgOn {
+  opacity: 1;
+}
+
+.shimmer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--surface-hover) 70%, transparent),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  background: var(--brand-grad);
+}
+
+/* gradient scrim so overlaid text stays readable on any photo */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--sp-3);
+  background: linear-gradient(
+    to top,
+    rgba(8, 10, 16, 0.82) 0%,
+    rgba(8, 10, 16, 0.35) 45%,
+    rgba(8, 10, 16, 0) 75%
+  );
+  color: #fff;
+}
