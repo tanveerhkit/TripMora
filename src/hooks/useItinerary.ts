@@ -6,7 +6,7 @@
  *  - a stale response never overwrites a newer one (request-id + AbortController).
  */
 import { useCallback, useEffect, useReducer, useRef } from 'react'
-import { ApiError, requestItineraryText, type GenerateMode } from '../lib/api'
+import { ApiError, requestModelText, type GenerateMode } from '../lib/api'
 import { mergeRefined } from '../lib/itineraryOps'
 import { parseItinerary, type ParseFailureKind } from '../lib/parseItinerary'
 import type { Itinerary } from '../types/itinerary'
@@ -106,7 +106,7 @@ export function useItinerary() {
     dispatch({ type: 'start', requestId: myId, mode })
 
     try {
-      const text = await requestItineraryText({
+      const text = await requestModelText({
         prompt: trimmed,
         mode,
         itinerary: mode === 'refine' ? itineraryRef.current : undefined,
