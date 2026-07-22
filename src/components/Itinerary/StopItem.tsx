@@ -113,21 +113,23 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
           </div>
 
           <div className={styles.metaRow}>
-            <span className={styles.tag} style={{ color: `var(${meta.colorVar})` }}>
-              {meta.label}
-            </span>
-            {stop.durationMin ? (
-              <span className={styles.metaItem}>
-                <Icon name="clock" size={14} />
-                {formatDuration(stop.durationMin)}
+            <div className={styles.metaInfo}>
+              <span className={styles.tag} style={{ color: `var(${meta.colorVar})` }}>
+                {meta.label}
               </span>
-            ) : null}
-            {stop.cost !== null ? (
-              <span className={styles.metaItem}>
-                <Icon name="coin" size={14} />
-                {stop.cost === 0 ? 'Free' : formatMoney(stop.cost, currency)}
-              </span>
-            ) : null}
+              {stop.durationMin ? (
+                <span className={styles.metaItem}>
+                  <Icon name="clock" size={14} />
+                  {formatDuration(stop.durationMin)}
+                </span>
+              ) : null}
+              {stop.cost !== null ? (
+                <span className={styles.metaItem}>
+                  <Icon name="coin" size={14} />
+                  {stop.cost === 0 ? 'Free' : formatMoney(stop.cost, currency)}
+                </span>
+              ) : null}
+            </div>
             <a
               className={styles.photosLink}
               href={googleImagesUrl(stop.title, destination)}

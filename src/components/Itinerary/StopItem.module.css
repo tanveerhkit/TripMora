@@ -112,6 +112,14 @@
 
 .metaRow {
   display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2) var(--sp-3);
+}
+
+.metaInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2) var(--sp-3);
@@ -133,10 +141,11 @@
 }
 
 .photosLink {
+  flex: none;
+  align-self: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  margin-left: auto;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--accent);
