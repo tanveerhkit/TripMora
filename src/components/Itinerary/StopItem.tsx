@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { CATEGORY_META, CATEGORY_OPTIONS } from '../../lib/categories'
-import { formatDuration, formatMoney } from '../../lib/format'
-import { useLocationImage } from '../../hooks/useLocationImage'
+import { formatDuration, formatMoney, googleImagesUrl } from '../../lib/format'
 import type { Stop, StopCategory } from '../../types/itinerary'
 import { Icon } from '../ui/Icon'
 import { Button } from '../ui/Button'
@@ -57,7 +56,13 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
         >
           <Icon name="grip" size={18} />
         </button>
-        <StopThumb title={stop.title} destination={destination} category={stop.category} />
+        <span
+          className={styles.badge}
+          style={{ color: `var(${meta.colorVar})` }}
+          title={meta.label}
+        >
+          <Icon name={meta.icon} size={18} />
+        </span>
       </div>
 
       {editing ? (
@@ -123,6 +128,17 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
                 {stop.cost === 0 ? 'Free' : formatMoney(stop.cost, currency)}
               </span>
             ) : null}
+            <a
+              className={styles.photosLink}
+              href={googleImagesUrl(stop.title, destination)}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`See photos of ${stop.title} on Google`}
+            >
+              <Icon name="image" size={14} />
+              Photos
+              <Icon name="external" size={11} />
+            </a>
           </div>
 
           {hasDetails && expanded && (
@@ -139,53 +155,6 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
         </div>
       )}
     </li>
-  )
-}
-
-/* --------------------- location thumbnail ------------------------ */
-
-/**
- * The stop's badge: a real photo of the place when Wikipedia has a confident
- * match, otherwise the category icon. The relevance guard in useLocationImage
- * keeps a generic stop ("lunch at a local eatery") from borrowing a random photo.
- */
-function StopThumb({
-  title,
-  destination,
-  category,
-}: {
-  title: string
-  destination: string
-  category: StopCategory
-}) {
-  const meta = CATEGORY_META[category]
-  // Prefer a confident photo of the exact place; otherwise fall back to a photo
-  // of the destination city so every stop still shows a real, relevant image
-  // (never a wrong best-guess). The city lookup is shared/cached across stops.
-  const place = useLocationImage(`${title}, ${destination}`, {
-    matchTerm: title,
-    context: destination,
-  })
-  const city = useLocationImage(destination)
-  const url = place.url ?? city.url
-
-  const [loaded, setLoaded] = useState(false)
-  useEffect(() => setLoaded(false), [url])
-
-  return (
-    <span className={styles.badge} style={{ color: `var(${meta.colorVar})` }} title={meta.label}>
-      <Icon name={meta.icon} size={26} />
-      {url && (
-        <img
-          src={url}
-          alt=""
-          loading="lazy"
-          className={`${styles.thumb} ${loaded ? styles.thumbOn : ''}`}
-          onLoad={() => setLoaded(true)}
-          onError={() => setLoaded(false)}
-        />
-      )}
-    </span>
   )
 }
 

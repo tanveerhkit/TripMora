@@ -42,26 +42,12 @@
 }
 
 .badge {
-  position: relative;
-  overflow: hidden;
   display: grid;
   place-items: center;
-  width: 80px;
-  height: 80px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius);
   background: color-mix(in srgb, currentColor 14%, transparent);
-}
-.thumb {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.thumbOn {
-  opacity: 1;
 }
 
 .body {
@@ -143,6 +129,28 @@
   gap: 4px;
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.photosLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+  transition: filter 0.15s ease, border-color 0.15s ease;
+}
+.photosLink:hover {
+  filter: brightness(1.05);
+  border-color: var(--accent);
+}
+.photosLink svg:last-child {
+  opacity: 0.7;
 }
 
 .details {
@@ -232,9 +240,5 @@
   }
   .editGrid > label {
     grid-column: span 2 !important;
-  }
-  .badge {
-    width: 60px;
-    height: 60px;
   }
 }
