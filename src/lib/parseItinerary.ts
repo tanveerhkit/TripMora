@@ -20,6 +20,19 @@ import {
   type StopCategory,
   type TripMeta,
 } from '../types/itinerary'
+import {
+  asArr,
+  asObj,
+  clamp,
+  extractJson,
+  firstStr,
+  normalizeStringList,
+  num,
+  str,
+  titleCase,
+} from './safe'
+
+export { extractJson }
 
 export type ParseFailureKind = 'json' | 'shape' | 'empty'
 
@@ -35,58 +48,6 @@ const rootSchema = z
     days: z.array(z.unknown()).min(1, 'The itinerary has no days.'),
   })
   .passthrough()
-
-/* ------------------------------------------------------------------ *
- * Safe accessors — never throw, always return a sane default.
- * ------------------------------------------------------------------ */
-function asObj(v: unknown): Record<string, unknown> {
-  return v && typeof v === 'object' && !Array.isArray(v)
-    ? (v as Record<string, unknown>)
-    : {}
-}
-
-function asArr(v: unknown): unknown[] {
-  return Array.isArray(v) ? v : []
-}
-
-function str(v: unknown, fallback = ''): string {
-  if (typeof v === 'string') return v.trim()
-  if (typeof v === 'number' && Number.isFinite(v)) return String(v)
-  return fallback
-}
-
-/** First non-empty string among the candidates. */
-function firstStr(...vals: unknown[]): string {
-  for (const v of vals) {
-    const s = str(v)
-    if (s) return s
-  }
-  return ''
-}
-
-/** Pull a finite number out of a number or a messy string ("₹1,500 approx"). */
-function num(v: unknown): number | null {
-  if (typeof v === 'number') return Number.isFinite(v) ? v : null
-  if (typeof v === 'string') {
-    const match = v.replace(/,/g, '').match(/-?\d+(\.\d+)?/)
-    if (match) {
-      const n = parseFloat(match[0])
-      return Number.isFinite(n) ? n : null
-    }
-  }
-  return null
-}
-
-function clamp(s: string, max: number): string {
-  return s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s
-}
-
-function titleCase(s: string): string {
-  return s
-    .replace(/[_-]+/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .trim()
-}
 
 /* ------------------------------------------------------------------ *
  * Category mapping — models invent their own category words; snap them
@@ -188,18 +149,6 @@ function normalizePacking(raw: unknown): PackingItem[] {
   return normalizeStringList(raw, 40).map((text) => packingItem(text))
 }
 
-function normalizeStringList(raw: unknown, max: number): string[] {
-  return asArr(raw)
-    .map((v) => {
-      if (typeof v === 'string') return v.trim()
-      const o = asObj(v)
-      return firstStr(o.item, o.name, o.label, o.text, o.tip)
-    })
-    .filter((s) => s.length > 0)
-    .map((s) => clamp(s, 160))
-    .slice(0, max)
-}
-
 function normalizeMeta(root: Record<string, unknown>, dayCount: number): TripMeta {
   const meta = asObj(root.meta ?? root.trip ?? root.overview)
   const currency = firstStr(meta.currency, root.currency) || '$'
@@ -215,23 +164,6 @@ function normalizeMeta(root: Record<string, unknown>, dayCount: number): TripMet
     summary: clamp(firstStr(meta.summary, root.summary, meta.description), 400),
     tags: normalizeStringList(meta.tags ?? root.tags ?? meta.interests, 12),
   }
-}
-
-/* ------------------------------------------------------------------ *
- * JSON extraction — models sometimes wrap JSON in prose or code fences
- * even when asked not to. Recover the object before parsing.
- * ------------------------------------------------------------------ */
-export function extractJson(text: string): string {
-  let t = text.trim()
-  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i)
-  if (fence) t = fence[1].trim()
-
-  const first = t.indexOf('{')
-  const last = t.lastIndexOf('}')
-  if (first !== -1 && last !== -1 && last > first) {
-    t = t.slice(first, last + 1)
-  }
-  return t
 }
 
 /* ------------------------------------------------------------------ *
