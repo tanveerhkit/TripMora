@@ -33,6 +33,12 @@ export interface Stop {
   cost: number | null
   /** a short local-guide style tip ("go early, queue is shorter") */
   tip: string
+  /**
+   * Honest heads-ups about common problems travelers report here (crowds,
+   * scams, queues, closures). AI-summarized guidance, not scraped reviews —
+   * the "Reviews" link points to real reviews. Empty if none.
+   */
+  watchOuts: string[]
 }
 
 export interface Day {
@@ -107,6 +113,7 @@ export function emptyStop(): Stop {
     durationMin: null,
     cost: null,
     tip: '',
+    watchOuts: [],
   }
 }
 

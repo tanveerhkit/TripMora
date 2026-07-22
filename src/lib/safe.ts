@@ -133,7 +133,10 @@ export function parseModelJson(text: string): unknown {
 }
 
 export function normalizeStringList(raw: unknown, max: number): string[] {
-  return asArr(raw)
+  // Models sometimes hand back a single string where a list was asked for
+  // ("Dress code enforced" instead of ["Dress code enforced"]) — keep it.
+  const arr = typeof raw === 'string' ? [raw] : asArr(raw)
+  return arr
     .map((v) => {
       if (typeof v === 'string') return v.trim()
       const o = asObj(v)
