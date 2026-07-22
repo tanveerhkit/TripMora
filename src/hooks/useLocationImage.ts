@@ -61,7 +61,7 @@ function cacheKey(query: string): string {
   return query.trim().toLowerCase()
 }
 
-async function fetchFromWikipedia(query: string, signal: AbortSignal): Promise<Hit> {
+async function fetchFromWikipedia(query: string): Promise<Hit> {
   const q = query.trim()
   if (!q) return { url: null, title: null }
 
@@ -73,7 +73,7 @@ async function fetchFromWikipedia(query: string, signal: AbortSignal): Promise<H
     '&prop=pageimages&piprop=thumbnail&pithumbsize=800&gsrsearch=' +
     encodeURIComponent(q)
 
-  const res = await fetch(url, { signal })
+  const res = await fetch(url)
   if (!res.ok) return { url: null, title: null }
 
   const data = (await res.json()) as {
@@ -86,7 +86,7 @@ async function fetchFromWikipedia(query: string, signal: AbortSignal): Promise<H
   return { url: first?.thumbnail?.source ?? null, title: first?.title ?? null }
 }
 
-function lookup(query: string, signal: AbortSignal): Promise<Hit> {
+function lookup(query: string): Promise<Hit> {
   const key = cacheKey(query)
   const cached = cache.get(key)
   if (cached) return Promise.resolve(cached)
@@ -94,7 +94,12 @@ function lookup(query: string, signal: AbortSignal): Promise<Hit> {
   const existing = inflight.get(key)
   if (existing) return existing
 
-  const promise = fetchFromWikipedia(query, signal)
+  // Note: the fetch is deliberately not abortable. It is shared across every
+  // component asking for the same place (and across StrictMode's double-mount),
+  // so cancelling it for one caller must never reject it for the others. The
+  // request is cheap, and its result is cached — callers just ignore stale
+  // resolutions via a local `cancelled` flag.
+  const promise = fetchFromWikipedia(query)
     .then((hit) => {
       cache.set(key, hit)
       inflight.delete(key)
@@ -139,21 +144,23 @@ export function useLocationImage(query: string, opts?: Options): ImageState {
       return
     }
 
-    const controller = new AbortController()
+    let cancelled = false
     setState({ status: 'loading', url: null })
 
-    lookup(query, controller.signal)
+    lookup(query)
       .then((hit) => {
-        if (controller.signal.aborted) return
+        if (cancelled) return
         const url = resolveUrl(hit, options)
         setState({ status: url ? 'loaded' : 'none', url })
       })
       .catch(() => {
-        if (controller.signal.aborted) return
+        if (cancelled) return
         setState({ status: 'error', url: null })
       })
 
-    return () => controller.abort()
+    return () => {
+      cancelled = true
+    }
   }, [query, matchTerm, context])
 
   return state
