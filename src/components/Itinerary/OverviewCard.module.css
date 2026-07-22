@@ -4,23 +4,20 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--sp-5);
   display: grid;
-  gap: var(--sp-4);
   box-shadow: var(--shadow-sm);
   animation: fadeInUp 0.3s ease both;
 }
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 4px;
-  background: var(--brand-grad);
+
+.hero {
+  height: clamp(150px, 26vw, 210px);
+  background: var(--surface-2);
 }
 
-.headings {
+.content {
   display: grid;
-  gap: var(--sp-2);
+  gap: var(--sp-4);
+  padding: var(--sp-5);
 }
 
 .eyebrow {
@@ -31,12 +28,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--accent);
+  color: #d3ddff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
 .destination {
   font-size: clamp(1.5rem, 4vw, 2rem);
   line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  margin-top: 4px;
 }
 
 .summary {
