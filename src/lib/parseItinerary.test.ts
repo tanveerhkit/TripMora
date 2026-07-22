@@ -113,6 +113,27 @@ describe('parseItinerary — forgiving normalization', () => {
     expect(res.itinerary.days[0].stops[0].category).toBe('culture')
   })
 
+  it('reads per-stop watch-outs, including an alias, and defaults to []', () => {
+    const res = parseItinerary(
+      JSON.stringify({
+        days: [
+          {
+            stops: [
+              { title: 'Trevi Fountain', watchOuts: ['Packed midday', 'Watch for pickpockets'] },
+              { title: 'Quiet chapel', warnings: 'Dress code enforced' },
+              { title: 'Park bench' },
+            ],
+          },
+        ],
+      }),
+    )
+    if (!res.ok) throw new Error('expected ok')
+    const [a, b, c] = res.itinerary.days[0].stops
+    expect(a.watchOuts).toEqual(['Packed midday', 'Watch for pickpockets'])
+    expect(b.watchOuts).toEqual(['Dress code enforced'])
+    expect(c.watchOuts).toEqual([])
+  })
+
   it('normalizes a budget given as a flat object map', () => {
     const res = parseItinerary(
       JSON.stringify({

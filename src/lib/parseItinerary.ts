@@ -96,6 +96,10 @@ function normalizeStop(raw: unknown): Stop | null {
     durationMin: num(o.durationMin ?? o.duration ?? o.durationMinutes ?? o.minutes),
     cost: num(o.cost ?? o.costEstimate ?? o.price ?? o.estimatedCost ?? o.budget),
     tip: clamp(firstStr(o.tip, o.tips, o.note, o.advice, o.proTip), 400),
+    watchOuts: normalizeStringList(
+      o.watchOuts ?? o.watchOut ?? o.warnings ?? o.problems ?? o.concerns ?? o.issues ?? o.heads_up,
+      4,
+    ),
   }
 }
 
