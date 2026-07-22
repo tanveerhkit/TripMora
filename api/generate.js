@@ -17,12 +17,16 @@ const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat
 // so it won't 404 when Google retires a specific pinned version. Fast, generous
 // on the free tier, and good at following JSON schemas.
 const DEFAULT_MODEL = 'gemini-flash-latest'
-const UPSTREAM_TIMEOUT_MS = 30_000
+const UPSTREAM_TIMEOUT_MS = 55_000
 const MAX_PROMPT_CHARS = 2000
-// Cap on generated tokens — enough for a full multi-day itinerary.
-const MAX_OUTPUT_TOKENS = 3000
+// Cap on generated tokens. Gemini Flash is a "thinking" model and its hidden
+// reasoning tokens count against this budget, so it must be generous — 3000 was
+// enough thinking to truncate even a 2-day itinerary mid-JSON. We also set
+// reasoning_effort: 'low' below to minimize that overhead.
+const MAX_OUTPUT_TOKENS = 8000
 
-export const config = { maxDuration: 30 }
+// Large itineraries can take ~30s+ to generate; Vercel Hobby allows up to 60s.
+export const config = { maxDuration: 60 }
 
 const SCHEMA_HINT = `Return ONLY a single minified JSON object (no markdown, no prose) with this exact shape:
 {
@@ -210,6 +214,9 @@ export default async function handler(req, res) {
         messages,
         temperature: 0.6,
         max_tokens: MAX_OUTPUT_TOKENS,
+        // Filling a fixed JSON schema needs no chain-of-thought; minimizing it
+        // frees the token budget (avoiding truncated JSON) and cuts latency.
+        reasoning_effort: 'low',
         response_format: { type: 'json_object' },
       }),
     })
