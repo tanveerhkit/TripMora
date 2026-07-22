@@ -1,28 +1,40 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useItinerary } from './hooks/useItinerary'
+import { useDream } from './hooks/useDream'
 import { useSessions } from './hooks/useSessions'
 import { useTheme } from './hooks/useTheme'
 import { relativeTime } from './lib/format'
 import { countStops } from './lib/itineraryOps'
+import { destinationToPrompt } from './lib/dreamPrompt'
 import type { StoredSession } from './lib/storage'
+import type { DestinationRec, DreamAnswers } from './types/dream'
 import { Button } from './components/ui/Button'
 import { Icon } from './components/ui/Icon'
+import { ModeChooser, type HomeMode } from './components/Home/ModeChooser'
 import { TripForm } from './components/TripForm/TripForm'
+import { DreamForm } from './components/Dream/DreamForm'
+import { DreamResults } from './components/Dream/DreamResults'
 import { LoadingItinerary } from './components/states/LoadingItinerary'
+import { LoadingDream } from './components/states/LoadingDream'
 import { ErrorState } from './components/states/ErrorState'
 import { ItineraryView } from './components/Itinerary/ItineraryView'
 import { SessionSidebar } from './components/Sessions/SessionSidebar'
 import styles from './App.module.css'
 
+type Screen = 'home' | 'describe' | 'dream'
+
 export default function App() {
   const itin = useItinerary()
+  const dream = useDream()
   const { sessions, upsert, remove } = useSessions()
   const { theme, toggle } = useTheme()
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [basePrompt, setBasePrompt] = useState('')
+  const [screen, setScreen] = useState<Screen>('home')
+  const [dreamAnswers, setDreamAnswers] = useState<DreamAnswers | null>(null)
 
-  // Autosave: whenever the current itinerary changes, persist its session.
+  // Autosave the current itinerary whenever it changes.
   useEffect(() => {
     if (itin.status === 'ready' && itin.itinerary) {
       upsert(basePrompt, itin.itinerary)
@@ -33,25 +45,50 @@ export default function App() {
     (prompt: string) => {
       setBasePrompt(prompt)
       setSidebarOpen(false)
+      dream.reset()
       itin.generate(prompt)
     },
-    [itin],
+    [itin, dream],
+  )
+
+  const handleDreamSubmit = useCallback(
+    (answers: DreamAnswers) => {
+      setDreamAnswers(answers)
+      dream.dream(answers)
+    },
+    [dream],
+  )
+
+  const handlePlanDestination = useCallback(
+    (dest: DestinationRec) => {
+      const prompt = destinationToPrompt(dest, dreamAnswers)
+      setBasePrompt(prompt)
+      setSidebarOpen(false)
+      dream.reset()
+      itin.generate(prompt)
+    },
+    [itin, dream, dreamAnswers],
   )
 
   const handleSelectSession = useCallback(
     (session: StoredSession) => {
       setBasePrompt(session.prompt)
+      dream.reset()
       itin.setItinerary(session.itinerary)
+      setScreen('describe')
       setSidebarOpen(false)
     },
-    [itin],
+    [itin, dream],
   )
 
   const handleNewTrip = useCallback(() => {
     itin.reset()
+    dream.reset()
     setBasePrompt('')
+    setDreamAnswers(null)
+    setScreen('home')
     setSidebarOpen(false)
-  }, [itin])
+  }, [itin, dream])
 
   const handleDeleteSession = useCallback(
     (id: string) => {
@@ -67,7 +104,9 @@ export default function App() {
   const hasItinerary = Boolean(itin.itinerary)
   const isGenerating = itin.isLoading && itin.loadingMode === 'generate'
   const isRefining = itin.isLoading && itin.loadingMode === 'refine'
-  const showForm = !hasItinerary && !itin.isLoading && itin.status !== 'error'
+  const itinErrorNoItin = itin.status === 'error' && !hasItinerary
+  const itineraryActive = hasItinerary || isGenerating || itinErrorNoItin
+  const notHome = itineraryActive || screen !== 'home'
   const recent = sessions.slice(0, 3)
 
   return (
@@ -82,16 +121,21 @@ export default function App() {
             aria-label="Saved trips"
             onClick={() => setSidebarOpen(true)}
           />
-          <div className={styles.brand}>
+          <button
+            type="button"
+            className={styles.brand}
+            onClick={handleNewTrip}
+            aria-label="TripMora home"
+          >
             <span className={styles.logo}>
               <Icon name="compass" size={18} />
             </span>
             <span className={styles.brandName}>
               <b>TripMora</b> <span>· AI trip planner</span>
             </span>
-          </div>
+          </button>
           <div className={styles.headerActions}>
-            {hasItinerary && (
+            {notHome && (
               <Button variant="secondary" size="sm" icon="plus" onClick={handleNewTrip}>
                 New trip
               </Button>
@@ -109,19 +153,86 @@ export default function App() {
       </header>
 
       <main className={styles.container}>
-        {showForm && (
+        {itineraryActive ? (
+          <>
+            {isGenerating && <LoadingItinerary mode="generate" />}
+
+            {itinErrorNoItin && itin.error && (
+              <ErrorState error={itin.error} onRetry={itin.retry} onStartOver={handleNewTrip} />
+            )}
+
+            {hasItinerary && !isGenerating && itin.itinerary && (
+              <>
+                {itin.status === 'error' && itin.error && (
+                  <div className={styles.banner} role="alert">
+                    <Icon name="warning" size={20} />
+                    <span className={styles.bannerText}>{itin.error.message}</span>
+                    <Button variant="secondary" size="sm" icon="retry" onClick={itin.retry}>
+                      Retry
+                    </Button>
+                  </div>
+                )}
+                <ItineraryView
+                  itinerary={itin.itinerary}
+                  mutate={itin.mutate}
+                  onRefine={itin.refine}
+                  refining={isRefining}
+                />
+              </>
+            )}
+          </>
+        ) : screen === 'dream' ? (
+          dream.isLoading ? (
+            <LoadingDream />
+          ) : dream.status === 'error' && dream.error ? (
+            <ErrorState error={dream.error} onRetry={dream.retry} onStartOver={handleNewTrip} />
+          ) : dream.result ? (
+            <DreamResults
+              result={dream.result}
+              onPlan={handlePlanDestination}
+              onAdjust={dream.reset}
+            />
+          ) : (
+            <DreamForm
+              onSubmit={handleDreamSubmit}
+              onBack={() => setScreen('home')}
+              loading={dream.isLoading}
+              initialAnswers={dreamAnswers}
+            />
+          )
+        ) : screen === 'describe' ? (
           <section className={styles.hero}>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon="chevron"
+              className={styles.backBtn}
+              onClick={() => setScreen('home')}
+            >
+              Back
+            </Button>
+            <div className={styles.heroCopy}>
+              <h1 className={styles.heroTitle}>Describe your trip</h1>
+              <p className={styles.heroSub}>
+                Tell me where you&apos;re going and what you like. I&apos;ll draft an editable
+                day-by-day itinerary.
+              </p>
+            </div>
+            <TripForm onSubmit={handleGenerate} loading={isGenerating} />
+          </section>
+        ) : (
+          <section className={`${styles.hero} ${styles.homeWide}`}>
             <div className={styles.heroCopy}>
               <h1 className={styles.heroTitle}>
-                Turn an idea into a <b>day-by-day plan</b>
+                Your next trip <b>starts here</b>
               </h1>
               <p className={styles.heroSub}>
-                Describe your trip in your own words. TripMora drafts a structured
-                itinerary you can expand, edit, reorder and refine.
+                Get matched with a destination, or describe a place you already love —
+                TripMora plans the rest.
               </p>
             </div>
 
-            <TripForm onSubmit={handleGenerate} loading={isGenerating} />
+            <ModeChooser onChoose={(m: HomeMode) => setScreen(m)} />
 
             {recent.length > 0 && (
               <div className={styles.recent}>
@@ -134,9 +245,7 @@ export default function App() {
                       className={styles.recentCard}
                       onClick={() => handleSelectSession(s)}
                     >
-                      <span className={styles.recentTitle}>
-                        {s.itinerary.meta.destination}
-                      </span>
+                      <span className={styles.recentTitle}>{s.itinerary.meta.destination}</span>
                       <span className={styles.recentMeta}>
                         {s.itinerary.days.length}d · {countStops(s.itinerary)} stops ·{' '}
                         {relativeTime(s.updatedAt)}
@@ -147,36 +256,6 @@ export default function App() {
               </div>
             )}
           </section>
-        )}
-
-        {isGenerating && <LoadingItinerary mode="generate" />}
-
-        {itin.status === 'error' && !hasItinerary && itin.error && (
-          <ErrorState
-            error={itin.error}
-            onRetry={itin.retry}
-            onStartOver={handleNewTrip}
-          />
-        )}
-
-        {hasItinerary && !isGenerating && itin.itinerary && (
-          <>
-            {itin.status === 'error' && itin.error && (
-              <div className={styles.banner} role="alert">
-                <Icon name="warning" size={20} />
-                <span className={styles.bannerText}>{itin.error.message}</span>
-                <Button variant="secondary" size="sm" icon="retry" onClick={itin.retry}>
-                  Retry
-                </Button>
-              </div>
-            )}
-            <ItineraryView
-              itinerary={itin.itinerary}
-              mutate={itin.mutate}
-              onRefine={itin.refine}
-              refining={isRefining}
-            />
-          </>
         )}
       </main>
 

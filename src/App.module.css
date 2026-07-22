@@ -68,6 +68,18 @@
   display: grid;
   gap: var(--sp-5);
 }
+
+/* wider so two mode cards sit comfortably side by side */
+.homeWide {
+  max-width: 760px;
+}
+
+.backBtn {
+  justify-self: start;
+}
+.backBtn svg {
+  transform: rotate(90deg);
+}
 .heroCopy {
   text-align: center;
   display: grid;
