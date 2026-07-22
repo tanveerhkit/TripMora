@@ -8,9 +8,19 @@ interface Props {
   result: DreamResult
   onPlan: (dest: DestinationRec) => void
   onAdjust: () => void
+  onSeeMore: () => void
+  loadingMore: boolean
+  moreError?: string | null
 }
 
-export function DreamResults({ result, onPlan, onAdjust }: Props) {
+export function DreamResults({
+  result,
+  onPlan,
+  onAdjust,
+  onSeeMore,
+  loadingMore,
+  moreError,
+}: Props) {
   const maxCost = Math.max(...result.destinations.map((d) => d.estCost ?? 0), 1)
 
   return (
@@ -46,6 +56,17 @@ export function DreamResults({ result, onPlan, onAdjust }: Props) {
             onPlan={() => onPlan(dest)}
           />
         ))}
+      </div>
+
+      <div className={styles.more}>
+        {moreError && (
+          <p className={styles.moreError}>
+            <Icon name="warning" size={14} /> {moreError}
+          </p>
+        )}
+        <Button variant="secondary" icon="sparkles" onClick={onSeeMore} loading={loadingMore}>
+          {loadingMore ? 'Finding more…' : 'See more destinations'}
+        </Button>
       </div>
     </div>
   )

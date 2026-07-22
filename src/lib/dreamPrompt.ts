@@ -1,7 +1,11 @@
 import type { DestinationRec, DreamAnswers } from '../types/dream'
 
-/** Turn the questionnaire answers into a readable prompt for the model. */
-export function buildDreamPrompt(a: DreamAnswers): string {
+/**
+ * Turn the questionnaire answers into a readable prompt for the model.
+ * `exclude` lists places already suggested, so a "see more" request returns
+ * fresh ideas instead of repeating what the traveler has already seen.
+ */
+export function buildDreamPrompt(a: DreamAnswers, exclude: string[] = []): string {
   const lines = [
     `When: ${a.when}`,
     `Budget: ${a.budget}`,
@@ -16,6 +20,11 @@ export function buildDreamPrompt(a: DreamAnswers): string {
   ]
   if (a.homeCountry.trim()) lines.push(`Travelling from: ${a.homeCountry.trim()}`)
   if (a.notes.trim()) lines.push(`Extra notes: ${a.notes.trim()}`)
+  if (exclude.length) {
+    lines.push(
+      `Already suggested — do NOT repeat any of these, suggest different places: ${exclude.join(', ')}`,
+    )
+  }
   return lines.join('\n')
 }
 

@@ -191,6 +191,9 @@ export default function App() {
               result={dream.result}
               onPlan={handlePlanDestination}
               onAdjust={dream.reset}
+              onSeeMore={dream.dreamMore}
+              loadingMore={dream.loadingMore}
+              moreError={dream.moreError}
             />
           ) : (
             <DreamForm
