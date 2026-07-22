@@ -1,9 +1,14 @@
 # TripMora — AI Trip Planner
 
-Describe a trip in plain words and TripMora turns it into a **structured,
-interactive day-by-day itinerary** you can expand, edit, reorder, refine and
-save. The AI never speaks back as a chatbot — it returns JSON that the app
-parses and renders as real, stateful UI.
+TripMora turns a trip idea into **structured, interactive UI** — never a chatbot.
+The AI returns JSON that the app parses and renders as real, stateful components.
+There are two ways in:
+
+- **Dreaming a trip** — not sure where to go? Answer a few questions and get
+  matched with destinations (season, cost comparison, safety, visa, weather,
+  festivals, crowds), each with a one-tap "Plan this trip".
+- **Describe your trip** — know the place? Describe it and get an editable
+  day-by-day itinerary you can expand, edit, reorder, refine and save.
 
 > Type _“5 relaxed days in Kyoto for a solo traveler who loves food, temples and
 > quiet mornings”_ → get an itinerary with timed stops, tips, a budget breakdown
@@ -15,6 +20,9 @@ parses and renders as real, stateful UI.
 
 **Core**
 
+- 🧭 **Two modes** — "Dreaming a trip" (a guided questionnaire → ranked
+  destination matches with cost comparison) and "Describe your trip" (free-form →
+  itinerary). Pick a match and it flows straight into a full itinerary.
 - ✍️ **Free-form input** — describe the trip however you like.
 - 🤖 **Real LLM, structured output** — the model returns JSON; the app renders it.
 - 🗓️ **Interactive itinerary** — expand/collapse days, **edit** any stop inline,
@@ -107,7 +115,7 @@ so you don’t need the Vercel CLI to develop locally.
 ### 5. Test / build
 
 ```bash
-npm test             # unit + render tests (15 tests)
+npm test             # unit + render tests (31 tests)
 npm run build        # type-check + production build
 ```
 
@@ -143,6 +151,9 @@ npm run build        # type-check + production build
 - **Refinement** sends the current itinerary plus a change request; the model
   returns the full updated itinerary, and the app merges it (keeping the trip id
   and which packing items were already checked).
+- **Dreaming** sends the questionnaire answers with a `dream` mode; the model
+  returns a separate destinations schema, validated by
+  [`parseDream`](src/lib/parseDream.ts) into interactive match cards.
 
 **Model**: default `llama-3.3-70b-versatile` on Groq (configurable via
 `GROQ_MODEL`). Chosen for being fast, free, and good at following JSON schemas.
@@ -180,20 +191,26 @@ api/
 src/
   lib/
     parseItinerary.ts    # validate + normalize messy AI JSON  ← the important bit
+    parseDream.ts        # same, for destination suggestions
+    safe.ts              # shared defensive JSON accessors
     api.ts               # fetch client with retry + typed errors
     itineraryOps.ts      # pure, immutable itinerary edits
+    dreamPrompt.ts       # answers → prompt, destination → itinerary prompt
     storage.ts           # localStorage sessions + theme
     categories.ts, format.ts
   hooks/
     useItinerary.ts      # request lifecycle + stale-response guard
+    useDream.ts          # same lifecycle for dreaming mode
     useSessions.ts, useTheme.ts
   components/
+    Home/                # two-mode chooser
+    Dream/               # questionnaire + destination match cards
     TripForm/            # free-form input
     Itinerary/           # OverviewCard, DayCard, StopItem, blocks, RefinementBar…
     Sessions/            # saved-trips drawer
     states/, ui/         # loading/error states, Button, Icon
-  types/itinerary.ts     # the clean app data model
-  App.tsx                # state routing (form / loading / error / itinerary)
+  types/itinerary.ts, types/dream.ts   # the clean app data models
+  App.tsx                # screen routing (home / dream / describe / itinerary)
 ```
 
 ---
@@ -207,7 +224,8 @@ src/
   reliably is a trade-off I chose against for correctness).
 - **Drag-and-drop is within a day.** Days reorder with up/down buttons; stops
   don’t drag across days.
-- **Sessions are per-browser** (localStorage) — no accounts or cloud sync.
+- **Sessions are per-browser** (localStorage) — no accounts or cloud sync. Only
+  itineraries are saved; destination suggestions from Dreaming mode aren't (yet).
 - Free-tier models occasionally return odd output; that’s exactly what the error
   handling and Retry are for.
 
