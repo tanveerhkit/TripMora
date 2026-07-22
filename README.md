@@ -33,8 +33,10 @@ There are two ways in:
 - 💾 **Save & reload sessions** — every trip is saved to your browser and listed
   in the sidebar; reopen or delete any of them.
 - 🧱 **Different block types** — beyond the itinerary, the AI output is rendered as
-  an overview card, a **budget bar chart**, an interactive **packing checklist**,
-  and a tips panel.
+  an overview card, an interactive **packing checklist**, and a tips panel.
+- 💰 **Interactive budget** — tap a category to see what it covers and how to book
+  it, then switch options (flight ↔ train ↔ bus ↔ cab, hostel → luxury, street
+  food → fine dining…) and the amounts and total **recalculate live**.
 
 **Robustness (the part that matters most)**
 
@@ -218,7 +220,9 @@ src/
 ## Known limitations
 
 - **Costs and details are AI estimates**, not live data — no real flight/hotel
-  prices, maps, or bookings.
+  prices, maps, or bookings. The budget's switchable options scale the AI's
+  estimate with fixed heuristics (e.g. a flight ≈ 1.9× a train), so they show the
+  right *shape*, not quoted fares.
 - **No streaming.** Structured JSON is parsed once it’s complete; the UI shows a
   skeleton while waiting rather than streaming tokens (streaming partial JSON
   reliably is a trade-off I chose against for correctness).
