@@ -45,6 +45,8 @@ export type IconName =
   | 'bed'
   | 'ticket'
   | 'plane'
+  | 'image'
+  | 'external'
 
 const PATHS: Record<IconName, JSX.Element> = {
   compass: (
@@ -229,6 +231,19 @@ const PATHS: Record<IconName, JSX.Element> = {
   ),
   plane: (
     <path d="M10.2 3.3a1.4 1.4 0 0 1 2.6 0l1.8 6 5.4 3.2a1 1 0 0 1-.5 1.9l-5.9-1-1 5.2 1.7 1.5a.6.6 0 0 1-.5 1l-2.3-.6-2.3.6a.6.6 0 0 1-.5-1l1.7-1.5-1-5.2-5.9 1a1 1 0 0 1-.5-1.9L8.4 9.3l1.8-6Z" />
+  ),
+  image: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="8.5" cy="9.5" r="1.5" />
+      <path d="m21 15-4.5-4.5L7 20" />
+    </>
+  ),
+  external: (
+    <>
+      <path d="M14 4h6v6M20 4l-8 8" />
+      <path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5" />
+    </>
   ),
 }
 
