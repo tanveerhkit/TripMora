@@ -55,11 +55,10 @@
 /* ---------------- card ---------------- */
 .card {
   display: grid;
-  gap: var(--sp-3);
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--sp-4);
+  overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -68,49 +67,83 @@
   box-shadow: var(--shadow-md);
 }
 
-.cardHead {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
+.imageWrap {
+  position: relative;
+  height: 168px;
+  background: var(--surface-2);
 }
+.imageWrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(8, 10, 16, 0.78) 0%,
+    rgba(8, 10, 16, 0.15) 45%,
+    transparent 72%
+  );
+}
+
 .rank {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
   display: grid;
   place-items: center;
   width: 30px;
   height: 30px;
   border-radius: var(--radius-sm);
-  background: var(--brand-grad);
+  background: rgba(10, 12, 18, 0.5);
+  backdrop-filter: blur(4px);
   color: #fff;
   font-weight: 800;
   font-size: 0.9rem;
-  flex: none;
 }
-.nameWrap {
-  flex: 1;
-  min-width: 0;
+.costLevel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: rgba(10, 12, 18, 0.5);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+}
+.nameOnImage {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  z-index: 2;
 }
 .name {
-  font-size: 1.15rem;
-  line-height: 1.2;
+  font-size: 1.25rem;
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
 }
 .country {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-top: 2px;
+  color: rgba(255, 255, 255, 0.92);
+  margin-top: 3px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
 }
-.costLevel {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: var(--radius-full);
-  padding: 4px 10px;
-  flex: none;
+
+.cardBody {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
 }
 
 .reason {

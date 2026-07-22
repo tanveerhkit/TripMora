@@ -2,6 +2,7 @@ import { formatMoney } from '../../lib/format'
 import type { DestinationRec } from '../../types/dream'
 import { Button } from '../ui/Button'
 import { Icon, type IconName } from '../ui/Icon'
+import { LocationImage } from '../ui/LocationImage'
 import styles from './DreamResults.module.css'
 
 interface Props {
@@ -53,11 +54,16 @@ export function DestinationCard({ dest, currency, maxCost, rank, onPlan }: Props
 
   return (
     <article className={styles.card}>
-      <header className={styles.cardHead}>
+      <div className={styles.imageWrap}>
+        <LocationImage
+          query={`${dest.name} ${dest.country}`.trim()}
+          alt={`Photo of ${dest.name}`}
+        />
         <span className={styles.rank} aria-hidden="true">
           {rank}
         </span>
-        <div className={styles.nameWrap}>
+        {dest.costLevel && <span className={styles.costLevel}>{dest.costLevel}</span>}
+        <div className={styles.nameOnImage}>
           <h3 className={styles.name}>{dest.name}</h3>
           {dest.country && dest.country !== dest.name && (
             <span className={styles.country}>
@@ -65,12 +71,12 @@ export function DestinationCard({ dest, currency, maxCost, rank, onPlan }: Props
             </span>
           )}
         </div>
-        {dest.costLevel && <span className={styles.costLevel}>{dest.costLevel}</span>}
-      </header>
+      </div>
 
-      {dest.matchReason && <p className={styles.reason}>{dest.matchReason}</p>}
+      <div className={styles.cardBody}>
+        {dest.matchReason && <p className={styles.reason}>{dest.matchReason}</p>}
 
-      <dl className={styles.facts}>
+        <dl className={styles.facts}>
         {facts.map((f) => (
           <div className={styles.fact} key={f.label}>
             <dt className={styles.factLabel}>
@@ -104,9 +110,10 @@ export function DestinationCard({ dest, currency, maxCost, rank, onPlan }: Props
         </div>
       )}
 
-      <Button variant="primary" size="md" icon="map" onClick={onPlan} className={styles.planBtn}>
-        Plan this trip
-      </Button>
+        <Button variant="primary" size="md" icon="map" onClick={onPlan} className={styles.planBtn}>
+          Plan this trip
+        </Button>
+      </div>
     </article>
   )
 }
