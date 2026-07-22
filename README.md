@@ -37,9 +37,10 @@ There are two ways in:
 - 💰 **Interactive budget** — tap a category to see what it covers and how to book
   it, then switch options (flight ↔ train ↔ bus ↔ cab, hostel → luxury, street
   food → fine dining…) and the amounts and total **recalculate live**.
-- 🖼️ **Location photos** — destination cards and the itinerary header show a real
-  photo of the place, fetched from **Wikipedia** (free, no API key), with a
-  gradient fallback when none exists.
+- 🖼️ **Location photos** — destination cards, the itinerary header, and each
+  landmark stop show a real photo, fetched from **Wikipedia** (free, no API key).
+  A relevance guard keeps a generic stop ("lunch at a local eatery") from
+  borrowing an unrelated image — it falls back to the category icon instead.
 
 **Robustness (the part that matters most)**
 
