@@ -15,7 +15,12 @@ const WHEN = ['Flexible', 'Next month', 'In 2-3 months', 'Spring', 'Summer', 'Au
 const BUDGET = ['Shoestring', 'Budget', 'Mid-range', 'Comfortable', 'Luxury']
 const COMPANY = ['Solo', 'Couple', 'Family', 'Friends']
 const STYLE = ['Adventure', 'Balanced', 'Relaxed', 'Luxury']
-const VISA = ['Open to anywhere', 'Prefer visa-free / on-arrival', 'Not sure']
+const VISA = [
+  'Open to anywhere',
+  'Prefer visa-free / on-arrival',
+  'No visa needed',
+  'Not sure',
+]
 const FOOD = ['No preference', 'Vegetarian', 'Vegan', 'Halal', 'Jain', 'Seafood lover']
 const TEMP = ['Cool', 'Mild', 'Warm', 'Hot', 'Any']
 const TERRAIN = ['Beaches', 'Mountains', 'Cities', 'Nature', 'Mix']
