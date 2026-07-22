@@ -10,11 +10,10 @@ import {
   asArr,
   asObj,
   clamp,
-  extractJson,
   firstStr,
   normalizeStringList,
   num,
-  str,
+  parseModelJson,
 } from './safe'
 
 export type DreamFailureKind = 'json' | 'shape' | 'empty'
@@ -63,7 +62,7 @@ export function parseDream(text: string): DreamParseResult {
 
   let data: unknown
   try {
-    data = JSON.parse(extractJson(text))
+    data = parseModelJson(text)
   } catch {
     return { ok: false, kind: 'json', message: "The AI's response wasn't valid JSON. Try again." }
   }

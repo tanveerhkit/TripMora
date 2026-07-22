@@ -28,6 +28,7 @@ import {
   firstStr,
   normalizeStringList,
   num,
+  parseModelJson,
   str,
   titleCase,
 } from './safe'
@@ -192,7 +193,7 @@ export function parseItinerary(text: string): ParseResult {
 
   let data: unknown
   try {
-    data = JSON.parse(extractJson(text))
+    data = parseModelJson(text)
   } catch {
     return {
       ok: false,
