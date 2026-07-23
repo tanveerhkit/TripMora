@@ -56,7 +56,7 @@ function reducer(state: State, action: Action): State {
     case 'success': {
       if (action.requestId !== state.requestId) return state // stale — ignore
       const itinerary =
-        action.mode === 'refine' && state.itinerary
+        (action.mode === 'refine' || action.mode === 'recover') && state.itinerary
           ? mergeRefined(state.itinerary, action.itinerary)
           : action.itinerary
       return { ...state, status: 'ready', itinerary, error: null, loadingMode: null }
@@ -109,7 +109,8 @@ export function useItinerary() {
       const text = await requestModelText({
         prompt: trimmed,
         mode,
-        itinerary: mode === 'refine' ? itineraryRef.current : undefined,
+        itinerary:
+          mode === 'refine' || mode === 'recover' ? itineraryRef.current : undefined,
         signal: controller.signal,
       })
       if (myId !== requestIdRef.current) return // a newer request superseded this one
@@ -136,6 +137,7 @@ export function useItinerary() {
 
   const generate = useCallback((prompt: string) => run(prompt, 'generate'), [run])
   const refine = useCallback((prompt: string) => run(prompt, 'refine'), [run])
+  const recover = useCallback((prompt: string) => run(prompt, 'recover'), [run])
 
   const retry = useCallback(() => {
     const last = lastRequestRef.current
@@ -169,6 +171,7 @@ export function useItinerary() {
     loadingMode: state.loadingMode,
     generate,
     refine,
+    recover,
     retry,
     setItinerary,
     mutate,

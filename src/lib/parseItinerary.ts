@@ -100,6 +100,9 @@ function normalizeStop(raw: unknown): Stop | null {
       o.watchOuts ?? o.watchOut ?? o.warnings ?? o.problems ?? o.concerns ?? o.issues ?? o.heads_up,
       4,
     ),
+    // The AI never sets this; it's client-side trip-recovery state. Honor it
+    // only if a round-tripped stop already carries it.
+    status: o.status === 'missed' ? 'missed' : 'planned',
   }
 }
 
