@@ -1,0 +1,210 @@
+/* PlanBento — MagicBento interaction engine, restyled with TripMora tokens.
+   Class names are global (the JS queries them by literal selector) but
+   namespaced `tm-` to avoid collisions. */
+
+.tm-bento-section {
+  position: relative;
+  user-select: none;
+}
+
+.tm-bento-grid {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 600px) {
+  .tm-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .tm-bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.tm-bento-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: 154px;
+  padding: var(--sp-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  overflow: hidden;
+  transition: border-color var(--dur-2) ease, box-shadow var(--dur-2) ease,
+    transform var(--dur-2) var(--ease-out);
+
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 220px;
+}
+
+/* buttons (the two action cards) need the usual control resets */
+button.tm-bento-card {
+  width: 100%;
+  font: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* action cards are larger and span two columns */
+.tm-bento-card--action {
+  min-height: 208px;
+}
+@media (min-width: 600px) {
+  .tm-bento-card--action {
+    grid-column: span 2;
+  }
+}
+
+@media (hover: hover) {
+  .tm-bento-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* ---------- header ---------- */
+.tm-bento-card__header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.tm-bento-card__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.tm-bento-card--action .tm-bento-card__icon {
+  width: 46px;
+  height: 46px;
+  color: #fff;
+  background: var(--brand-grad);
+  box-shadow: var(--shadow-sm);
+}
+.tm-bento-card__label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-faint);
+}
+.tm-bento-card__go {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--accent);
+  background: var(--accent-soft);
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+@media (hover: hover) {
+  .tm-bento-card--action:hover .tm-bento-card__go {
+    transform: translateX(3px);
+  }
+}
+
+/* ---------- content ---------- */
+.tm-bento-card__content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 5px;
+}
+.tm-bento-card__title {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.tm-bento-card--action .tm-bento-card__title {
+  font-size: 1.3rem;
+}
+.tm-bento-card__description {
+  display: block;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* text clamp (textAutoHide) */
+.tm-bento-card--clamp .tm-bento-card__title,
+.tm-bento-card--clamp .tm-bento-card__description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tm-bento-card--clamp .tm-bento-card__title {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+.tm-bento-card--clamp .tm-bento-card__description {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* ---------- cursor-following border glow ---------- */
+.tm-bento-card--glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--glow-color), calc(var(--glow-intensity) * 0.9)) 0%,
+    rgba(var(--glow-color), calc(var(--glow-intensity) * 0.4)) 30%,
+    transparent 60%
+  );
+  border-radius: inherit;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+@media (hover: hover) {
+  .tm-bento-card--glow:hover {
+    box-shadow: var(--shadow-md), 0 0 26px rgba(var(--glow-color), 0.18);
+  }
+}
+
+/* ---------- particles ---------- */
+.tm-particle-container {
+  position: relative;
+  overflow: hidden;
+}
+.tm-particle::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: rgba(var(--glow-color, 52, 211, 153), 0.2);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* ---------- global cursor spotlight ---------- */
+.tm-spotlight {
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  z-index: 200 !important;
+  pointer-events: none;
+}
