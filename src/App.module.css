@@ -29,7 +29,7 @@
 /* ---------- home: secondary "plan your own way" section ---------- */
 .homeSecondary {
   width: 100%;
-  max-width: 780px;
+  max-width: 980px;
   margin: 0 auto;
   padding: var(--sp-7) var(--sp-4);
   scroll-margin-top: var(--header-h);
