@@ -1,15 +1,30 @@
-import { useCallback, useEffect, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type MouseEvent as ReactMouseEvent,
+} from 'react'
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 import { useLocationImage } from '../../hooks/useLocationImage'
-import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import styles from './FeaturedHero.module.css'
 
 interface Destination {
   name: string
   country: string
-  /** Wikipedia lookup term for the background photo */
+  /** Wikipedia lookup term for the photography */
   query: string
-  /** rough trip length, folded into the "Plan a trip" prompt */
+  /** rough trip length, folded into the featured "Explore" prompt */
   days: number
   blurb: string
 }
@@ -30,7 +45,7 @@ const DESTINATIONS: Destination[] = [
     query: 'Kyoto',
     days: 5,
     blurb:
-      'Thousand-year-old temples, bamboo groves and lantern-lit lanes — Japan’s old capital keeps time with the seasons.',
+      'Thousand-year-old temples, silent bamboo groves and lantern-lit lanes — Japan’s old capital keeps time with the seasons.',
   },
   {
     name: 'Santorini',
@@ -38,7 +53,7 @@ const DESTINATIONS: Destination[] = [
     query: 'Santorini',
     days: 4,
     blurb:
-      'Whitewashed villages spill down caldera cliffs above the Aegean, where the sunsets over Oia are worth the trip alone.',
+      'Whitewashed villages spill down caldera cliffs above the Aegean, where the slow sunsets over Oia are worth the trip alone.',
   },
   {
     name: 'Kerala',
@@ -58,133 +73,232 @@ const DESTINATIONS: Destination[] = [
   },
 ]
 
-const ROTATE_MS = 6000
+const ROTATE_MS = 7000
 // Larger than the card default so the full-bleed background stays crisp.
-const HERO_SIZE = 1280
-
-function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
-  )
-}
+const HERO_SIZE = 1600
+const EASE = [0.16, 1, 0.3, 1] as const
 
 interface Props {
-  /** fires with a ready-made prompt for the featured place */
+  /** plan a specific place immediately (featured "Explore" + quick search) */
   onPlan: (prompt: string) => void
+  /** jump to the "plan your own way" section (primary CTA) */
+  onOpenPlanner: () => void
 }
 
-export function FeaturedHero({ onPlan }: Props) {
+export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [search, setSearch] = useState('')
+  const reduce = useReducedMotion()
   const count = DESTINATIONS.length
-
-  const go = useCallback(
-    (next: number) => setIndex((next + count) % count),
-    [count],
-  )
-
-  // Auto-advance, unless the pointer/focus is inside the hero or the user has
-  // asked for reduced motion.
-  useEffect(() => {
-    if (paused || prefersReducedMotion()) return
-    const id = window.setInterval(() => {
-      setIndex((prev) => (prev + 1) % count)
-    }, ROTATE_MS)
-    return () => window.clearInterval(id)
-  }, [paused, count])
-
   const active = DESTINATIONS[index]
 
-  const handlePlan = () => {
+  const heroRef = useRef<HTMLElement>(null)
+  const touchStartX = useRef<number | null>(null)
+
+  const go = useCallback((next: number) => setIndex((next + count) % count), [count])
+
+  // Auto-advance unless the pointer/focus is inside or reduced motion is on.
+  useEffect(() => {
+    if (paused || reduce) return
+    const id = window.setInterval(() => setIndex((p) => (p + 1) % count), ROTATE_MS)
+    return () => window.clearInterval(id)
+  }, [paused, reduce, count])
+
+  // ---- mouse parallax on the background (motion values → no re-render) ----
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const bgX = useSpring(useTransform(mx, (v) => v * -28), { stiffness: 60, damping: 18 })
+  const bgY = useSpring(useTransform(my, (v) => v * -28), { stiffness: 60, damping: 18 })
+
+  const onMouseMove = (e: ReactMouseEvent) => {
+    if (reduce) return
+    const r = heroRef.current?.getBoundingClientRect()
+    if (!r) return
+    mx.set((e.clientX - r.left) / r.width - 0.5)
+    my.set((e.clientY - r.top) / r.height - 0.5)
+  }
+  const resetParallax = () => {
+    mx.set(0)
+    my.set(0)
+  }
+
+  // ---- measure the carousel step so the active card slides to the left slot ----
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [step, setStep] = useState(0)
+  useLayoutEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    const measure = () => {
+      const cards = el.children
+      if (cards.length < 2) return
+      const first = cards[0] as HTMLElement
+      const second = cards[1] as HTMLElement
+      setStep(second.offsetLeft - first.offsetLeft)
+    }
+    measure()
+    if (typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const handleExplore = () => {
     onPlan(`${active.days} days in ${active.name}, ${active.country}`)
+  }
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault()
+    const q = search.trim()
+    if (q) onPlan(`Plan a trip to ${q}`)
+    else onOpenPlanner()
   }
 
   return (
     <section
+      ref={heroRef}
       className={styles.hero}
       aria-roledescription="carousel"
       aria-label="Featured destinations"
+      onMouseMove={onMouseMove}
       onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseLeave={() => {
+        setPaused(false)
+        resetParallax()
+      }}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div className={styles.bg} aria-hidden="true">
+      {/* ---------- background ---------- */}
+      <motion.div className={styles.bg} style={{ x: bgX, y: bgY }} aria-hidden="true">
         {DESTINATIONS.map((d, i) => (
-          <HeroBackground key={d.name} query={d.query} active={i === index} />
+          <HeroLayer key={d.name} query={d.query} active={i === index} reduce={Boolean(reduce)} />
         ))}
-        <div className={styles.scrim} />
-      </div>
+      </motion.div>
+      <div className={styles.scrim} aria-hidden="true" />
+      <div className={styles.vignette} aria-hidden="true" />
 
-      <div className={styles.inner}>
-        {/* keyed by index so the copy replays its entrance on each change */}
-        <div className={styles.copy} key={index}>
-          <span className={styles.eyebrow}>
-            <Icon name="sparkles" size={14} />
-            Featured destination
-          </span>
-          <h1 className={styles.name}>{active.name}</h1>
-          <span className={styles.country}>
-            <Icon name="map" size={15} />
-            {active.country}
-          </span>
-          <p className={styles.blurb}>{active.blurb}</p>
-          <Button variant="primary" size="lg" className={styles.cta} onClick={handlePlan}>
-            Plan a trip
-            <Icon name="arrow" size={18} />
-          </Button>
-        </div>
-
-        <div className={styles.cards}>
-          {DESTINATIONS.map((d, i) => (
-            <DestinationCard
-              key={d.name}
-              dest={d}
-              active={i === index}
-              onSelect={() => go(i)}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className={styles.controls}>
-        <span className={styles.counter} aria-hidden="true">
-          <b>{String(index + 1).padStart(2, '0')}</b>
-          <i>/</i>
-          {String(count).padStart(2, '0')}
-        </span>
-
-        <div className={styles.dots}>
+      {/* ---------- vertical progress ---------- */}
+      <div className={styles.progress} aria-hidden="true">
+        <div className={styles.rail}>
           {DESTINATIONS.map((d, i) => (
             <button
               key={d.name}
               type="button"
-              className={`${styles.dot} ${i === index ? styles.dotOn : ''}`}
+              tabIndex={-1}
+              className={`${styles.tick} ${i === index ? styles.tickOn : ''}`}
               onClick={() => go(i)}
-              aria-label={`Show ${d.name}`}
-              aria-current={i === index}
-            />
+            >
+              <span className={styles.tickNum}>{String(i + 1).padStart(2, '0')}</span>
+            </button>
           ))}
         </div>
+        <span className={styles.railCount}>
+          <b>{String(index + 1).padStart(2, '0')}</b> / {String(count).padStart(2, '0')}
+        </span>
+      </div>
 
-        <div className={styles.arrows}>
-          <button
-            type="button"
-            className={styles.arrowBtn}
-            onClick={() => go(index - 1)}
-            aria-label="Previous destination"
-          >
-            <Icon name="chevron" size={18} className={styles.prevIcon} />
-          </button>
-          <button
-            type="button"
-            className={styles.arrowBtn}
-            onClick={() => go(index + 1)}
-            aria-label="Next destination"
-          >
-            <Icon name="chevron" size={18} className={styles.nextIcon} />
-          </button>
+      {/* ---------- content ---------- */}
+      <div className={styles.grid}>
+        <div className={styles.left}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active.name}
+              className={styles.copy}
+              initial={{ opacity: 0, y: reduce ? 0 : 26 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: reduce ? 0 : -18 }}
+              transition={{ duration: 0.55, ease: EASE }}
+            >
+              <span className={styles.badge}>
+                <Icon name="sparkles" size={14} />
+                Featured destination
+              </span>
+              <h1 className={styles.title}>{active.name}</h1>
+              <span className={styles.country}>
+                <Icon name="map" size={16} />
+                {active.country}
+              </span>
+              <p className={styles.blurb}>{active.blurb}</p>
+            </motion.div>
+          </AnimatePresence>
+
+          <div className={styles.ctas}>
+            <button type="button" className={styles.primary} onClick={onOpenPlanner}>
+              Plan a trip
+              <Icon name="arrow" size={18} className={styles.primaryArrow} />
+            </button>
+            <button type="button" className={styles.secondary} onClick={handleExplore}>
+              Explore {active.name}
+            </button>
+          </div>
+
+          {/* functional quick-plan search */}
+          <form className={styles.search} onSubmit={handleSearch}>
+            <span className={styles.searchIcon} aria-hidden="true">
+              <Icon name="map" size={18} />
+            </span>
+            <input
+              className={styles.searchInput}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search any destination…"
+              aria-label="Search any destination"
+            />
+            <button type="submit" className={styles.searchBtn}>
+              <span>Plan</span>
+              <Icon name="arrow" size={16} />
+            </button>
+          </form>
+        </div>
+
+        {/* ---------- carousel ---------- */}
+        <div
+          className={styles.right}
+          onTouchStart={(e) => {
+            touchStartX.current = e.touches[0].clientX
+          }}
+          onTouchEnd={(e) => {
+            const start = touchStartX.current
+            touchStartX.current = null
+            if (start == null) return
+            const dx = e.changedTouches[0].clientX - start
+            if (Math.abs(dx) > 44) go(dx < 0 ? index + 1 : index - 1)
+          }}
+        >
+          <div className={styles.viewport}>
+            <motion.div
+              ref={trackRef}
+              className={styles.track}
+              animate={{ x: -index * step }}
+              transition={{ duration: reduce ? 0 : 0.7, ease: EASE }}
+            >
+              {DESTINATIONS.map((d, i) => (
+                <DestinationCard
+                  key={d.name}
+                  dest={d}
+                  active={i === index}
+                  z={i === index ? count + 2 : count - i}
+                  reduce={Boolean(reduce)}
+                  onSelect={() => go(i)}
+                />
+              ))}
+            </motion.div>
+          </div>
+
+          {/* mobile position dots */}
+          <div className={styles.dots}>
+            {DESTINATIONS.map((d, i) => (
+              <button
+                key={d.name}
+                type="button"
+                className={`${styles.dot} ${i === index ? styles.dotOn : ''}`}
+                onClick={() => go(i)}
+                aria-label={`Show ${d.name}`}
+                aria-current={i === index}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -195,12 +309,26 @@ export function FeaturedHero({ onPlan }: Props) {
   )
 }
 
-function HeroBackground({ query, active }: { query: string; active: boolean }) {
+function HeroLayer({
+  query,
+  active,
+  reduce,
+}: {
+  query: string
+  active: boolean
+  reduce: boolean
+}) {
   const { url } = useLocationImage(query, { size: HERO_SIZE })
   return (
-    <div
-      className={`${styles.bgLayer} ${active ? styles.bgOn : ''}`}
-      style={url ? { backgroundImage: `url("${url}")` } : undefined}
+    <motion.div
+      className={styles.bgLayer}
+      style={{ backgroundImage: url ? `url("${url}")` : undefined }}
+      initial={false}
+      animate={{ opacity: active ? 1 : 0, scale: active ? 1.06 : 1 }}
+      transition={{
+        opacity: { duration: reduce ? 0 : 0.85, ease: 'easeInOut' },
+        scale: { duration: reduce ? 0 : 9, ease: 'easeOut' },
+      }}
     />
   )
 }
@@ -208,20 +336,28 @@ function HeroBackground({ query, active }: { query: string; active: boolean }) {
 function DestinationCard({
   dest,
   active,
+  z,
+  reduce,
   onSelect,
 }: {
   dest: Destination
   active: boolean
+  z: number
+  reduce: boolean
   onSelect: () => void
 }) {
   const { url } = useLocationImage(dest.query, { size: HERO_SIZE })
   return (
-    <button
+    <motion.button
       type="button"
       className={`${styles.card} ${active ? styles.cardOn : ''}`}
+      style={{ zIndex: z }}
       onClick={onSelect}
       aria-label={`${dest.name}, ${dest.country}`}
       aria-current={active}
+      animate={reduce ? undefined : { scale: active ? 1.06 : 0.92, y: active ? -6 : 8 }}
+      whileHover={reduce ? undefined : { y: active ? -14 : 0 }}
+      transition={{ type: 'spring', stiffness: 280, damping: 26 }}
     >
       <span
         className={styles.cardImg}
@@ -229,14 +365,17 @@ function DestinationCard({
       >
         {!url && (
           <span className={styles.cardFallback} aria-hidden="true">
-            <Icon name="map" size={20} />
+            <Icon name="map" size={22} />
           </span>
         )}
       </span>
-      <span className={styles.cardLabel}>
+      <span className={styles.bookmark} aria-hidden="true">
+        <Icon name="bookmark" size={15} />
+      </span>
+      <span className={styles.cardMeta}>
         <b>{dest.name}</b>
         <span>{dest.country}</span>
       </span>
-    </button>
+    </motion.button>
   )
 }
