@@ -171,10 +171,12 @@
   align-items: flex-start;
   gap: 7px;
   font-size: 0.8rem;
+  line-height: 1.5;
   color: var(--text);
-  background: var(--warning-soft);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
+  background: var(--callout-bg);
+  border: 1px solid var(--callout-border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
 }
 .booking svg {
   color: var(--warning);

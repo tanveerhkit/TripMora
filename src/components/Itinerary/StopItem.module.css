@@ -220,30 +220,33 @@
   line-height: 1.55;
 }
 
+/* shared amber callout — opaque so it reads identically in every card */
 .tip {
   display: flex;
   gap: var(--sp-2);
   align-items: flex-start;
   font-size: 0.85rem;
+  line-height: 1.5;
   color: var(--text);
-  background: var(--warning-soft);
+  background: var(--callout-bg);
+  border: 1px solid var(--callout-border);
   border-radius: var(--radius);
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
 .tip svg {
   color: var(--warning);
   flex: none;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 /* honest "things to watch for" — AI guidance, distinct from the pro tip */
 .watchOuts {
   display: grid;
   gap: 5px;
-  background: var(--warning-soft);
-  border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+  background: var(--callout-bg);
+  border: 1px solid var(--callout-border);
   border-radius: var(--radius);
-  padding: 8px 11px;
+  padding: 10px 12px;
 }
 .watchHead {
   display: inline-flex;
