@@ -111,14 +111,13 @@
 }
 
 .metaRow {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sp-2) var(--sp-3);
+  display: grid;
+  gap: var(--sp-2);
 }
 
+/* stop info (category, duration, cost) gets a full row so nothing gets
+   crushed into a narrow column and wraps mid-value */
 .metaInfo {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -140,12 +139,10 @@
   color: var(--text-muted);
 }
 
+/* action links sit on their own row so the pair stays even on every card */
 .stopLinks {
-  flex: none;
-  align-self: flex-start;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 6px;
 }
 
