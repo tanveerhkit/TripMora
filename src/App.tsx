@@ -43,11 +43,11 @@ export default function App() {
   }, [itin.itinerary, itin.status, basePrompt, upsert])
 
   const handleGenerate = useCallback(
-    (prompt: string) => {
+    (prompt: string, hard = false) => {
       setBasePrompt(prompt)
       setSidebarOpen(false)
       dream.reset()
-      itin.generate(prompt)
+      itin.generate(prompt, hard)
     },
     [itin, dream],
   )
