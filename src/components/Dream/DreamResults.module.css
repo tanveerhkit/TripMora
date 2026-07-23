@@ -1,7 +1,7 @@
 .wrap {
   display: grid;
   gap: var(--sp-4);
-  animation: fadeInUp 0.3s ease both;
+  animation: fadeInUp var(--dur-3) var(--ease-out) both;
 }
 
 .header {

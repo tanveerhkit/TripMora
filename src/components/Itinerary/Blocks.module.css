@@ -8,7 +8,7 @@
   display: grid;
   gap: var(--sp-3);
   box-shadow: var(--shadow-sm);
-  animation: fadeInUp 0.3s ease both;
+  animation: fadeInUp var(--dur-3) var(--ease-out) both;
 }
 
 .panelHead {
@@ -109,7 +109,7 @@
   display: grid;
   gap: var(--sp-2);
   padding: var(--sp-2) 0 var(--sp-1);
-  animation: fadeInUp 0.18s ease both;
+  animation: fadeInUp 0.18s var(--ease-out) both;
 }
 .budgetCovers {
   font-size: 0.82rem;

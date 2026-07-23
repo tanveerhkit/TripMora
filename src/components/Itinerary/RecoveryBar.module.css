@@ -5,7 +5,7 @@
   border: 1px solid color-mix(in srgb, var(--warning) 34%, transparent);
   border-radius: var(--radius-lg);
   padding: var(--sp-4);
-  animation: fadeInUp 0.3s ease both;
+  animation: fadeInUp var(--dur-3) var(--ease-out) both;
 }
 
 .head {

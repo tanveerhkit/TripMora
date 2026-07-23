@@ -211,7 +211,7 @@
 .details {
   display: grid;
   gap: var(--sp-2);
-  animation: fadeInUp 0.2s ease both;
+  animation: fadeInUp 0.2s var(--ease-out) both;
 }
 
 .desc {
