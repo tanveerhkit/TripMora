@@ -28,7 +28,12 @@ interface Options {
   matchTerm?: string
   /** words to ignore when matching (usually the destination) */
   context?: string
+  /** requested thumbnail width in px (Wikipedia pithumbsize); default 800.
+      hero backgrounds ask for a larger size so they stay crisp full-bleed. */
+  size?: number
 }
+
+const DEFAULT_SIZE = 800
 
 const cache = new Map<string, Hit>()
 const inflight = new Map<string, Promise<Hit>>()
@@ -57,11 +62,11 @@ export function isRelevant(pageTitle: string, term: string, context: string): bo
   return matched.length / pageTokens.length >= 0.6
 }
 
-function cacheKey(query: string): string {
-  return query.trim().toLowerCase()
+function cacheKey(query: string, size: number): string {
+  return `${query.trim().toLowerCase()}@${size}`
 }
 
-async function fetchFromWikipedia(query: string): Promise<Hit> {
+async function fetchFromWikipedia(query: string, size: number): Promise<Hit> {
   const q = query.trim()
   if (!q) return { url: null, title: null }
 
@@ -70,7 +75,7 @@ async function fetchFromWikipedia(query: string): Promise<Hit> {
   const url =
     'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*' +
     '&generator=search&gsrlimit=1&gsrnamespace=0' +
-    '&prop=pageimages&piprop=thumbnail&pithumbsize=800&gsrsearch=' +
+    `&prop=pageimages&piprop=thumbnail&pithumbsize=${size}&gsrsearch=` +
     encodeURIComponent(q)
 
   const res = await fetch(url)
@@ -86,8 +91,8 @@ async function fetchFromWikipedia(query: string): Promise<Hit> {
   return { url: first?.thumbnail?.source ?? null, title: first?.title ?? null }
 }
 
-function lookup(query: string): Promise<Hit> {
-  const key = cacheKey(query)
+function lookup(query: string, size: number): Promise<Hit> {
+  const key = cacheKey(query, size)
   const cached = cache.get(key)
   if (cached) return Promise.resolve(cached)
 
@@ -99,7 +104,7 @@ function lookup(query: string): Promise<Hit> {
   // so cancelling it for one caller must never reject it for the others. The
   // request is cheap, and its result is cached — callers just ignore stale
   // resolutions via a local `cancelled` flag.
-  const promise = fetchFromWikipedia(query)
+  const promise = fetchFromWikipedia(query, size)
     .then((hit) => {
       cache.set(key, hit)
       inflight.delete(key)
@@ -127,16 +132,17 @@ function resolveUrl(hit: Hit, opts?: Options): string | null {
 export function useLocationImage(query: string, opts?: Options): ImageState {
   const matchTerm = opts?.matchTerm
   const context = opts?.context
+  const size = opts?.size ?? DEFAULT_SIZE
 
   const [state, setState] = useState<ImageState>({ status: 'idle', url: null })
 
   useEffect(() => {
     const options = matchTerm ? { matchTerm, context } : undefined
-    const key = cacheKey(query)
-    if (!key) {
+    if (!query.trim()) {
       setState({ status: 'none', url: null })
       return
     }
+    const key = cacheKey(query, size)
     const cached = cache.get(key)
     if (cached) {
       const url = resolveUrl(cached, options)
@@ -147,7 +153,7 @@ export function useLocationImage(query: string, opts?: Options): ImageState {
     let cancelled = false
     setState({ status: 'loading', url: null })
 
-    lookup(query)
+    lookup(query, size)
       .then((hit) => {
         if (cancelled) return
         const url = resolveUrl(hit, options)
@@ -161,7 +167,7 @@ export function useLocationImage(query: string, opts?: Options): ImageState {
     return () => {
       cancelled = true
     }
-  }, [query, matchTerm, context])
+  }, [query, matchTerm, context, size])
 
   return state
 }
