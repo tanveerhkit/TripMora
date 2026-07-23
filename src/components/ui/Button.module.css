@@ -14,15 +14,17 @@
   line-height: 1;
   white-space: nowrap;
   transition:
-    transform 0.05s ease,
-    background 0.15s ease,
-    border-color 0.15s ease,
-    opacity 0.15s ease,
-    box-shadow 0.15s ease;
+    transform var(--dur-2) var(--ease-spring),
+    background var(--dur-1) ease,
+    border-color var(--dur-1) ease,
+    filter var(--dur-1) ease,
+    opacity var(--dur-1) ease,
+    box-shadow var(--dur-1) ease;
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: scale(0.96);
+  transition-duration: 0.05s;
 }
 
 .btn:disabled {
@@ -57,13 +59,24 @@
 /* variants */
 .primary {
   --btn-fg: #fff;
+  position: relative;
+  overflow: hidden;
   background: var(--brand-grad);
   box-shadow: var(--shadow-sm);
 }
+/* glass sheen across the top edge so the gradient reads as a lit surface */
+.primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sheen);
+  opacity: 0.7;
+  pointer-events: none;
+}
 @media (hover: hover) {
   .primary:hover:not(:disabled) {
-    box-shadow: var(--shadow-md);
-    filter: brightness(1.04);
+    box-shadow: var(--shadow-md), var(--glow-brand);
+    filter: brightness(1.05);
   }
 }
 
