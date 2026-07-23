@@ -180,11 +180,15 @@
 @media (hover: none) {
   :root {
     --bg-elevated: #f6fbf8;
+    --inset: #ffffff;
+    --inset-hover: #ffffff;
   }
   :root[data-theme='dark'] {
     --bg-elevated: #16291d;
+    --inset: #1b3024;
+    --inset-hover: #1b3024;
   }
-  /* The surfaces above are opaque on touch, so backdrop-filter adds nothing —
+  /* Every card surface is opaque on touch, so backdrop-filter adds nothing —
      but it still splits each card's compositing at nested layers on mobile
      GPUs, leaving a faint seam mid-card. Strip it out entirely here. */
   *,
@@ -194,9 +198,26 @@
     -webkit-backdrop-filter: none !important;
   }
 }
+
+/* Fade-only entrance on touch. The default slide leaves a retained
+   translateY() that promotes a section to its own compositing layer — the
+   other thing that can seam a card into two shades on mobile. Desktop keeps
+   the slide. */
+@media (hover: none) {
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
 @media (hover: none) and (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     --bg-elevated: #16291d;
+    --inset: #1b3024;
+    --inset-hover: #1b3024;
   }
 }
 
