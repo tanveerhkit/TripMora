@@ -26,6 +26,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-2);
+  font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.1rem;
   letter-spacing: -0.02em;
@@ -74,12 +75,34 @@
 .heroCopy {
   text-align: center;
   display: grid;
+  justify-items: center;
   gap: var(--sp-3);
 }
+
+/* pill badge above the headline — sets a modern, product-y tone */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: var(--radius-full);
+  padding: 5px 12px 5px 10px;
+  animation: fadeInUp var(--dur-3) var(--ease-out) both;
+}
+.eyebrow svg {
+  color: var(--accent);
+}
+
 .heroTitle {
-  font-size: clamp(1.9rem, 6vw, 2.8rem);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.1rem, 6.4vw, 3.1rem);
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  animation: fadeInUp var(--dur-3) var(--ease-out) 0.05s both;
 }
 .heroTitle b {
   background: var(--brand-grad);
@@ -92,6 +115,7 @@
   font-size: 1.05rem;
   max-width: 46ch;
   margin: 0 auto;
+  animation: fadeInUp var(--dur-3) var(--ease-out) 0.1s both;
 }
 
 .recent {
@@ -122,16 +146,19 @@
   display: grid;
   gap: 3px;
   box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+  transition: border-color var(--dur-1) ease, transform var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
 }
 @media (hover: hover) {
   .recentCard:hover {
     border-color: var(--accent);
     box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
   }
 }
 .recentCard:active {
-  transform: translateY(1px);
+  transform: scale(0.99);
+  transition-duration: 0.05s;
 }
 .recentTitle {
   font-weight: 700;
