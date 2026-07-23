@@ -65,3 +65,87 @@
     width: 100%;
   }
 }
+
+/* ---------- recovering / working state ---------- */
+.workingLabel {
+  display: inline-flex;
+  align-items: baseline;
+}
+.dots {
+  display: inline-block;
+  width: 1.4ch;
+  text-align: left;
+}
+.dots::after {
+  content: '';
+  animation: recDots 1.4s steps(1, end) infinite;
+}
+@keyframes recDots {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+}
+
+/* the alert icon breathes while the AI is working */
+.busy .icon {
+  animation: recPulse 1.2s ease-in-out infinite;
+}
+@keyframes recPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--warning) 55%, transparent);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--warning) 0%, transparent);
+  }
+}
+
+/* a soft indeterminate sweep along the bottom edge while recovering */
+.busy {
+  position: relative;
+  overflow: hidden;
+}
+.busy::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 40%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, transparent, var(--warning), transparent);
+  animation: recSweep 1.3s ease-in-out infinite;
+}
+@keyframes recSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots::after {
+    content: '…';
+    animation: none;
+  }
+  .busy .icon,
+  .busy::after {
+    animation: none;
+  }
+  .busy::after {
+    display: none;
+  }
+}

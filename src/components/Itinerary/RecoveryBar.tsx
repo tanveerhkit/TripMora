@@ -25,7 +25,11 @@ export function RecoveryBar({ missedCount, onRecover, loading = false }: Props) 
   }
 
   return (
-    <section className={styles.wrap} aria-label="Trip recovery">
+    <section
+      className={`${styles.wrap} ${loading ? styles.busy : ''}`}
+      aria-label="Trip recovery"
+      aria-busy={loading}
+    >
       <div className={styles.head}>
         <span className={styles.icon}>
           <Icon name="warning" size={18} />
@@ -47,7 +51,14 @@ export function RecoveryBar({ missedCount, onRecover, loading = false }: Props) 
           disabled={loading}
         />
         <Button type="submit" variant="primary" size="sm" icon="retry" loading={loading}>
-          Recover my trip
+          {loading ? (
+            <span className={styles.workingLabel}>
+              Recovering
+              <span className={styles.dots} aria-hidden="true" />
+            </span>
+          ) : (
+            'Recover my trip'
+          )}
         </Button>
       </form>
     </section>
