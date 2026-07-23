@@ -14,6 +14,7 @@ export type IconName =
   | 'grip'
   | 'chevron'
   | 'arrow'
+  | 'bookmark'
   | 'close'
   | 'sparkles'
   | 'retry'
@@ -86,6 +87,7 @@ const PATHS: Record<IconName, JSX.Element> = {
   ),
   chevron: <path d="m6 9 6 6 6-6" />,
   arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
+  bookmark: <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.2L5 21V4a1 1 0 0 1 1-1Z" />,
   close: <path d="M18 6 6 18M6 6l12 12" />,
   sparkles: (
     <path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3ZM19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14Z" />
