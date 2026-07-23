@@ -32,12 +32,14 @@ interface Destination {
 // A curated rotation of photogenic places with strong Wikipedia lead images.
 const DESTINATIONS: Destination[] = [
   {
-    name: 'Bali',
-    country: 'Indonesia',
-    query: 'Bali',
+    name: 'Kashmir',
+    country: 'India',
+    // "Kashmir" resolves to a political map on Wikipedia — point at the valley's
+    // most iconic scene instead so the card shows real beauty, not borders.
+    query: 'Dal Lake',
     days: 6,
     blurb:
-      'Volcanic ridges, emerald rice terraces and surf-bar sunsets — the island of the gods pairs temple mornings with beach-club afternoons.',
+      'Glide across mirror-still Dal Lake by shikara, wake in a carved houseboat and watch snow settle on the Pir Panjal — the Himalayan valley they call paradise on earth.',
   },
   {
     name: 'Kyoto',
@@ -48,12 +50,14 @@ const DESTINATIONS: Destination[] = [
       'Thousand-year-old temples, silent bamboo groves and lantern-lit lanes — Japan’s old capital keeps time with the seasons.',
   },
   {
-    name: 'Santorini',
-    country: 'Greece',
-    query: 'Santorini',
-    days: 4,
+    name: 'Dubai',
+    country: 'UAE',
+    // a landscape skyline over the water fills the full-bleed hero far better
+    // than a cropped single tower.
+    query: 'Dubai Marina',
+    days: 5,
     blurb:
-      'Whitewashed villages spill down caldera cliffs above the Aegean, where the slow sunsets over Oia are worth the trip alone.',
+      'Glass towers soar above the desert, abras cross the creek to spice-scented souks and the Gulf coast unrolls into golden dunes — Dubai does glamour at full volume.',
   },
   {
     name: 'Kerala',
