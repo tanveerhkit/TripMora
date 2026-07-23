@@ -69,9 +69,11 @@
   border-radius: 6px;
   touch-action: none;
 }
-.grip:hover {
-  color: var(--text-muted);
-  background: var(--surface-2);
+@media (hover: hover) {
+  .grip:hover {
+    color: var(--text-muted);
+    background: var(--surface-2);
+  }
 }
 .grip:active {
   cursor: grabbing;
@@ -138,8 +140,10 @@
   border-radius: 6px;
   transition: transform 0.2s ease, background 0.15s ease;
 }
-.disclosure:hover {
-  background: var(--surface-2);
+@media (hover: hover) {
+  .disclosure:hover {
+    background: var(--surface-2);
+  }
 }
 .disclosure.open {
   transform: rotate(180deg);
@@ -194,9 +198,11 @@
   padding: 3px 10px;
   transition: filter 0.15s ease, border-color 0.15s ease;
 }
-.stopLink:hover {
-  filter: brightness(1.05);
-  border-color: var(--accent);
+@media (hover: hover) {
+  .stopLink:hover {
+    filter: brightness(1.05);
+    border-color: var(--accent);
+  }
 }
 .stopLink svg:last-child {
   opacity: 0.7;

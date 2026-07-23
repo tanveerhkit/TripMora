@@ -57,8 +57,10 @@
   margin: -2px;
   transition: background 0.12s ease;
 }
-.budgetRowTop:hover {
-  background: var(--surface-2);
+@media (hover: hover) {
+  .budgetRowTop:hover {
+    background: var(--surface-2);
+  }
 }
 .budgetLabel {
   display: inline-flex;
@@ -131,8 +133,10 @@
   transition: all 0.14s ease;
   min-width: 0;
 }
-.option:hover {
-  border-color: var(--border-strong);
+@media (hover: hover) {
+  .option:hover {
+    border-color: var(--border-strong);
+  }
 }
 .optionOn {
   border-color: var(--accent);
@@ -217,8 +221,10 @@
   padding: 6px 6px 6px 4px;
   border-radius: var(--radius-sm);
 }
-.checkItem:hover {
-  background: var(--surface-2);
+@media (hover: hover) {
+  .checkItem:hover {
+    background: var(--surface-2);
+  }
 }
 .check {
   display: inline-flex;
@@ -265,9 +271,17 @@
 .removeItem:focus-visible {
   opacity: 1;
 }
-.removeItem:hover {
-  color: var(--danger);
-  background: var(--danger-soft);
+/* no hover on touch — keep the delete icon visible so it stays reachable */
+@media (hover: none) {
+  .removeItem {
+    opacity: 1;
+  }
+}
+@media (hover: hover) {
+  .removeItem:hover {
+    color: var(--danger);
+    background: var(--danger-soft);
+  }
 }
 
 .addRow {

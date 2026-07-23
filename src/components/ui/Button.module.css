@@ -60,41 +60,51 @@
   background: var(--brand-grad);
   box-shadow: var(--shadow-sm);
 }
-.primary:hover:not(:disabled) {
-  box-shadow: var(--shadow-md);
-  filter: brightness(1.04);
+@media (hover: hover) {
+  .primary:hover:not(:disabled) {
+    box-shadow: var(--shadow-md);
+    filter: brightness(1.04);
+  }
 }
 
 .secondary {
   --btn-bg: var(--surface);
   --btn-border: var(--border);
 }
-.secondary:hover:not(:disabled) {
-  background: var(--surface-hover);
-  border-color: var(--border-strong);
+@media (hover: hover) {
+  .secondary:hover:not(:disabled) {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+  }
 }
 
 .ghost {
   --btn-bg: transparent;
 }
-.ghost:hover:not(:disabled) {
-  background: var(--surface-2);
+@media (hover: hover) {
+  .ghost:hover:not(:disabled) {
+    background: var(--surface-2);
+  }
 }
 
 .subtle {
   --btn-bg: var(--accent-soft);
   --btn-fg: var(--accent);
 }
-.subtle:hover:not(:disabled) {
-  filter: brightness(1.05);
+@media (hover: hover) {
+  .subtle:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
 }
 
 .danger {
   --btn-bg: transparent;
   --btn-fg: var(--danger);
 }
-.danger:hover:not(:disabled) {
-  background: var(--danger-soft);
+@media (hover: hover) {
+  .danger:hover:not(:disabled) {
+    background: var(--danger-soft);
+  }
 }
 
 .spinner {

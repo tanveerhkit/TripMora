@@ -81,8 +81,10 @@
   padding: var(--sp-3) var(--sp-4);
   transition: border-color 0.15s ease, background 0.15s ease;
 }
-.hardToggle:hover:not(:disabled) {
-  border-color: var(--border-strong);
+@media (hover: hover) {
+  .hardToggle:hover:not(:disabled) {
+    border-color: var(--border-strong);
+  }
 }
 .hardToggle:disabled {
   opacity: 0.6;
@@ -179,10 +181,12 @@
   transition: all 0.15s ease;
   line-height: 1.4;
 }
-.chip:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--text);
-  background: var(--accent-soft);
+@media (hover: hover) {
+  .chip:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--text);
+    background: var(--accent-soft);
+  }
 }
 .chip:disabled {
   opacity: 0.6;

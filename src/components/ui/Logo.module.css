@@ -10,9 +10,11 @@
   box-shadow: var(--shadow-sm);
   transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
 }
-.logo:hover {
-  transform: translateY(-1px) rotate(-4deg);
-  box-shadow: var(--shadow-md);
+@media (hover: hover) {
+  .logo:hover {
+    transform: translateY(-1px) rotate(-4deg);
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .svg {
@@ -45,9 +47,11 @@
   fill: #fff;
 }
 
-.logo:hover .needle {
-  animation-duration: 1.4s;
-  animation-timing-function: linear;
+@media (hover: hover) {
+  .logo:hover .needle {
+    animation-duration: 1.4s;
+    animation-timing-function: linear;
+  }
 }
 
 /* a "seeking" sweep with gentle overshoots, not a uniform spinner */
