@@ -228,6 +228,10 @@ export default function App() {
         ) : (
           <section className={`${styles.hero} ${styles.homeWide}`}>
             <div className={styles.heroCopy}>
+              <span className={styles.eyebrow}>
+                <Icon name="sparkles" size={14} />
+                AI-powered trip planning
+              </span>
               <h1 className={styles.heroTitle}>
                 Your next trip <b>starts here</b>
               </h1>
