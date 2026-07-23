@@ -17,16 +17,19 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s ease, transform 0.06s ease, box-shadow 0.15s ease;
+  transition: border-color var(--dur-1) ease, transform var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
 }
 @media (hover: hover) {
   .card:hover {
     border-color: var(--accent);
     box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
   }
 }
 .card:active {
-  transform: translateY(1px);
+  transform: scale(0.99);
+  transition-duration: 0.05s;
 }
 .card::before {
   content: '';
@@ -44,6 +47,8 @@
 }
 
 .icon {
+  position: relative;
+  overflow: hidden;
   display: grid;
   place-items: center;
   width: 48px;
@@ -51,6 +56,20 @@
   border-radius: var(--radius);
   color: #fff;
   background: var(--brand-grad);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur-2) var(--ease-out);
+}
+.icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sheen);
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .card:hover .icon {
+    box-shadow: var(--glow-brand);
+  }
 }
 
 .body {
@@ -89,11 +108,12 @@
   color: var(--accent);
   background: var(--accent-soft);
   transform: rotate(-90deg);
-  transition: transform 0.15s ease;
+  transition: transform var(--dur-2) var(--ease-spring), background var(--dur-1) ease;
 }
 @media (hover: hover) {
   .card:hover .go {
-    transform: rotate(-90deg) translateY(3px);
+    transform: rotate(-90deg) translateY(5px);
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
   }
 }
 
