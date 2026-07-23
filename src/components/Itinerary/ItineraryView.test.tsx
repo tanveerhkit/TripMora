@@ -33,7 +33,9 @@ describe('ItineraryView', () => {
         itinerary={parsed.itinerary}
         mutate={() => {}}
         onRefine={() => {}}
+        onRecover={() => {}}
         refining={false}
+        recovering={false}
       />,
     )
 

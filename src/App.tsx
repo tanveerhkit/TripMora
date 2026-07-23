@@ -105,6 +105,7 @@ export default function App() {
   const hasItinerary = Boolean(itin.itinerary)
   const isGenerating = itin.isLoading && itin.loadingMode === 'generate'
   const isRefining = itin.isLoading && itin.loadingMode === 'refine'
+  const isRecovering = itin.isLoading && itin.loadingMode === 'recover'
   const itinErrorNoItin = itin.status === 'error' && !hasItinerary
   const itineraryActive = hasItinerary || isGenerating || itinErrorNoItin
   const notHome = itineraryActive || screen !== 'home'
@@ -175,7 +176,9 @@ export default function App() {
                   itinerary={itin.itinerary}
                   mutate={itin.mutate}
                   onRefine={itin.refine}
+                  onRecover={itin.recover}
                   refining={isRefining}
+                  recovering={isRecovering}
                 />
               </>
             )}

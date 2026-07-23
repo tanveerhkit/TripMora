@@ -19,6 +19,37 @@
   z-index: 5;
 }
 
+/* a stop the traveler didn't make it to */
+.missed {
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  background: var(--danger-soft);
+}
+.missed .title {
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--danger) 60%, transparent);
+  color: var(--text-muted);
+}
+.missedOn {
+  color: var(--danger) !important;
+  background: var(--danger-soft) !important;
+}
+.missedTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+}
+.missedTag svg {
+  flex: none;
+}
+
 .rail {
   display: flex;
   flex-direction: column;

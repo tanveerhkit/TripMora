@@ -47,6 +47,8 @@ export type IconName =
   | 'plane'
   | 'image'
   | 'external'
+  | 'flag'
+  | 'circleCheck'
 
 const PATHS: Record<IconName, JSX.Element> = {
   compass: (
@@ -243,6 +245,18 @@ const PATHS: Record<IconName, JSX.Element> = {
     <>
       <path d="M14 4h6v6M20 4l-8 8" />
       <path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5" />
+    </>
+  ),
+  flag: (
+    <>
+      <path d="M5 21V4" />
+      <path d="M5 4h12l-2.5 4 2.5 4H5" />
+    </>
+  ),
+  circleCheck: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8.5 12 2.5 2.5 4.5-5" />
     </>
   ),
 }
