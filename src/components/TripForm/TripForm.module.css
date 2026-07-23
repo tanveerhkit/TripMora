@@ -178,7 +178,8 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 10px 12px;
-  transition: all 0.15s ease;
+  transition: color var(--dur-1) ease, background var(--dur-1) ease,
+    border-color var(--dur-1) ease, transform var(--dur-2) var(--ease-out);
   line-height: 1.4;
 }
 @media (hover: hover) {
@@ -186,7 +187,12 @@
     border-color: var(--accent);
     color: var(--text);
     background: var(--accent-soft);
+    transform: translateX(3px);
   }
+}
+.chip:active:not(:disabled) {
+  transform: scale(0.99);
+  transition-duration: 0.05s;
 }
 .chip:disabled {
   opacity: 0.6;
