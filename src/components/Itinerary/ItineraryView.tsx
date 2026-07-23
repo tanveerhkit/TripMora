@@ -19,6 +19,7 @@ import { BudgetBlock } from './BudgetBlock'
 import { DayCard } from './DayCard'
 import { OverviewCard } from './OverviewCard'
 import { PackingChecklist } from './PackingChecklist'
+import { RecoveryBar } from './RecoveryBar'
 import { RefinementBar } from './RefinementBar'
 import { TipsBlock } from './TipsBlock'
 import styles from './ItineraryView.module.css'
@@ -27,11 +28,36 @@ interface Props {
   itinerary: Itinerary
   mutate: (fn: (it: Itinerary) => Itinerary) => void
   onRefine: (prompt: string) => void
+  onRecover: (prompt: string) => void
   refining: boolean
+  recovering: boolean
 }
 
-export function ItineraryView({ itinerary, mutate, onRefine, refining }: Props) {
+export function ItineraryView({
+  itinerary,
+  mutate,
+  onRefine,
+  onRecover,
+  refining,
+  recovering,
+}: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+
+  const missedStops = itinerary.days.flatMap((d) =>
+    d.stops.filter((s) => s.status === 'missed'),
+  )
+
+  const handleRecover = (notes: string) => {
+    const titles = missedStops
+      .map((s) => s.title)
+      .filter(Boolean)
+      .slice(0, 12)
+      .join(', ')
+    const base = titles
+      ? `I've marked these stops as missed: ${titles}. Rework my remaining plan to recover — refit the important ones into the time I have left, or swap in a strong nearby alternative.`
+      : 'Some stops are marked missed. Rework my remaining plan to recover them.'
+    onRecover(notes ? `${base} Also, what went wrong: ${notes}` : base)
+  }
 
   const toggleCollapse = useCallback((dayId: string) => {
     setCollapsed((prev) => {
@@ -79,7 +105,14 @@ export function ItineraryView({ itinerary, mutate, onRefine, refining }: Props) 
     <div className={styles.layout}>
       <div className={styles.main}>
         <OverviewCard itinerary={itinerary} />
-        <RefinementBar onRefine={onRefine} loading={refining} />
+        {missedStops.length > 0 && (
+          <RecoveryBar
+            missedCount={missedStops.length}
+            onRecover={handleRecover}
+            loading={recovering}
+          />
+        )}
+        <RefinementBar onRefine={onRefine} loading={refining || recovering} />
 
         <div className={styles.toolbar}>
           <h3 className={styles.daysTitle}>Day by day</h3>

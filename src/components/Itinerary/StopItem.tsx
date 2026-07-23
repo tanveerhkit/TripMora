@@ -39,13 +39,14 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
   const meta = CATEGORY_META[stop.category]
   // Older saved trips (pre-watchOuts) load straight from storage without it.
   const watchOuts = stop.watchOuts ?? []
+  const missed = stop.status === 'missed'
   const hasDetails = Boolean(stop.description || stop.tip || watchOuts.length)
 
   return (
     <li
       ref={setNodeRef}
       style={style}
-      className={`${styles.stop} ${isDragging ? styles.dragging : ''}`}
+      className={`${styles.stop} ${isDragging ? styles.dragging : ''} ${missed ? styles.missed : ''}`}
     >
       <div className={styles.rail}>
         <button
@@ -87,6 +88,17 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
               <Button
                 variant="ghost"
                 size="sm"
+                icon="flag"
+                iconOnly
+                className={missed ? styles.missedOn : undefined}
+                aria-label={missed ? 'Unmark missed' : 'Mark as missed'}
+                aria-pressed={missed}
+                title={missed ? 'Unmark missed' : "Mark as missed — you didn't make it here"}
+                onClick={() => onChange({ status: missed ? 'planned' : 'missed' })}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
                 icon="edit"
                 iconOnly
                 aria-label="Edit stop"
@@ -116,6 +128,12 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
 
           <div className={styles.metaRow}>
             <div className={styles.metaInfo}>
+              {missed && (
+                <span className={styles.missedTag}>
+                  <Icon name="flag" size={12} />
+                  Missed
+                </span>
+              )}
               <span className={styles.tag} style={{ color: `var(${meta.colorVar})` }}>
                 {meta.label}
               </span>
