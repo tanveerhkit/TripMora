@@ -11,7 +11,8 @@ import type { DestinationRec, DreamAnswers } from './types/dream'
 import { Button } from './components/ui/Button'
 import { Icon } from './components/ui/Icon'
 import { SiteHeader } from './components/layout/SiteHeader'
-import { ModeChooser, type HomeMode } from './components/Home/ModeChooser'
+import { type HomeMode } from './components/Home/ModeChooser'
+import { PlanBento } from './components/Home/PlanBento'
 import { FeaturedHero } from './components/Home/FeaturedHero'
 import { TripForm } from './components/TripForm/TripForm'
 import { DreamForm } from './components/Dream/DreamForm'
@@ -152,7 +153,7 @@ export default function App() {
                 </p>
               </div>
 
-              <ModeChooser onChoose={(m: HomeMode) => setScreen(m)} />
+              <PlanBento onChoose={(m: HomeMode) => setScreen(m)} />
 
               {recent.length > 0 && (
                 <div className={styles.recent}>
