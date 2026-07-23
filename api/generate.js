@@ -82,6 +82,19 @@ Rules:
 - Keep each day achievable; don't cram. Never leave "days" empty.
 - Output valid JSON only. Do not wrap it in code fences.`
 
+const HARD_MODE_RULES = `
+HARD MODE (this OVERRIDES the pacing rules above): the traveler wants to fit an ambitious number of
+places into the days they have — more than would normally be comfortable. Do NOT drop destinations,
+spread them thin, or warn that it can't be done. Build one tight, efficient, back-to-back plan that
+fits EVERYTHING:
+- Pack 6-9 stops per day; start early and finish late.
+- Group stops by area and minimize backtracking; add realistic transport legs (category "transport")
+  when hopping between cities or regions.
+- Keep it physically doable but intentionally intense — short visits, quick meals, no long downtime.
+- Be upfront about the pace: say in "meta.summary" that it's a packed, fast plan, add "packed pace"
+  to "meta.tags", and put a realistic stamina/logistics caution in a couple of stop "tip" fields.
+- Because the plan is dense, keep each stop concise: short descriptions and at most one "watchOut".`
+
 const REFINE_SYSTEM = `You are TripMora, editing an existing travel itinerary.
 You are given the current itinerary as JSON and a change request.
 Apply ONLY what the user asked for and keep everything else exactly as it was.
@@ -205,8 +218,10 @@ function buildMessages(body) {
     ]
   }
 
+  const generateSystem =
+    body.hard === true ? `${GENERATE_SYSTEM}\n${HARD_MODE_RULES}` : GENERATE_SYSTEM
   return [
-    { role: 'system', content: GENERATE_SYSTEM },
+    { role: 'system', content: generateSystem },
     { role: 'user', content: `Plan this trip:\n${prompt}` },
   ]
 }
@@ -259,6 +274,9 @@ export default async function handler(req, res) {
 
   const messages = buildMessages(body)
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL
+  // Hard mode crams far more stops per day, so give it extra room to avoid a
+  // truncated JSON tail on longer trips.
+  const maxTokens = body.hard === true ? 12000 : MAX_OUTPUT_TOKENS
 
   const callGemini = () =>
     fetch(GEMINI_URL, {
@@ -272,7 +290,7 @@ export default async function handler(req, res) {
         model,
         messages,
         temperature: 0.6,
-        max_tokens: MAX_OUTPUT_TOKENS,
+        max_tokens: maxTokens,
         // Filling a fixed JSON schema needs no chain-of-thought; minimizing it
         // frees the token budget (avoiding truncated JSON) and cuts latency.
         reasoning_effort: 'low',

@@ -13,6 +13,8 @@ export interface GenerateArgs {
   prompt: string
   mode: GenerateMode
   itinerary?: Itinerary | null
+  /** hard mode: cram an over-ambitious trip into the available days */
+  hard?: boolean
   signal?: AbortSignal
 }
 
@@ -62,6 +64,7 @@ async function requestOnce(args: GenerateArgs): Promise<string> {
       body: JSON.stringify({
         prompt: args.prompt,
         mode: args.mode,
+        hard: args.hard || undefined,
         itinerary:
           (args.mode === 'refine' || args.mode === 'recover') && args.itinerary
             ? itineraryForServer(args.itinerary)

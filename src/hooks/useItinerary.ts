@@ -81,7 +81,11 @@ export function useItinerary() {
   const requestIdRef = useRef(0)
   const abortRef = useRef<AbortController | null>(null)
   const itineraryRef = useRef<Itinerary | null>(null)
-  const lastRequestRef = useRef<{ prompt: string; mode: GenerateMode } | null>(null)
+  const lastRequestRef = useRef<{
+    prompt: string
+    mode: GenerateMode
+    hard?: boolean
+  } | null>(null)
 
   // Keep a ref of the latest itinerary so `run` can read it without being
   // re-created on every edit.
@@ -92,7 +96,8 @@ export function useItinerary() {
   // Abort any in-flight request on unmount.
   useEffect(() => () => abortRef.current?.abort(), [])
 
-  const run = useCallback(async (prompt: string, mode: GenerateMode) => {
+  const run = useCallback(
+    async (prompt: string, mode: GenerateMode, opts: { hard?: boolean } = {}) => {
     const trimmed = prompt.trim()
     if (!trimmed) return
 
@@ -101,7 +106,7 @@ export function useItinerary() {
     abortRef.current = controller
     const myId = requestIdRef.current + 1
     requestIdRef.current = myId
-    lastRequestRef.current = { prompt: trimmed, mode }
+    lastRequestRef.current = { prompt: trimmed, mode, hard: opts.hard }
 
     dispatch({ type: 'start', requestId: myId, mode })
 
@@ -111,6 +116,7 @@ export function useItinerary() {
         mode,
         itinerary:
           mode === 'refine' || mode === 'recover' ? itineraryRef.current : undefined,
+        hard: opts.hard,
         signal: controller.signal,
       })
       if (myId !== requestIdRef.current) return // a newer request superseded this one
@@ -135,13 +141,16 @@ export function useItinerary() {
     }
   }, [])
 
-  const generate = useCallback((prompt: string) => run(prompt, 'generate'), [run])
+  const generate = useCallback(
+    (prompt: string, hard = false) => run(prompt, 'generate', { hard }),
+    [run],
+  )
   const refine = useCallback((prompt: string) => run(prompt, 'refine'), [run])
   const recover = useCallback((prompt: string) => run(prompt, 'recover'), [run])
 
   const retry = useCallback(() => {
     const last = lastRequestRef.current
-    if (last) run(last.prompt, last.mode)
+    if (last) run(last.prompt, last.mode, { hard: last.hard })
   }, [run])
 
   const setItinerary = useCallback((itinerary: Itinerary) => {
