@@ -1,0 +1,329 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: clamp(540px, 82vh, 780px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #fff;
+  /* rich fallback while the first photo loads */
+  background: radial-gradient(120% 120% at 20% 0%, #0d3b2a, #06140d 70%);
+}
+
+/* ---------- background layers ---------- */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.bgLayer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 0.9s var(--ease-out);
+  will-change: opacity;
+}
+.bgOn {
+  opacity: 1;
+  /* slow ken-burns drift gives the still photo some life */
+  animation: heroZoom 14s ease-out both;
+}
+@keyframes heroZoom {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1.15);
+  }
+}
+
+/* darken the left + bottom so white copy and controls stay legible on any photo */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      95deg,
+      rgba(4, 12, 9, 0.86) 0%,
+      rgba(4, 12, 9, 0.6) 34%,
+      rgba(4, 12, 9, 0.18) 62%,
+      rgba(4, 12, 9, 0.05) 100%
+    ),
+    linear-gradient(to top, rgba(4, 12, 9, 0.7) 0%, rgba(4, 12, 9, 0) 42%);
+}
+
+/* ---------- content row ---------- */
+.inner {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--sp-6) var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-6);
+}
+
+.copy {
+  max-width: 34rem;
+  display: grid;
+  gap: var(--sp-3);
+  animation: fadeInUp 0.55s var(--ease-out) both;
+}
+
+.eyebrow {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #eafff4;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: var(--radius-full);
+  padding: 6px 13px 6px 11px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.eyebrow svg {
+  color: var(--brand-1);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 9vw, 6rem);
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  text-shadow: 0 6px 34px rgba(0, 0, 0, 0.5);
+}
+
+.country {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+.country svg {
+  color: var(--brand-1);
+}
+
+.blurb {
+  max-width: 46ch;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+}
+
+.cta {
+  justify-self: start;
+  margin-top: var(--sp-2);
+}
+
+/* ---------- destination cards ---------- */
+.cards {
+  display: flex;
+  gap: var(--sp-3);
+  flex: none;
+}
+
+.card {
+  position: relative;
+  width: 132px;
+  height: 208px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: var(--shadow-lg);
+  opacity: 0.72;
+  transform: translateY(6px);
+  transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-3) var(--ease-out),
+    border-color var(--dur-2) ease, box-shadow var(--dur-2) ease;
+}
+@media (hover: hover) {
+  .card:hover {
+    opacity: 0.95;
+    transform: translateY(0);
+  }
+}
+.card:focus-visible {
+  opacity: 1;
+}
+.cardOn {
+  opacity: 1;
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-lg), 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.cardImg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: #0d3b2a;
+}
+.cardFallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  background: var(--brand-grad);
+}
+/* readability gradient behind the label */
+.cardImg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(3, 10, 7, 0.78) 6%, rgba(3, 10, 7, 0) 52%);
+}
+
+.cardLabel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
+  gap: 1px;
+  padding: var(--sp-3);
+  text-align: left;
+}
+.cardLabel b {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+.cardLabel span {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* ---------- controls ---------- */
+.controls {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--sp-4) var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.counter {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+.counter b {
+  color: #fff;
+  font-size: 1rem;
+}
+.counter i {
+  margin: 0 4px;
+  font-style: normal;
+  opacity: 0.5;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.4);
+  transition: width var(--dur-2) var(--ease-out), background var(--dur-2) ease;
+}
+@media (hover: hover) {
+  .dot:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+}
+.dotOn {
+  width: 26px;
+  background: #fff;
+}
+
+.arrows {
+  display: flex;
+  gap: var(--sp-2);
+}
+.arrowBtn {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background var(--dur-1) ease, transform var(--dur-2) var(--ease-spring);
+}
+@media (hover: hover) {
+  .arrowBtn:hover {
+    background: rgba(255, 255, 255, 0.24);
+  }
+}
+.arrowBtn:active {
+  transform: scale(0.92);
+}
+.prevIcon {
+  transform: rotate(90deg);
+}
+.nextIcon {
+  transform: rotate(-90deg);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px) {
+  .cards {
+    display: none;
+  }
+  .inner {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    min-height: clamp(460px, 74vh, 620px);
+  }
+  .inner {
+    padding: var(--sp-5) var(--sp-4);
+  }
+  .blurb {
+    font-size: 0.94rem;
+  }
+  .cta {
+    width: 100%;
+  }
+}
