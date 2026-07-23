@@ -8,9 +8,13 @@
   list-style: none;
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
-.stop:hover {
-  background: var(--inset-hover);
-  border-color: var(--border-strong);
+/* only lighten on a real pointer — on touch, :hover sticks to the last-tapped
+   card and makes it look permanently lighter than its neighbours */
+@media (hover: hover) {
+  .stop:hover {
+    background: var(--inset-hover);
+    border-color: var(--border-strong);
+  }
 }
 .dragging {
   opacity: 0.85;
