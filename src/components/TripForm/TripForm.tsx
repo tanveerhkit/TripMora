@@ -4,7 +4,7 @@ import { Icon } from '../ui/Icon'
 import styles from './TripForm.module.css'
 
 interface Props {
-  onSubmit: (prompt: string) => void
+  onSubmit: (prompt: string, hard: boolean) => void
   loading?: boolean
   initialValue?: string
 }
@@ -20,12 +20,13 @@ const MAX = 2000
 
 export function TripForm({ onSubmit, loading = false, initialValue = '' }: Props) {
   const [value, setValue] = useState(initialValue)
+  const [hard, setHard] = useState(false)
   const trimmed = value.trim()
 
   function submit(e?: FormEvent) {
     e?.preventDefault()
     if (!trimmed || loading) return
-    onSubmit(trimmed)
+    onSubmit(trimmed, hard)
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -60,16 +61,35 @@ export function TripForm({ onSubmit, loading = false, initialValue = '' }: Props
         </div>
       </div>
 
+      <button
+        type="button"
+        role="switch"
+        aria-checked={hard}
+        className={`${styles.hardToggle} ${hard ? styles.hardOn : ''}`}
+        onClick={() => setHard((h) => !h)}
+        disabled={loading}
+      >
+        <span className={styles.hardSwitch}>
+          <span className={styles.hardKnob} />
+        </span>
+        <span className={styles.hardText}>
+          <strong>
+            <Icon name="flame" size={15} /> Hard mode
+          </strong>
+          <span>Cram in more places than usually fit — a tight, fast-paced plan.</span>
+        </span>
+      </button>
+
       <div className={styles.submitRow}>
         <Button
           type="submit"
           variant="primary"
           size="lg"
-          icon="sparkles"
+          icon={hard ? 'flame' : 'sparkles'}
           loading={loading}
           disabled={!trimmed}
         >
-          {loading ? 'Planning…' : 'Plan my trip'}
+          {loading ? 'Planning…' : hard ? 'Plan the hard way' : 'Plan my trip'}
         </Button>
       </div>
 
