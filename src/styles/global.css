@@ -50,6 +50,11 @@
   --warning: #d98a1f;
   --warning-soft: rgba(217, 138, 31, 0.14);
 
+  /* opaque amber callout (watch-outs / tips) — same shade everywhere,
+     never tinted by whatever sits behind it */
+  --callout-bg: #fdf4e3;
+  --callout-border: #f1e1bb;
+
   /* category accents */
   --cat-sightseeing: #0f9d58;
   --cat-food: #e8843c;
@@ -126,6 +131,8 @@
   --success-soft: rgba(69, 192, 127, 0.16);
   --warning: #e6a53d;
   --warning-soft: rgba(230, 165, 61, 0.16);
+  --callout-bg: #2b2717;
+  --callout-border: #4a4223;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
@@ -165,6 +172,8 @@
     --success-soft: rgba(69, 192, 127, 0.16);
     --warning: #e6a53d;
     --warning-soft: rgba(230, 165, 61, 0.16);
+    --callout-bg: #2b2717;
+    --callout-border: #4a4223;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.6);

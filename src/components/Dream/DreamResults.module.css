@@ -264,10 +264,12 @@
   align-items: flex-start;
   gap: 6px;
   font-size: 0.82rem;
+  line-height: 1.5;
   color: var(--text);
-  background: var(--warning-soft);
+  background: var(--callout-bg);
+  border: 1px solid var(--callout-border);
   border-radius: var(--radius);
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
 .festivals svg {
   color: var(--warning);
