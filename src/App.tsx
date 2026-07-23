@@ -264,10 +264,6 @@ export default function App() {
         )}
       </main>
 
-      <footer className={styles.footer}>
-        Built with React + Gemini · your trips are saved in this browser only
-      </footer>
-
       <SessionSidebar
         open={sidebarOpen}
         sessions={sessions}

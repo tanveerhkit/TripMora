@@ -165,18 +165,6 @@
   font-size: 0.9rem;
 }
 
-/* ---------- footer ---------- */
-.footer {
-  border-top: 1px solid var(--border);
-  padding: var(--sp-4);
-  text-align: center;
-  color: var(--text-faint);
-  font-size: 0.8rem;
-}
-.footer a {
-  font-weight: 600;
-}
-
 @media (max-width: 480px) {
   .brandName span {
     display: none;
