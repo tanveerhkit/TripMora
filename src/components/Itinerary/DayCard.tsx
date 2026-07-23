@@ -80,15 +80,15 @@ export function DayCard({
           onClick={onToggleCollapse}
           aria-expanded={!collapsed}
         >
-          <span className={styles.titleText}>
-            {editing ? 'Editing day' : day.title}
-            <Icon
-              name="chevron"
-              size={18}
-              className={`${styles.chev} ${collapsed ? '' : styles.chevOpen}`}
-            />
+          <span className={styles.titleMain}>
+            <span className={styles.titleText}>{editing ? 'Editing day' : day.title}</span>
+            {!editing && day.summary && <span className={styles.summary}>{day.summary}</span>}
           </span>
-          {!editing && day.summary && <span className={styles.summary}>{day.summary}</span>}
+          <Icon
+            name="chevron"
+            size={18}
+            className={`${styles.chev} ${collapsed ? '' : styles.chevOpen}`}
+          />
         </button>
 
         <div className={styles.headerActions}>
