@@ -1,0 +1,76 @@
+.logo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--brand-grad);
+  color: #fff;
+  flex: none;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+}
+.logo:hover {
+  transform: translateY(-1px) rotate(-4deg);
+  box-shadow: var(--shadow-md);
+}
+
+.svg {
+  width: 64%;
+  height: 64%;
+  display: block;
+  overflow: visible;
+}
+
+.ring {
+  fill: none;
+  stroke: #fff;
+  stroke-opacity: 0.55;
+  stroke-width: 1.5;
+}
+
+/* the needle pivots around the compass centre */
+.needle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: logoSeek 6s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+}
+.north {
+  fill: #fff;
+}
+.south {
+  fill: rgba(255, 255, 255, 0.5);
+}
+.pivot {
+  fill: #fff;
+}
+
+.logo:hover .needle {
+  animation-duration: 1.4s;
+  animation-timing-function: linear;
+}
+
+/* a "seeking" sweep with gentle overshoots, not a uniform spinner */
+@keyframes logoSeek {
+  0% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(200deg);
+  }
+  50% {
+    transform: rotate(170deg);
+  }
+  85% {
+    transform: rotate(372deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .needle {
+    animation: none;
+  }
+}

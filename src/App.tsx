@@ -10,6 +10,7 @@ import type { StoredSession } from './lib/storage'
 import type { DestinationRec, DreamAnswers } from './types/dream'
 import { Button } from './components/ui/Button'
 import { Icon } from './components/ui/Icon'
+import { Logo } from './components/ui/Logo'
 import { ModeChooser, type HomeMode } from './components/Home/ModeChooser'
 import { TripForm } from './components/TripForm/TripForm'
 import { DreamForm } from './components/Dream/DreamForm'
@@ -127,9 +128,7 @@ export default function App() {
             onClick={handleNewTrip}
             aria-label="TripMora home"
           >
-            <span className={styles.logo}>
-              <Icon name="compass" size={18} />
-            </span>
+            <Logo />
             <span className={styles.brandName}>
               <b>TripMora</b> <span>· AI trip planner</span>
             </span>

@@ -30,16 +30,6 @@
   font-size: 1.1rem;
   letter-spacing: -0.02em;
 }
-.logo {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: var(--brand-grad);
-  color: #fff;
-  flex: none;
-}
 .brandName b {
   background: var(--brand-grad);
   -webkit-background-clip: text;
