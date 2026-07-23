@@ -172,6 +172,25 @@
   }
 }
 
+/* ---------- touch devices: solid surfaces ----------
+   backdrop-filter over the ambient gradient + nested translucent cards bands
+   badly on many mobile GPUs — the blur breaks across layers, leaving a hard
+   colour edge mid-card. On touch pointers we make the elevated surfaces opaque
+   so cards render as clean, even panels; the frosted glass stays on desktop. */
+@media (hover: none) {
+  :root {
+    --bg-elevated: #f6fbf8;
+  }
+  :root[data-theme='dark'] {
+    --bg-elevated: #16291d;
+  }
+}
+@media (hover: none) and (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg-elevated: #16291d;
+  }
+}
+
 /* ---------- reset ---------- */
 *,
 *::before,
