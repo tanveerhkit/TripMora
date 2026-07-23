@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useItinerary } from './hooks/useItinerary'
 import { useDream } from './hooks/useDream'
 import { useSessions } from './hooks/useSessions'
@@ -10,7 +10,7 @@ import type { StoredSession } from './lib/storage'
 import type { DestinationRec, DreamAnswers } from './types/dream'
 import { Button } from './components/ui/Button'
 import { Icon } from './components/ui/Icon'
-import { Logo } from './components/ui/Logo'
+import { SiteHeader } from './components/layout/SiteHeader'
 import { ModeChooser, type HomeMode } from './components/Home/ModeChooser'
 import { FeaturedHero } from './components/Home/FeaturedHero'
 import { TripForm } from './components/TripForm/TripForm'
@@ -35,6 +35,14 @@ export default function App() {
   const [basePrompt, setBasePrompt] = useState('')
   const [screen, setScreen] = useState<Screen>('home')
   const [dreamAnswers, setDreamAnswers] = useState<DreamAnswers | null>(null)
+
+  const plannerRef = useRef<HTMLElement>(null)
+  const openPlanner = useCallback(() => {
+    plannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [])
+  const scrollToHero = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
 
   // Autosave the current itinerary whenever it changes.
   useEffect(() => {
@@ -114,51 +122,24 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <Button
-            variant="ghost"
-            size="sm"
-            icon="menu"
-            iconOnly
-            aria-label="Saved trips"
-            onClick={() => setSidebarOpen(true)}
-          />
-          <button
-            type="button"
-            className={styles.brand}
-            onClick={handleNewTrip}
-            aria-label="TripMora home"
-          >
-            <Logo />
-            <span className={styles.brandName}>
-              <b>TripMora</b> <span>· AI trip planner</span>
-            </span>
-          </button>
-          <div className={styles.headerActions}>
-            {notHome && (
-              <Button variant="secondary" size="sm" icon="plus" onClick={handleNewTrip}>
-                New trip
-              </Button>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={theme === 'dark' ? 'sun' : 'moon'}
-              iconOnly
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              onClick={toggle}
-            />
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        immersive={!itineraryActive && screen === 'home'}
+        notHome={notHome}
+        theme={theme}
+        onToggleTheme={toggle}
+        onHome={handleNewTrip}
+        onOpenSidebar={() => setSidebarOpen(true)}
+        onNavPlanner={openPlanner}
+        onNavDestinations={scrollToHero}
+        onSearch={() => setScreen('describe')}
+      />
 
       <main className={styles.main}>
         {!itineraryActive && screen === 'home' ? (
           <>
-            <FeaturedHero onPlan={handleGenerate} />
+            <FeaturedHero onPlan={handleGenerate} onOpenPlanner={openPlanner} />
 
-            <section className={styles.homeSecondary}>
+            <section ref={plannerRef} className={styles.homeSecondary}>
               <div className={styles.secondaryHead}>
                 <span className={styles.eyebrow}>
                   <Icon name="sparkles" size={14} />
