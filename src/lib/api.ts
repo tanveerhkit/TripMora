@@ -7,7 +7,7 @@
  */
 import type { Itinerary } from '../types/itinerary'
 
-export type GenerateMode = 'generate' | 'refine' | 'dream'
+export type GenerateMode = 'generate' | 'refine' | 'dream' | 'recover'
 
 export interface GenerateArgs {
   prompt: string
@@ -43,6 +43,8 @@ function itineraryForServer(itinerary: Itinerary): unknown {
         durationMin: s.durationMin,
         cost: s.cost,
         tip: s.tip,
+        // so 'recover' knows which stops the traveler missed
+        status: s.status,
       })),
     })),
     budget: itinerary.budget.map((b) => ({ label: b.label, amount: b.amount })),
@@ -61,7 +63,7 @@ async function requestOnce(args: GenerateArgs): Promise<string> {
         prompt: args.prompt,
         mode: args.mode,
         itinerary:
-          args.mode === 'refine' && args.itinerary
+          (args.mode === 'refine' || args.mode === 'recover') && args.itinerary
             ? itineraryForServer(args.itinerary)
             : undefined,
       }),

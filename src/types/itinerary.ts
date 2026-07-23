@@ -20,6 +20,9 @@ export const STOP_CATEGORIES = [
 
 export type StopCategory = (typeof STOP_CATEGORIES)[number]
 
+/** Trip-recovery state: 'missed' flags a stop the traveler didn't make it to. */
+export type StopStatus = 'planned' | 'missed'
+
 export interface Stop {
   id: string
   /** e.g. "08:10" or "Morning" — empty string if unknown. */
@@ -39,6 +42,8 @@ export interface Stop {
    * the "Reviews" link points to real reviews. Empty if none.
    */
   watchOuts: string[]
+  /** Trip-recovery state; 'planned' by default, 'missed' when flagged. */
+  status: StopStatus
 }
 
 export interface Day {
@@ -114,6 +119,7 @@ export function emptyStop(): Stop {
     cost: null,
     tip: '',
     watchOuts: [],
+    status: 'planned',
   }
 }
 

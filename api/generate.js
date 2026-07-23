@@ -92,6 +92,21 @@ Rules:
 - Preserve unrelated days, stops, wording, costs and order.
 - Output valid JSON only. Do not wrap it in code fences.`
 
+const RECOVER_SYSTEM = `You are TripMora, helping a traveler whose trip has gone off-plan.
+You are given the current itinerary as JSON plus notes on what went wrong. Some stops carry a
+"status" field: "missed" means the traveler did NOT make it there; "planned" is untouched.
+
+Rules:
+- ${SCHEMA_HINT}
+- Rework the plan so it still works despite the failures the traveler describes.
+- For each "missed" stop worth keeping, PREFER to refit it into the remaining days/time; only
+  replace it with a strong nearby alternative when refitting truly isn't realistic. Note which you
+  did in that stop's "tip" (e.g. "moved here from day 1" or "stand-in for the sold-out X").
+- Honor the traveler's notes (closures, weather, delays, illness, a blown budget, running late).
+- Keep the parts that still work; don't needlessly rewrite unaffected days.
+- Stay realistic and achievable. Return the COMPLETE updated itinerary in the same schema (not a diff).
+- Output valid JSON only. Do not wrap it in code fences.`
+
 const DREAM_SCHEMA_HINT = `Return ONLY a single minified JSON object (no markdown, no prose) with this exact shape:
 {
   "summary": string,               // 1-2 sentences framing your picks for this traveler
@@ -152,7 +167,13 @@ async function readJsonBody(req) {
 
 function buildMessages(body) {
   const mode =
-    body.mode === 'refine' ? 'refine' : body.mode === 'dream' ? 'dream' : 'generate'
+    body.mode === 'refine'
+      ? 'refine'
+      : body.mode === 'recover'
+        ? 'recover'
+        : body.mode === 'dream'
+          ? 'dream'
+          : 'generate'
   const prompt = String(body.prompt || '').slice(0, MAX_PROMPT_CHARS).trim()
 
   if (mode === 'refine') {
@@ -162,6 +183,17 @@ function buildMessages(body) {
       {
         role: 'user',
         content: `Current itinerary:\n${current}\n\nChange request:\n${prompt}`,
+      },
+    ]
+  }
+
+  if (mode === 'recover') {
+    const current = body.itinerary ? JSON.stringify(body.itinerary) : '{}'
+    return [
+      { role: 'system', content: RECOVER_SYSTEM },
+      {
+        role: 'user',
+        content: `Current itinerary:\n${current}\n\nWhat went wrong:\n${prompt}`,
       },
     ]
   }
