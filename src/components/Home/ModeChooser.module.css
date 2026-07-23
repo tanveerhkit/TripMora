@@ -19,9 +19,11 @@
   box-shadow: var(--shadow-sm);
   transition: border-color 0.15s ease, transform 0.06s ease, box-shadow 0.15s ease;
 }
-.card:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md);
+@media (hover: hover) {
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+  }
 }
 .card:active {
   transform: translateY(1px);
@@ -35,8 +37,10 @@
   opacity: 0;
   transition: opacity 0.15s ease;
 }
-.card:hover::before {
-  opacity: 1;
+@media (hover: hover) {
+  .card:hover::before {
+    opacity: 1;
+  }
 }
 
 .icon {
@@ -87,8 +91,10 @@
   transform: rotate(-90deg);
   transition: transform 0.15s ease;
 }
-.card:hover .go {
-  transform: rotate(-90deg) translateY(3px);
+@media (hover: hover) {
+  .card:hover .go {
+    transform: rotate(-90deg) translateY(3px);
+  }
 }
 
 @media (min-width: 680px) {

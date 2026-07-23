@@ -59,18 +59,22 @@
   padding: 7px 13px;
   transition: all 0.14s ease;
 }
-.chip:hover {
-  border-color: var(--border-strong);
-  color: var(--text);
+@media (hover: hover) {
+  .chip:hover {
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
 }
 .chipOn {
   color: #fff;
   background: var(--brand-grad);
   border-color: transparent;
 }
-.chipOn:hover {
-  color: #fff;
-  filter: brightness(1.04);
+@media (hover: hover) {
+  .chipOn:hover {
+    color: #fff;
+    filter: brightness(1.04);
+  }
 }
 
 .toggles {
