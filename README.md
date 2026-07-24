@@ -257,4 +257,4 @@ Roughly **9–10 hours**, approximately:
 
 ## License
 
-MIT — do what you like.
+ Made by Tanveer Hussain Khan for Flam Frontend Assessment.
