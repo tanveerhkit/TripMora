@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { countStops, estimatedTotal } from '../../lib/itineraryOps'
 import { formatMoney } from '../../lib/format'
 import { useStopGallery } from '../../hooks/useStopGallery'
@@ -22,7 +23,17 @@ export function OverviewCard({ itinerary }: Props) {
   const stops = countStops(itinerary)
   const total = estimatedTotal(itinerary)
   const gallery = useStopGallery(itinerary)
-  const useGallery = supportsWebGL() && gallery.length >= 3
+  const [isCompact, setIsCompact] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 640px)')
+    const sync = () => setIsCompact(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
+
+  const useGallery = supportsWebGL() && gallery.length >= 3 && !isCompact
 
   const chips = [
     meta.travelerType && { icon: 'tag' as const, text: meta.travelerType },
