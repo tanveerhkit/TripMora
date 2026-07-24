@@ -229,7 +229,7 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
 
           <div className={styles.ctas}>
             <SpecularButton
-              size="lg"
+              size="md"
               radius={100}
               tint="#19d3a6"
               tintOpacity={0.92}
