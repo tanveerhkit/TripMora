@@ -33,8 +33,15 @@ export function SiteHeader({
 
   // Blur the bar in once the hero starts sliding under it.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    onScroll()
+    let prev = window.scrollY > 40
+    setScrolled(prev)
+    const onScroll = () => {
+      const isScrolled = window.scrollY > 40
+      if (isScrolled !== prev) {
+        prev = isScrolled
+        setScrolled(isScrolled)
+      }
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])

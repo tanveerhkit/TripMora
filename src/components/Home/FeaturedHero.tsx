@@ -71,10 +71,11 @@ const DESTINATIONS: Destination[] = [
 ]
 
 const ROTATE_MS = 7000
-const HERO_SIZE = 1600
 const EASE = [0.16, 1, 0.3, 1] as const
-const REPEAT_COUNT = 7
-const EXTENDED_DESTINATIONS = Array.from({ length: REPEAT_COUNT }, () => DESTINATIONS).flat()
+
+const getIsMobile = () =>
+  typeof window !== 'undefined' &&
+  (window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 1024))
 
 interface Props {
   onOpenPlanner: () => void
@@ -82,7 +83,18 @@ interface Props {
 
 export function FeaturedHero({ onOpenPlanner }: Props) {
   const count = DESTINATIONS.length
-  const startOffset = count * 3
+  const [isMobile, setIsMobile] = useState(getIsMobile)
+
+  useEffect(() => {
+    const check = () => setIsMobile(getIsMobile())
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  const repeatCount = isMobile ? 3 : 5
+  const extendedDestinations = Array.from({ length: repeatCount }, () => DESTINATIONS).flat()
+  const startOffset = count * Math.floor(repeatCount / 2)
+
   const [displayIndex, setDisplayIndex] = useState(startOffset)
   const [paused, setPaused] = useState(false)
   const reduce = useReducedMotion()
@@ -116,11 +128,13 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
   }, [paused, reduce])
 
   useEffect(() => {
-    if (displayIndex >= count * 6 || displayIndex <= count) {
-      const norm = count * 3 + realIndex
+    const minBound = count
+    const maxBound = count * (repeatCount - 1)
+    if (displayIndex >= maxBound || displayIndex <= minBound) {
+      const norm = count * Math.floor(repeatCount / 2) + realIndex
       setDisplayIndex(norm)
     }
-  }, [displayIndex, count, realIndex])
+  }, [displayIndex, count, realIndex, repeatCount])
 
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -128,7 +142,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
   const bgY = useSpring(useTransform(my, (v) => v * -28), { stiffness: 60, damping: 18 })
 
   const onMouseMove = (e: ReactMouseEvent) => {
-    if (reduce || (typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window))) return
+    if (reduce || isMobile) return
     const r = heroRef.current?.getBoundingClientRect()
     if (!r) return
     mx.set((e.clientX - r.left) / r.width - 0.5)
@@ -172,9 +186,15 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <motion.div className={styles.bg} style={{ x: bgX, y: bgY }} aria-hidden="true">
+      <motion.div className={styles.bg} style={isMobile ? undefined : { x: bgX, y: bgY }} aria-hidden="true">
         {DESTINATIONS.map((d, i) => (
-          <HeroLayer key={d.name} query={d.query} active={i === realIndex} reduce={Boolean(reduce)} />
+          <HeroLayer
+            key={d.name}
+            query={d.query}
+            active={i === realIndex}
+            reduce={Boolean(reduce)}
+            isMobile={isMobile}
+          />
         ))}
       </motion.div>
       <div className={styles.scrim} aria-hidden="true" />
@@ -208,7 +228,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
               initial={{ opacity: 0, y: reduce ? 0 : 26 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: reduce ? 0 : -18 }}
-              transition={{ duration: 0.55, ease: EASE }}
+              transition={{ duration: isMobile ? 0.3 : 0.55, ease: EASE }}
             >
               <span className={styles.badge}>
                 <Icon name="sparkles" size={14} />
@@ -266,15 +286,18 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
               ref={trackRef}
               className={styles.track}
               animate={{ x: -displayIndex * step }}
-              transition={{ duration: reduce ? 0 : 0.7, ease: EASE }}
+              transition={{ duration: reduce || isMobile ? 0.3 : 0.7, ease: EASE }}
             >
-              {EXTENDED_DESTINATIONS.map((d, i) => (
+              {extendedDestinations.map((d, i) => (
                 <DestinationCard
                   key={`${d.name}-${i}`}
                   dest={d}
+                  index={i}
+                  displayIndex={displayIndex}
                   active={i === displayIndex}
                   z={i === displayIndex ? count + 2 : Math.max(1, count - Math.abs(i - displayIndex))}
                   reduce={Boolean(reduce)}
+                  isMobile={isMobile}
                   onSelect={() => setDisplayIndex(i)}
                 />
               ))}
@@ -307,13 +330,16 @@ function HeroLayer({
   query,
   active,
   reduce,
+  isMobile,
 }: {
   query: string
   active: boolean
   reduce: boolean
+  isMobile: boolean
 }) {
-  const { url } = useLocationImage(query, { size: HERO_SIZE })
-  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window)
+  const { url } = useLocationImage(query, { size: isMobile ? 800 : 1600 })
+
+  if (isMobile && !active) return null
 
   return (
     <motion.div
@@ -331,19 +357,25 @@ function HeroLayer({
 
 function DestinationCard({
   dest,
+  index,
+  displayIndex,
   active,
   z,
   reduce,
+  isMobile,
   onSelect,
 }: {
   dest: Destination
+  index: number
+  displayIndex: number
   active: boolean
   z: number
   reduce: boolean
+  isMobile: boolean
   onSelect: () => void
 }) {
-  const { url } = useLocationImage(dest.query, { size: HERO_SIZE })
-  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window)
+  const isNear = Math.abs(index - displayIndex) <= (isMobile ? 2 : 4)
+  const { url } = useLocationImage(isNear ? dest.query : '', { size: isMobile ? 400 : 800 })
   const shouldReduce = reduce || isMobile
 
   return (
@@ -375,3 +407,4 @@ function DestinationCard({
     </motion.button>
   )
 }
+

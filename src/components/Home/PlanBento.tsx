@@ -609,15 +609,15 @@ const usePrefersReducedMotion = () => {
   return reduce
 }
 
+const checkIsMobile = () =>
+  typeof window !== 'undefined' &&
+  (window.innerWidth <= MOBILE_BREAKPOINT ||
+    ('ontouchstart' in window && window.innerWidth <= 1024))
+
 const useMobileDetection = () => {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(checkIsMobile)
   useEffect(() => {
-    const check = () =>
-      setIsMobile(
-        window.innerWidth <= MOBILE_BREAKPOINT ||
-          ('ontouchstart' in window && window.innerWidth <= 1024),
-      )
-    check()
+    const check = () => setIsMobile(checkIsMobile())
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
