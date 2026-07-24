@@ -17,6 +17,7 @@ import {
 } from 'framer-motion'
 import { useLocationImage } from '../../hooks/useLocationImage'
 import { Icon } from '../ui/Icon'
+import { SpecularButton } from '../ui/SpecularButton'
 import styles from './FeaturedHero.module.css'
 
 interface Destination {
@@ -227,10 +228,24 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
           </AnimatePresence>
 
           <div className={styles.ctas}>
-            <button type="button" className={styles.primary} onClick={onOpenPlanner}>
-              Plan a trip
-              <Icon name="arrow" size={18} className={styles.primaryArrow} />
-            </button>
+            <SpecularButton
+              size="lg"
+              radius={100}
+              tint="#19d3a6"
+              tintOpacity={0.92}
+              textColor="#04140e"
+              lineColor="#ffffff"
+              baseColor="#0a3b2d"
+              intensity={1.1}
+              proximity={280}
+              className={styles.specularCta}
+              onClick={onOpenPlanner}
+            >
+              <span className={styles.ctaInner}>
+                Plan a trip
+                <Icon name="arrow" size={18} className={styles.primaryArrow} />
+              </span>
+            </SpecularButton>
             <button type="button" className={styles.secondary} onClick={handleExplore}>
               Explore {active.name}
             </button>
