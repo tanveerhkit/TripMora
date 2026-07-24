@@ -132,13 +132,12 @@ export default function App() {
         onOpenSidebar={() => setSidebarOpen(true)}
         onNavPlanner={openPlanner}
         onNavDestinations={scrollToHero}
-        onSearch={() => setScreen('describe')}
       />
 
       <main className={styles.main}>
         {!itineraryActive && screen === 'home' ? (
           <>
-            <FeaturedHero onPlan={handleGenerate} onOpenPlanner={openPlanner} />
+            <FeaturedHero onOpenPlanner={openPlanner} />
 
             <section ref={plannerRef} className={styles.homeSecondary}>
               <div className={styles.secondaryHead}>

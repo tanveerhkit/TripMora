@@ -4,7 +4,6 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  type FormEvent,
   type MouseEvent as ReactMouseEvent,
 } from 'react'
 import {
@@ -23,24 +22,19 @@ import styles from './FeaturedHero.module.css'
 interface Destination {
   name: string
   country: string
-  /** Wikipedia lookup term for the photography */
   query: string
-  /** rough trip length, folded into the featured "Explore" prompt */
   days: number
   blurb: string
 }
 
-// A curated rotation of photogenic places with strong Wikipedia lead images.
 const DESTINATIONS: Destination[] = [
   {
     name: 'Kashmir',
     country: 'India',
-    // "Kashmir" resolves to a political map on Wikipedia — point at the valley's
-    // most iconic scene instead so the card shows real beauty, not borders.
     query: 'Dal Lake',
     days: 6,
     blurb:
-      'Glide across mirror-still Dal Lake by shikara, wake in a carved houseboat and watch snow settle on the Pir Panjal — the Himalayan valley they call paradise on earth.',
+      'Glide across mirror-still Dal Lake by shikara, wake in a carved houseboat and watch snow settle on the Pir Panjal - the Himalayan valley they call paradise on earth.',
   },
   {
     name: 'Kyoto',
@@ -48,17 +42,15 @@ const DESTINATIONS: Destination[] = [
     query: 'Kyoto',
     days: 5,
     blurb:
-      'Thousand-year-old temples, silent bamboo groves and lantern-lit lanes — Japan’s old capital keeps time with the seasons.',
+      "Thousand-year-old temples, silent bamboo groves and lantern-lit lanes - Japan's old capital keeps time with the seasons.",
   },
   {
     name: 'Dubai',
     country: 'UAE',
-    // a landscape skyline over the water fills the full-bleed hero far better
-    // than a cropped single tower.
     query: 'Dubai Marina',
     days: 5,
     blurb:
-      'Glass towers soar above the desert, abras cross the creek to spice-scented souks and the Gulf coast unrolls into golden dunes — Dubai does glamour at full volume.',
+      'Glass towers soar above the desert, abras cross the creek to spice-scented souks and the Gulf coast unrolls into golden dunes - Dubai does glamour at full volume.',
   },
   {
     name: 'Kerala',
@@ -66,7 +58,7 @@ const DESTINATIONS: Destination[] = [
     query: 'Kerala',
     days: 6,
     blurb:
-      'Glide the palm-fringed backwaters, sip cardamom tea up in the hills and slow right down on India’s lush tropical coast.',
+      "Glide the palm-fringed backwaters, sip cardamom tea up in the hills and slow right down on India's lush tropical coast.",
   },
   {
     name: 'Marrakech',
@@ -79,38 +71,33 @@ const DESTINATIONS: Destination[] = [
 ]
 
 const ROTATE_MS = 7000
-// Larger than the card default so the full-bleed background stays crisp.
 const HERO_SIZE = 1600
 const EASE = [0.16, 1, 0.3, 1] as const
 
 interface Props {
-  /** plan a specific place immediately (featured "Explore" + quick search) */
-  onPlan: (prompt: string) => void
-  /** jump to the "plan your own way" section (primary CTA) */
   onOpenPlanner: () => void
 }
 
-export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
+export function FeaturedHero({ onOpenPlanner }: Props) {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
-  const [search, setSearch] = useState('')
   const reduce = useReducedMotion()
   const count = DESTINATIONS.length
   const active = DESTINATIONS[index]
 
   const heroRef = useRef<HTMLElement>(null)
   const touchStartX = useRef<number | null>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [step, setStep] = useState(0)
 
   const go = useCallback((next: number) => setIndex((next + count) % count), [count])
 
-  // Auto-advance unless the pointer/focus is inside or reduced motion is on.
   useEffect(() => {
     if (paused || reduce) return
     const id = window.setInterval(() => setIndex((p) => (p + 1) % count), ROTATE_MS)
     return () => window.clearInterval(id)
   }, [paused, reduce, count])
 
-  // ---- mouse parallax on the background (motion values → no re-render) ----
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
   const bgX = useSpring(useTransform(mx, (v) => v * -28), { stiffness: 60, damping: 18 })
@@ -123,14 +110,12 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
     mx.set((e.clientX - r.left) / r.width - 0.5)
     my.set((e.clientY - r.top) / r.height - 0.5)
   }
+
   const resetParallax = () => {
     mx.set(0)
     my.set(0)
   }
 
-  // ---- measure the carousel step so the active card slides to the left slot ----
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [step, setStep] = useState(0)
   useLayoutEffect(() => {
     const el = trackRef.current
     if (!el) return
@@ -148,16 +133,6 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
     return () => ro.disconnect()
   }, [])
 
-  const handleExplore = () => {
-    onPlan(`${active.days} days in ${active.name}, ${active.country}`)
-  }
-  const handleSearch = (e: FormEvent) => {
-    e.preventDefault()
-    const q = search.trim()
-    if (q) onPlan(`Plan a trip to ${q}`)
-    else onOpenPlanner()
-  }
-
   return (
     <section
       ref={heroRef}
@@ -173,7 +148,6 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      {/* ---------- background ---------- */}
       <motion.div className={styles.bg} style={{ x: bgX, y: bgY }} aria-hidden="true">
         {DESTINATIONS.map((d, i) => (
           <HeroLayer key={d.name} query={d.query} active={i === index} reduce={Boolean(reduce)} />
@@ -182,7 +156,6 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
       <div className={styles.scrim} aria-hidden="true" />
       <div className={styles.vignette} aria-hidden="true" />
 
-      {/* ---------- vertical progress ---------- */}
       <div className={styles.progress} aria-hidden="true">
         <div className={styles.rail}>
           {DESTINATIONS.map((d, i) => (
@@ -202,7 +175,6 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
         </span>
       </div>
 
-      {/* ---------- content ---------- */}
       <div className={styles.grid}>
         <div className={styles.left}>
           <AnimatePresence mode="wait">
@@ -246,32 +218,9 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
                 <Icon name="arrow" size={18} className={styles.primaryArrow} />
               </span>
             </SpecularButton>
-            <button type="button" className={styles.secondary} onClick={handleExplore}>
-              Explore {active.name}
-            </button>
           </div>
-
-          {/* functional quick-plan search */}
-          <form className={styles.search} onSubmit={handleSearch}>
-            <span className={styles.searchIcon} aria-hidden="true">
-              <Icon name="map" size={18} />
-            </span>
-            <input
-              className={styles.searchInput}
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search any destination…"
-              aria-label="Search any destination"
-            />
-            <button type="submit" className={styles.searchBtn}>
-              <span>Plan</span>
-              <Icon name="arrow" size={16} />
-            </button>
-          </form>
         </div>
 
-        {/* ---------- carousel ---------- */}
         <div
           className={styles.right}
           onTouchStart={(e) => {
@@ -305,7 +254,6 @@ export function FeaturedHero({ onPlan, onOpenPlanner }: Props) {
             </motion.div>
           </div>
 
-          {/* mobile position dots */}
           <div className={styles.dots}>
             {DESTINATIONS.map((d, i) => (
               <button
