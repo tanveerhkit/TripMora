@@ -242,9 +242,18 @@
   transition: transform var(--dur-2) var(--ease-out);
 }
 @media (hover: hover) {
-  .primary:hover .primaryArrow {
+  .primary:hover .primaryArrow,
+  .specularCta:hover .primaryArrow {
     transform: translateX(4px);
   }
+}
+
+/* specular "Plan a trip" — label sits above the WebGL shine canvas */
+.ctaInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
 }
 .secondary {
   background: var(--h-glass);
@@ -491,7 +500,8 @@
     height: clamp(224px, 62vw, 286px);
   }
   .primary,
-  .secondary {
+  .secondary,
+  .specularCta {
     flex: 1;
     justify-content: center;
   }
