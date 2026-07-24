@@ -25,6 +25,9 @@
   display: grid;
   gap: var(--sp-4);
   grid-template-columns: 1fr;
+  /* size each fieldset to its own content — otherwise a shorter group (Budget)
+     stretches to match a taller neighbour (When) and its chips balloon. */
+  align-items: start;
 }
 
 .q {
