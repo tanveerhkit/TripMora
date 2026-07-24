@@ -248,12 +248,18 @@
   }
 }
 
-/* specular "Plan a trip" — label sits above the WebGL shine canvas */
+/* specular "Plan a trip" — label sits above the WebGL shine canvas.
+   Pin its padding/size to match the secondary CTA (`.ctas` compound selector
+   outweighs the component's own size preset) so the two buttons stay level. */
 .ctaInner {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-weight: 700;
+}
+.ctas .specularCta {
+  padding: 15px 26px;
+  font-size: 1rem;
 }
 .secondary {
   background: var(--h-glass);
