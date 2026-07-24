@@ -16,6 +16,25 @@
   background: var(--surface-2);
 }
 
+/* WebGL circular gallery of the trip's places, in place of the static hero.
+   Sits on a dark band so the white labels read the same in light and dark. */
+.gallery {
+  position: relative;
+  height: clamp(300px, 42vw, 384px);
+  background: radial-gradient(120% 130% at 28% -10%, #0e3b2c, #06140d 72%);
+}
+.galleryOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--sp-4) var(--sp-5);
+  background: linear-gradient(to bottom, rgba(4, 12, 9, 0.72) 0%, rgba(4, 12, 9, 0) 36%);
+}
+
 .content {
   display: grid;
   gap: var(--sp-4);

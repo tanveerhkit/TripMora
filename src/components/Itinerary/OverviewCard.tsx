@@ -1,36 +1,66 @@
 import { countStops, estimatedTotal } from '../../lib/itineraryOps'
 import { formatMoney } from '../../lib/format'
+import { useStopGallery } from '../../hooks/useStopGallery'
 import type { Itinerary } from '../../types/itinerary'
 import { Icon } from '../ui/Icon'
 import { LocationImage } from '../ui/LocationImage'
+import { CircularGallery } from '../ui/CircularGallery'
 import styles from './OverviewCard.module.css'
 
 interface Props {
   itinerary: Itinerary
 }
 
+function supportsWebGL(): boolean {
+  return (
+    typeof WebGLRenderingContext !== 'undefined' || typeof WebGL2RenderingContext !== 'undefined'
+  )
+}
+
 export function OverviewCard({ itinerary }: Props) {
   const { meta } = itinerary
   const stops = countStops(itinerary)
   const total = estimatedTotal(itinerary)
+  const gallery = useStopGallery(itinerary)
+  const useGallery = supportsWebGL() && gallery.length >= 3
 
   const chips = [
     meta.travelerType && { icon: 'tag' as const, text: meta.travelerType },
     meta.bestSeason && { icon: 'sun' as const, text: meta.bestSeason },
   ].filter(Boolean) as { icon: 'tag' | 'sun'; text: string }[]
 
+  const header = (
+    <>
+      <span className={styles.eyebrow}>
+        <Icon name="map" size={15} /> Your itinerary
+      </span>
+      <h2 className={styles.destination}>{meta.destination}</h2>
+    </>
+  )
+
   return (
     <section className={styles.card}>
-      <LocationImage
-        className={styles.hero}
-        query={meta.destination}
-        alt={`Photo of ${meta.destination}`}
-      >
-        <span className={styles.eyebrow}>
-          <Icon name="map" size={15} /> Your itinerary
-        </span>
-        <h2 className={styles.destination}>{meta.destination}</h2>
-      </LocationImage>
+      {useGallery ? (
+        <div className={styles.gallery}>
+          <CircularGallery
+            items={gallery}
+            bend={2.6}
+            textColor="#ffffff"
+            borderRadius={0.06}
+            font="600 26px Inter"
+            scrollEase={0.03}
+          />
+          <div className={styles.galleryOverlay}>{header}</div>
+        </div>
+      ) : (
+        <LocationImage
+          className={styles.hero}
+          query={meta.destination}
+          alt={`Photo of ${meta.destination}`}
+        >
+          {header}
+        </LocationImage>
+      )}
 
       <div className={styles.content}>
         {meta.summary && <p className={styles.summary}>{meta.summary}</p>}
