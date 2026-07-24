@@ -180,6 +180,12 @@
   font-size: 0.9rem;
 }
 
+@media (max-width: 640px) {
+  .container {
+    padding: calc(var(--header-h) + 12px) 12px 24px;
+  }
+}
+
 @media (max-width: 480px) {
   .brandName span {
     display: none;

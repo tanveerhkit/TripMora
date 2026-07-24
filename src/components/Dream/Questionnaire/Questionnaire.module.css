@@ -172,7 +172,6 @@
     linear-gradient(180deg, color-mix(in srgb, var(--surface) 20%, transparent), transparent 46%),
     color-mix(in srgb, var(--bg-elevated) 94%, transparent);
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
 }
 
 .cardInner {
@@ -448,31 +447,86 @@
 }
 
 @media (max-width: 640px) {
+  .stepper {
+    min-height: auto;
+    gap: var(--sp-3);
+  }
+
   .contentSlot {
     min-height: auto;
     align-items: start;
   }
 
+  .progressHeader {
+    padding: 10px 12px;
+    border-radius: 18px;
+    gap: 8px;
+  }
+
   .progressTop {
-    align-items: flex-start;
-    flex-direction: column;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    flex-direction: row;
   }
 
-  .toggleGrid,
-  .navigationFooter {
-    grid-template-columns: 1fr;
+  .progressTitle {
+    font-size: 0.88rem;
+  }
+
+  .card {
+    border-radius: 18px;
+  }
+
+  .cardInner {
+    padding: 14px 16px;
+    gap: var(--sp-4);
+  }
+
+  .questionTitle {
+    font-size: 1.4rem;
+    line-height: 1.15;
+  }
+
+  .questionDescription {
+    font-size: 0.9rem;
+  }
+
+  .toggleGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-2);
+  }
+
+  .toggleOption {
+    padding: 12px 14px;
+    min-height: auto;
+  }
+
+  .toggleLabel {
+    font-size: 1rem;
+  }
+
+  .toggleHint {
+    font-size: 0.8rem;
   }
 
   .navigationFooter {
-    display: grid;
+    display: flex;
+    gap: var(--sp-2);
+    padding: 8px;
+    border-radius: 16px;
   }
 
   .footerButton {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
   }
 
   .optionChip {
     width: 100%;
     min-width: 0;
+    min-height: 48px;
+    padding: 10px 14px 10px 16px;
+    font-size: 0.92rem;
   }
 }
