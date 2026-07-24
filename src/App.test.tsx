@@ -30,7 +30,7 @@ describe('App', () => {
   it('opens the dreaming questionnaire when that mode is chosen', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /dreaming a trip/i }))
-    expect(screen.getByText(/where you should go/i)).toBeTruthy()
-    expect(screen.getByRole('button', { name: /find my destinations/i })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: /when do you want to travel/i })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /^next$/i })).toBeTruthy()
   })
 })
