@@ -129,6 +129,25 @@ function resolveUrl(hit: Hit, opts?: Options): string | null {
   return hit.url
 }
 
+/**
+ * One-shot async resolver sharing the same in-memory cache as the hook — for
+ * callers that need many images at once (e.g. building a gallery). Returns the
+ * image URL, or null when there's no usable/relevant image.
+ */
+export async function resolveLocationImage(
+  query: string,
+  opts?: Options,
+): Promise<string | null> {
+  const size = opts?.size ?? DEFAULT_SIZE
+  if (!query.trim()) return null
+  try {
+    const hit = await lookup(query, size)
+    return resolveUrl(hit, opts)
+  } catch {
+    return null
+  }
+}
+
 export function useLocationImage(query: string, opts?: Options): ImageState {
   const matchTerm = opts?.matchTerm
   const context = opts?.context
