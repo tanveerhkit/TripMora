@@ -462,6 +462,15 @@
   .viewport {
     padding-top: 24px;
     padding-bottom: 24px;
+    margin-right: 0;
+  }
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
+  .bg,
+  .bgLayer,
+  .track {
+    will-change: auto !important;
   }
 }
 

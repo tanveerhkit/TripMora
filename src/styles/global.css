@@ -203,7 +203,12 @@
    badly on many mobile GPUs — the blur breaks across layers, leaving a hard
    colour edge mid-card. On touch pointers and small mobile screens we make the elevated surfaces opaque
    so cards render as clean, even panels; the frosted glass stays on desktop. */
-@media (hover: none), (max-width: 768px) {
+/* ---------- touch devices & mobile screens: performance optimizations ----------
+   backdrop-filter over the ambient gradient + nested translucent cards bands
+   badly on many mobile GPUs — the blur breaks across layers, leaving a hard
+   colour edge mid-card. On touch pointers and small mobile screens we make the elevated surfaces opaque
+   so cards render as clean, even panels; the frosted glass stays on desktop. */
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
   :root {
     --bg-elevated: #f6fbf8;
     --inset: #ffffff;
@@ -224,10 +229,14 @@
   *::after {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 
-  /* Disable heavy infinite full-viewport transform drift on mobile */
+  /* Disable heavy infinite full-viewport transform drift & GPU fixed compositing on mobile */
   body::before {
+    position: absolute !important;
+    inset: 0 !important;
     animation: none !important;
     transform: none !important;
     will-change: auto !important;
@@ -235,7 +244,7 @@
 }
 
 /* Fade-only entrance on touch/mobile. */
-@media (hover: none), (max-width: 768px) {
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -245,7 +254,7 @@
     }
   }
 }
-@media ((hover: none) or (max-width: 768px)) and (prefers-color-scheme: dark) {
+@media ((hover: none) or (pointer: coarse) or (max-width: 1024px)) and (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     --bg-elevated: #16291d;
     --inset: #1b3024;

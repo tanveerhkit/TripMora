@@ -122,10 +122,10 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
   )
 
   useEffect(() => {
-    if (paused || reduce) return
+    if (paused || reduce || isMobile) return
     const id = window.setInterval(() => setDisplayIndex((p) => p + 1), ROTATE_MS)
     return () => window.clearInterval(id)
-  }, [paused, reduce])
+  }, [paused, reduce, isMobile])
 
   useEffect(() => {
     const minBound = count
@@ -228,7 +228,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
               initial={{ opacity: 0, y: reduce ? 0 : 26 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: reduce ? 0 : -18 }}
-              transition={{ duration: isMobile ? 0.3 : 0.55, ease: EASE }}
+              transition={{ duration: isMobile ? 0.2 : 0.55, ease: EASE }}
             >
               <span className={styles.badge}>
                 <Icon name="sparkles" size={14} />
@@ -267,6 +267,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
 
         <div
           className={styles.right}
+          style={{ touchAction: 'pan-y' }}
           onTouchStart={(e) => {
             touchStartX.current = e.touches[0].clientX
           }}
@@ -281,12 +282,13 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
             }
           }}
         >
-          <div className={styles.viewport}>
+          <div className={styles.viewport} style={{ touchAction: 'pan-y' }}>
             <motion.div
               ref={trackRef}
               className={styles.track}
+              style={{ touchAction: 'pan-y' }}
               animate={{ x: -displayIndex * step }}
-              transition={{ duration: reduce || isMobile ? 0.3 : 0.7, ease: EASE }}
+              transition={{ duration: reduce || isMobile ? 0.25 : 0.7, ease: EASE }}
             >
               {extendedDestinations.map((d, i) => (
                 <DestinationCard
@@ -348,7 +350,7 @@ function HeroLayer({
       initial={false}
       animate={{ opacity: active ? 1 : 0, scale: active && !isMobile ? 1.06 : 1 }}
       transition={{
-        opacity: { duration: reduce || isMobile ? 0.3 : 0.85, ease: 'easeInOut' },
+        opacity: { duration: reduce || isMobile ? 0.25 : 0.85, ease: 'easeInOut' },
         scale: { duration: reduce || isMobile ? 0 : 9, ease: 'easeOut' },
       }}
     />
@@ -376,7 +378,34 @@ function DestinationCard({
 }) {
   const isNear = Math.abs(index - displayIndex) <= (isMobile ? 2 : 4)
   const { url } = useLocationImage(isNear ? dest.query : '', { size: isMobile ? 400 : 800 })
-  const shouldReduce = reduce || isMobile
+
+  if (isMobile) {
+    return (
+      <button
+        type="button"
+        className={`${styles.card} ${active ? styles.cardOn : ''}`}
+        style={{ zIndex: z, touchAction: 'pan-y' }}
+        onClick={onSelect}
+        aria-label={`${dest.name}, ${dest.country}`}
+        aria-current={active}
+      >
+        <span
+          className={styles.cardImg}
+          style={url ? { backgroundImage: `url("${url}")` } : undefined}
+        >
+          {!url && (
+            <span className={styles.cardFallback} aria-hidden="true">
+              <Icon name="map" size={22} />
+            </span>
+          )}
+        </span>
+        <span className={styles.cardMeta}>
+          <b>{dest.name}</b>
+          <span>{dest.country}</span>
+        </span>
+      </button>
+    )
+  }
 
   return (
     <motion.button
@@ -386,8 +415,8 @@ function DestinationCard({
       onClick={onSelect}
       aria-label={`${dest.name}, ${dest.country}`}
       aria-current={active}
-      animate={shouldReduce ? undefined : { scale: active ? 1.06 : 0.92, y: active ? -6 : 8 }}
-      whileHover={shouldReduce ? undefined : { y: active ? -14 : 0 }}
+      animate={reduce ? undefined : { scale: active ? 1.06 : 0.92, y: active ? -6 : 8 }}
+      whileHover={reduce ? undefined : { y: active ? -14 : 0 }}
       transition={{ type: 'spring', stiffness: 280, damping: 26 }}
     >
       <span

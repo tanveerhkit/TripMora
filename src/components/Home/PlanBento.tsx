@@ -152,7 +152,8 @@ function PlanMapGraphic() {
             strokeLinecap="round"
           />
 
-          <g filter="url(#pinGlow)" transform="translate(196, 62)">
+          <g transform="translate(196, 62)">
+            <circle cx="18" cy="18" r="22" fill="#34d399" fillOpacity="0.35" />
             <path
               d="M 18 0 C 8.05 0 0 8.05 0 18 C 0 29.7 18 46 18 46 C 18 46 36 29.7 36 18 C 36 8.05 27.95 0 18 0 Z"
               fill="#10b981"
