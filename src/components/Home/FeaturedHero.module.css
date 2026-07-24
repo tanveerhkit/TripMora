@@ -405,29 +405,6 @@
   color: rgba(255, 255, 255, 0.7);
   background: linear-gradient(135deg, #17b48f, #0c6b52);
 }
-.bookmark {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-full);
-  color: #fff;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: transform var(--dur-2) var(--ease-spring), background var(--dur-1) ease;
-}
-@media (hover: hover) {
-  .card:hover .bookmark {
-    transform: rotate(-12deg) scale(1.08);
-    background: rgba(255, 255, 255, 0.26);
-  }
-}
 .cardMeta {
   position: absolute;
   left: 0;

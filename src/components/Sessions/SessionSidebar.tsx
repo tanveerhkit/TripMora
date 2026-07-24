@@ -13,7 +13,7 @@ interface Props {
   onClose: () => void
   onSelect: (session: StoredSession) => void
   onDelete: (id: string) => void
-  onNew: () => void
+  onNew?: () => void
 }
 
 export function SessionSidebar({
@@ -23,7 +23,6 @@ export function SessionSidebar({
   onClose,
   onSelect,
   onDelete,
-  onNew,
 }: Props) {
   // Close on Escape while open.
   useEffect(() => {
@@ -58,12 +57,6 @@ export function SessionSidebar({
             onClick={onClose}
           />
         </header>
-
-        <div className={styles.newWrap}>
-          <Button variant="primary" size="md" icon="plus" onClick={onNew} className={styles.newBtn}>
-            New trip
-          </Button>
-        </div>
 
         {sessions.length === 0 ? (
           <div className={styles.empty}>

@@ -48,17 +48,10 @@
   font-size: 1.05rem;
 }
 
-.newWrap {
-  padding: var(--sp-3) var(--sp-4);
-}
-.newBtn {
-  width: 100%;
-}
-
 .list {
   list-style: none;
   margin: 0;
-  padding: 0 var(--sp-3) var(--sp-4);
+  padding: var(--sp-3) var(--sp-3) var(--sp-4);
   overflow-y: auto;
   display: grid;
   gap: var(--sp-2);

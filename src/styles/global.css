@@ -198,12 +198,12 @@
   }
 }
 
-/* ---------- touch devices: solid surfaces ----------
+/* ---------- touch devices & mobile screens: performance optimizations ----------
    backdrop-filter over the ambient gradient + nested translucent cards bands
    badly on many mobile GPUs — the blur breaks across layers, leaving a hard
-   colour edge mid-card. On touch pointers we make the elevated surfaces opaque
+   colour edge mid-card. On touch pointers and small mobile screens we make the elevated surfaces opaque
    so cards render as clean, even panels; the frosted glass stays on desktop. */
-@media (hover: none) {
+@media (hover: none), (max-width: 768px) {
   :root {
     --bg-elevated: #f6fbf8;
     --inset: #ffffff;
@@ -214,22 +214,24 @@
     --inset: #1b3024;
     --inset-hover: #1b3024;
   }
-  /* Every card surface is opaque on touch, so backdrop-filter adds nothing —
-     but it still splits each card's compositing at nested layers on mobile
-     GPUs, leaving a faint seam mid-card. Strip it out entirely here. */
+  /* Strip out backdrop-filter on mobile to prevent compositing jank */
   *,
   *::before,
   *::after {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
+
+  /* Disable heavy infinite full-viewport transform drift on mobile */
+  body::before {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
 }
 
-/* Fade-only entrance on touch. The default slide leaves a retained
-   translateY() that promotes a section to its own compositing layer — the
-   other thing that can seam a card into two shades on mobile. Desktop keeps
-   the slide. */
-@media (hover: none) {
+/* Fade-only entrance on touch/mobile. */
+@media (hover: none), (max-width: 768px) {
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -239,7 +241,7 @@
     }
   }
 }
-@media (hover: none) and (prefers-color-scheme: dark) {
+@media ((hover: none) or (max-width: 768px)) and (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     --bg-elevated: #16291d;
     --inset: #1b3024;

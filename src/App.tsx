@@ -263,7 +263,6 @@ export default function App() {
         onClose={() => setSidebarOpen(false)}
         onSelect={handleSelectSession}
         onDelete={handleDeleteSession}
-        onNew={handleNewTrip}
       />
     </div>
   )

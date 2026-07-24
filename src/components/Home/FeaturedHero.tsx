@@ -286,15 +286,17 @@ function HeroLayer({
   reduce: boolean
 }) {
   const { url } = useLocationImage(query, { size: HERO_SIZE })
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window)
+
   return (
     <motion.div
       className={styles.bgLayer}
       style={{ backgroundImage: url ? `url("${url}")` : undefined }}
       initial={false}
-      animate={{ opacity: active ? 1 : 0, scale: active ? 1.06 : 1 }}
+      animate={{ opacity: active ? 1 : 0, scale: active && !isMobile ? 1.06 : 1 }}
       transition={{
-        opacity: { duration: reduce ? 0 : 0.85, ease: 'easeInOut' },
-        scale: { duration: reduce ? 0 : 9, ease: 'easeOut' },
+        opacity: { duration: reduce || isMobile ? 0.3 : 0.85, ease: 'easeInOut' },
+        scale: { duration: reduce || isMobile ? 0 : 9, ease: 'easeOut' },
       }}
     />
   )
@@ -335,9 +337,6 @@ function DestinationCard({
             <Icon name="map" size={22} />
           </span>
         )}
-      </span>
-      <span className={styles.bookmark} aria-hidden="true">
-        <Icon name="bookmark" size={15} />
       </span>
       <span className={styles.cardMeta}>
         <b>{dest.name}</b>

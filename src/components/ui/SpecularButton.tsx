@@ -159,6 +159,12 @@ export function SpecularButton({
     if (!btn || !fx) return
     // Respect reduced motion: skip the WebGL sweep, keep the plain button.
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    // Skip WebGL shader loops on touch screens / mobile viewports for smooth performance
+    if (
+      window.matchMedia?.('(hover: none), (max-width: 768px)').matches ||
+      'ontouchstart' in window
+    )
+      return
     // Bail cleanly where WebGL isn't available (jsdom, unsupported browsers)
     // without poking getContext — keeps the plain button and the console quiet.
     if (
