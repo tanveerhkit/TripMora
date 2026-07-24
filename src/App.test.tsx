@@ -10,8 +10,8 @@ afterEach(() => {
 describe('App', () => {
   it('offers both planning modes on the home screen', () => {
     render(<App />)
-    expect(screen.getByRole('button', { name: /dreaming a trip/i })).toBeTruthy()
-    expect(screen.getByRole('button', { name: /describe your trip/i })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: /dream a trip/i })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: /plan a trip/i })).toBeTruthy()
   })
 
   it('shows the brand and a theme toggle', () => {
@@ -22,14 +22,14 @@ describe('App', () => {
 
   it('opens the describe form when that mode is chosen', () => {
     render(<App />)
-    fireEvent.click(screen.getByRole('button', { name: /describe your trip/i }))
+    fireEvent.click(screen.getByRole('heading', { name: /plan a trip/i }).closest('button')!)
     expect(screen.getByLabelText(/describe your trip/i)).toBeTruthy()
     expect(screen.getByRole('button', { name: /plan my trip/i })).toBeTruthy()
   })
 
   it('opens the dreaming questionnaire when that mode is chosen', () => {
     render(<App />)
-    fireEvent.click(screen.getByRole('button', { name: /dreaming a trip/i }))
+    fireEvent.click(screen.getByRole('button', { name: /dream a trip/i }))
     expect(screen.getByRole('heading', { name: /when do you want to travel/i })).toBeTruthy()
     expect(screen.getByRole('button', { name: /^next$/i })).toBeTruthy()
   })

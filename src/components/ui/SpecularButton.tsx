@@ -175,6 +175,8 @@ export function SpecularButton({
 
     let raf = 0
     let ro: ResizeObserver | null = null
+    let io: IntersectionObserver | null = null
+    let stopLoop = () => {}
     let onPointerMove: ((e: PointerEvent) => void) | null = null
     let canvas: HTMLCanvasElement | null = null
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -262,8 +264,37 @@ export function SpecularButton({
       const lineC = new Color()
       const baseC = new Color()
 
+      let isVisible = true
+      let isUpdating = false
+
+      const startLoop = () => {
+        if (!isUpdating && isVisible) {
+          isUpdating = true
+          raf = requestAnimationFrame(update)
+        }
+      }
+
+      stopLoop = () => {
+        if (isUpdating) {
+          isUpdating = false
+          cancelAnimationFrame(raf)
+        }
+      }
+
+      if (typeof IntersectionObserver !== 'undefined') {
+        io = new IntersectionObserver(
+          (entries) => {
+            isVisible = entries[0]?.isIntersecting ?? true
+            if (isVisible) startLoop()
+            else stopLoop()
+          },
+          { threshold: 0.05 },
+        )
+        io.observe(btn)
+      }
+
       const update = (now: number) => {
-        raf = requestAnimationFrame(update)
+        if (!isUpdating) return
         const dt = Math.min((now - last) / 1000, 0.05)
         last = now
         const pr = propsRef.current
@@ -290,8 +321,11 @@ export function SpecularButton({
         program.uniforms.uShineFade.value = (pr.shineFade * Math.PI) / 180
         program.uniforms.uThickness.value = pr.thickness * dpr
         renderer.render({ scene: mesh })
+
+        raf = requestAnimationFrame(update)
       }
-      raf = requestAnimationFrame(update)
+
+      startLoop()
     } catch {
       // WebGL unavailable — leave the plain button in place.
       if (raf) cancelAnimationFrame(raf)
@@ -301,6 +335,8 @@ export function SpecularButton({
     }
 
     return () => {
+      stopLoop()
+      io?.disconnect()
       cancelAnimationFrame(raf)
       ro?.disconnect()
       if (onPointerMove) window.removeEventListener('pointermove', onPointerMove)

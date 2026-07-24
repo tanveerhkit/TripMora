@@ -43,13 +43,35 @@
   gap: var(--sp-3);
 }
 .secondaryTitle {
-  font-size: clamp(1.6rem, 4vw, 2.1rem);
-  letter-spacing: -0.025em;
+  font-size: clamp(2rem, 5.5vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text, #ffffff);
+}
+.highlight {
+  color: #34d399;
 }
 .secondarySub {
-  color: var(--text-muted);
-  max-width: 48ch;
+  color: var(--text-muted, #9ca3af);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  max-width: 44ch;
   margin: 0 auto;
+}
+
+.bottomFooterBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: var(--sp-2) 0 var(--sp-4);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-faint, #6b7280);
+}
+.bottomFooterBadge svg {
+  color: var(--text-faint, #6b7280);
+  opacity: 0.7;
 }
 
 .backBtn {

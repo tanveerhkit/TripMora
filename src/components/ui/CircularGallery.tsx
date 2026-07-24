@@ -388,32 +388,74 @@ class App {
     this.scrollSpeed = scrollSpeed
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 }
     this.onCheckDebounce = debounce(this.onCheck, 200)
+    this.isUpdating = false
+    this.isIntersecting = true
+    this.boundUpdate = this.update.bind(this)
+
     this.createRenderer()
     this.createCamera()
     this.createScene()
     this.onResize()
     this.createGeometry()
     this.createMedias(items, bend, textColor, borderRadius, font)
-    this.update()
+    this.setupIntersectionObserver()
     this.addEventListeners()
+    this.startLoop()
   }
+
+  setupIntersectionObserver() {
+    if (typeof IntersectionObserver !== 'undefined' && this.container) {
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0]
+          this.isIntersecting = entry ? entry.isIntersecting : true
+          if (this.isIntersecting) {
+            this.startLoop()
+          } else {
+            this.stopLoop()
+          }
+        },
+        { threshold: 0.05 },
+      )
+      this.observer.observe(this.container)
+    }
+  }
+
   createRenderer() {
-    this.renderer = new Renderer({ alpha: true, antialias: true, dpr: Math.min(window.devicePixelRatio || 1, 2) })
+    const isMobile =
+      typeof window !== 'undefined' &&
+      (window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 1024))
+    const maxDpr = isMobile ? 1.25 : 1.75
+    this.renderer = new Renderer({
+      alpha: true,
+      antialias: !isMobile,
+      dpr: Math.min(window.devicePixelRatio || 1, maxDpr),
+    })
     this.gl = this.renderer.gl
     this.gl.clearColor(0, 0, 0, 0)
     this.container.appendChild(this.gl.canvas)
   }
+
   createCamera() {
     this.camera = new Camera(this.gl)
     this.camera.fov = 45
     this.camera.position.z = 20
   }
+
   createScene() {
     this.scene = new Transform()
   }
+
   createGeometry() {
-    this.planeGeometry = new Plane(this.gl, { heightSegments: 50, widthSegments: 100 })
+    const isMobile =
+      typeof window !== 'undefined' &&
+      (window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 1024))
+    // Mobile screens: reduce vertex density by 90%+ (12x24 vs 50x100) to eliminate mobile GPU bottlenecks
+    const hSegments = isMobile ? 12 : 25
+    const wSegments = isMobile ? 24 : 50
+    this.planeGeometry = new Plane(this.gl, { heightSegments: hSegments, widthSegments: wSegments })
   }
+
   createMedias(items, bend = 1, textColor, borderRadius, font) {
     const galleryItems = items && items.length ? items : []
     this.mediasImages = galleryItems.concat(galleryItems)
@@ -436,49 +478,76 @@ class App {
       })
     })
   }
+
+  startLoop() {
+    if (!this.isUpdating && this.isIntersecting) {
+      this.isUpdating = true
+      this.raf = window.requestAnimationFrame(this.boundUpdate)
+    }
+  }
+
+  stopLoop() {
+    if (this.isUpdating) {
+      this.isUpdating = false
+      window.cancelAnimationFrame(this.raf)
+    }
+  }
+
   onTouchDown(e) {
     this.isDown = true
     this.scroll.position = this.scroll.current
     this.start = e.touches ? e.touches[0].clientX : e.clientX
+    this.startLoop()
   }
+
   onTouchMove(e) {
     if (!this.isDown) return
     const x = e.touches ? e.touches[0].clientX : e.clientX
     const distance = (this.start - x) * (this.scrollSpeed * 0.025)
     this.scroll.target = this.scroll.position + distance
+    this.startLoop()
   }
+
   onTouchUp() {
     this.isDown = false
     this.onCheck()
+    this.startLoop()
   }
+
   onKeyDown(e) {
     switch (e.key) {
       case 'ArrowRight':
         e.preventDefault()
         this.scroll.target += this.scrollSpeed * 5
         this.onCheckDebounce()
+        this.startLoop()
         break
       case 'ArrowLeft':
         e.preventDefault()
         this.scroll.target -= this.scrollSpeed * 5
         this.onCheckDebounce()
+        this.startLoop()
         break
       case 'Home':
         e.preventDefault()
         this.scroll.target = 0
         this.onCheckDebounce()
+        this.startLoop()
         break
       default:
         break
     }
   }
+
   onCheck() {
     if (!this.medias || !this.medias[0]) return
     const width = this.medias[0].width
     const itemIndex = Math.round(Math.abs(this.scroll.target) / width)
     const item = width * itemIndex
     this.scroll.target = this.scroll.target < 0 ? -item : item
+    this.startLoop()
   }
+
   onResize() {
     this.screen = { width: this.container.clientWidth, height: this.container.clientHeight }
     this.renderer.setSize(this.screen.width, this.screen.height)
@@ -490,15 +559,29 @@ class App {
     if (this.medias) {
       this.medias.forEach((media) => media.onResize({ screen: this.screen, viewport: this.viewport }))
     }
+    this.startLoop()
   }
+
   update() {
+    if (!this.isUpdating) return
     this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease)
     const direction = this.scroll.current > this.scroll.last ? 'right' : 'left'
+    const diff = Math.abs(this.scroll.current - this.scroll.target)
+    const delta = Math.abs(this.scroll.current - this.scroll.last)
+
     if (this.medias) this.medias.forEach((media) => media.update(this.scroll, direction))
     this.renderer.render({ scene: this.scene, camera: this.camera })
     this.scroll.last = this.scroll.current
-    this.raf = window.requestAnimationFrame(this.update.bind(this))
+
+    // Idle optimization: when gallery movement has settled and user is not touching, stop RAF loop to save mobile GPU/CPU
+    if (!this.isDown && diff < 0.0005 && delta < 0.0005) {
+      this.isUpdating = false
+      return
+    }
+
+    this.raf = window.requestAnimationFrame(this.boundUpdate)
   }
+
   addEventListeners() {
     this.boundOnResize = this.onResize.bind(this)
     this.boundOnTouchDown = this.onTouchDown.bind(this)
@@ -507,8 +590,6 @@ class App {
     this.boundOnKeyDown = this.onKeyDown.bind(this)
 
     window.addEventListener('resize', this.boundOnResize)
-    // Drag starts on the gallery, but continues/ends on the window so the drag
-    // stays smooth even when the cursor leaves the container.
     this.container.addEventListener('mousedown', this.boundOnTouchDown)
     window.addEventListener('mousemove', this.boundOnTouchMove)
     window.addEventListener('mouseup', this.boundOnTouchUp)
@@ -517,8 +598,10 @@ class App {
     window.addEventListener('touchend', this.boundOnTouchUp)
     this.container.addEventListener('keydown', this.boundOnKeyDown)
   }
+
   destroy() {
-    window.cancelAnimationFrame(this.raf)
+    this.stopLoop()
+    if (this.observer) this.observer.disconnect()
     window.removeEventListener('resize', this.boundOnResize)
     window.removeEventListener('mousemove', this.boundOnTouchMove)
     window.removeEventListener('mouseup', this.boundOnTouchUp)

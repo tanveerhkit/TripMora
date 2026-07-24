@@ -143,16 +143,24 @@ export default function App() {
               <div className={styles.secondaryHead}>
                 <span className={styles.eyebrow}>
                   <Icon name="sparkles" size={14} />
-                  AI-powered trip planning
+                  AI trip planning
                 </span>
-                <h2 className={styles.secondaryTitle}>Plan your own way</h2>
+                <h2 className={styles.secondaryTitle}>
+                  Plan your <span className={styles.highlight}>own way</span>
+                </h2>
                 <p className={styles.secondarySub}>
-                  Know the place already, or let TripMora match you with a destination —
-                  either way you get an editable day-by-day itinerary.
+                  Know the place already or need ideas?
+                  <br />
+                  We’ve got you covered.
                 </p>
               </div>
 
               <PlanBento onChoose={(m: HomeMode) => setScreen(m)} />
+
+              <div className={styles.bottomFooterBadge}>
+                <Icon name="sparkles" size={14} />
+                <span>Editable day-by-day itinerary</span>
+              </div>
 
               {recent.length > 0 && (
                 <div className={styles.recent}>

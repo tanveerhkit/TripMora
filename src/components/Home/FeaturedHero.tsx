@@ -73,30 +73,54 @@ const DESTINATIONS: Destination[] = [
 const ROTATE_MS = 7000
 const HERO_SIZE = 1600
 const EASE = [0.16, 1, 0.3, 1] as const
+const REPEAT_COUNT = 7
+const EXTENDED_DESTINATIONS = Array.from({ length: REPEAT_COUNT }, () => DESTINATIONS).flat()
 
 interface Props {
   onOpenPlanner: () => void
 }
 
 export function FeaturedHero({ onOpenPlanner }: Props) {
-  const [index, setIndex] = useState(0)
+  const count = DESTINATIONS.length
+  const startOffset = count * 3
+  const [displayIndex, setDisplayIndex] = useState(startOffset)
   const [paused, setPaused] = useState(false)
   const reduce = useReducedMotion()
-  const count = DESTINATIONS.length
-  const active = DESTINATIONS[index]
+
+  const realIndex = ((displayIndex % count) + count) % count
+  const active = DESTINATIONS[realIndex]
 
   const heroRef = useRef<HTMLElement>(null)
   const touchStartX = useRef<number | null>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState(0)
 
-  const go = useCallback((next: number) => setIndex((next + count) % count), [count])
+  const goNext = useCallback(() => setDisplayIndex((p) => p + 1), [])
+  const goPrev = useCallback(() => setDisplayIndex((p) => p - 1), [])
+
+  const goToRealIndex = useCallback(
+    (targetReal: number) => {
+      const currentReal = ((displayIndex % count) + count) % count
+      let diff = targetReal - currentReal
+      if (diff > count / 2) diff -= count
+      if (diff < -count / 2) diff += count
+      setDisplayIndex((prev) => prev + diff)
+    },
+    [displayIndex, count],
+  )
 
   useEffect(() => {
     if (paused || reduce) return
-    const id = window.setInterval(() => setIndex((p) => (p + 1) % count), ROTATE_MS)
+    const id = window.setInterval(() => setDisplayIndex((p) => p + 1), ROTATE_MS)
     return () => window.clearInterval(id)
-  }, [paused, reduce, count])
+  }, [paused, reduce])
+
+  useEffect(() => {
+    if (displayIndex >= count * 6 || displayIndex <= count) {
+      const norm = count * 3 + realIndex
+      setDisplayIndex(norm)
+    }
+  }, [displayIndex, count, realIndex])
 
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -104,7 +128,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
   const bgY = useSpring(useTransform(my, (v) => v * -28), { stiffness: 60, damping: 18 })
 
   const onMouseMove = (e: ReactMouseEvent) => {
-    if (reduce) return
+    if (reduce || (typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window))) return
     const r = heroRef.current?.getBoundingClientRect()
     if (!r) return
     mx.set((e.clientX - r.left) / r.width - 0.5)
@@ -150,7 +174,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
     >
       <motion.div className={styles.bg} style={{ x: bgX, y: bgY }} aria-hidden="true">
         {DESTINATIONS.map((d, i) => (
-          <HeroLayer key={d.name} query={d.query} active={i === index} reduce={Boolean(reduce)} />
+          <HeroLayer key={d.name} query={d.query} active={i === realIndex} reduce={Boolean(reduce)} />
         ))}
       </motion.div>
       <div className={styles.scrim} aria-hidden="true" />
@@ -163,15 +187,15 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
               key={d.name}
               type="button"
               tabIndex={-1}
-              className={`${styles.tick} ${i === index ? styles.tickOn : ''}`}
-              onClick={() => go(i)}
+              className={`${styles.tick} ${i === realIndex ? styles.tickOn : ''}`}
+              onClick={() => goToRealIndex(i)}
             >
               <span className={styles.tickNum}>{String(i + 1).padStart(2, '0')}</span>
             </button>
           ))}
         </div>
         <span className={styles.railCount}>
-          <b>{String(index + 1).padStart(2, '0')}</b> / {String(count).padStart(2, '0')}
+          <b>{String(realIndex + 1).padStart(2, '0')}</b> / {String(count).padStart(2, '0')}
         </span>
       </div>
 
@@ -231,24 +255,27 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
             touchStartX.current = null
             if (start == null) return
             const dx = e.changedTouches[0].clientX - start
-            if (Math.abs(dx) > 44) go(dx < 0 ? index + 1 : index - 1)
+            if (Math.abs(dx) > 44) {
+              if (dx < 0) goNext()
+              else goPrev()
+            }
           }}
         >
           <div className={styles.viewport}>
             <motion.div
               ref={trackRef}
               className={styles.track}
-              animate={{ x: -index * step }}
+              animate={{ x: -displayIndex * step }}
               transition={{ duration: reduce ? 0 : 0.7, ease: EASE }}
             >
-              {DESTINATIONS.map((d, i) => (
+              {EXTENDED_DESTINATIONS.map((d, i) => (
                 <DestinationCard
-                  key={d.name}
+                  key={`${d.name}-${i}`}
                   dest={d}
-                  active={i === index}
-                  z={i === index ? count + 2 : count - i}
+                  active={i === displayIndex}
+                  z={i === displayIndex ? count + 2 : Math.max(1, count - Math.abs(i - displayIndex))}
                   reduce={Boolean(reduce)}
-                  onSelect={() => go(i)}
+                  onSelect={() => setDisplayIndex(i)}
                 />
               ))}
             </motion.div>
@@ -259,10 +286,10 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
               <button
                 key={d.name}
                 type="button"
-                className={`${styles.dot} ${i === index ? styles.dotOn : ''}`}
-                onClick={() => go(i)}
+                className={`${styles.dot} ${i === realIndex ? styles.dotOn : ''}`}
+                onClick={() => goToRealIndex(i)}
                 aria-label={`Show ${d.name}`}
-                aria-current={i === index}
+                aria-current={i === realIndex}
               />
             ))}
           </div>
@@ -270,7 +297,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
       </div>
 
       <p className="sr-only" aria-live="polite">
-        Showing {active.name}, {active.country}. Destination {index + 1} of {count}.
+        Showing {active.name}, {active.country}. Destination {realIndex + 1} of {count}.
       </p>
     </section>
   )
@@ -316,6 +343,9 @@ function DestinationCard({
   onSelect: () => void
 }) {
   const { url } = useLocationImage(dest.query, { size: HERO_SIZE })
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window)
+  const shouldReduce = reduce || isMobile
+
   return (
     <motion.button
       type="button"
@@ -324,8 +354,8 @@ function DestinationCard({
       onClick={onSelect}
       aria-label={`${dest.name}, ${dest.country}`}
       aria-current={active}
-      animate={reduce ? undefined : { scale: active ? 1.06 : 0.92, y: active ? -6 : 8 }}
-      whileHover={reduce ? undefined : { y: active ? -14 : 0 }}
+      animate={shouldReduce ? undefined : { scale: active ? 1.06 : 0.92, y: active ? -6 : 8 }}
+      whileHover={shouldReduce ? undefined : { y: active ? -14 : 0 }}
       transition={{ type: 'spring', stiffness: 280, damping: 26 }}
     >
       <span

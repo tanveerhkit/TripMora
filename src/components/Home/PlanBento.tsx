@@ -23,13 +23,154 @@ const DEFAULT_SPOTLIGHT_RADIUS = 300
 const DEFAULT_GLOW_COLOR = '52, 211, 153' // TripMora emerald (--brand-1)
 const MOBILE_BREAKPOINT = 768
 
+function DreamLandscapeGraphic() {
+  return (
+    <div className="tm-bento-card__graphic-container" aria-hidden="true">
+      <svg
+        viewBox="0 0 280 180"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="tm-bento-card__graphic"
+        preserveAspectRatio="xMaxYMax meet"
+      >
+        <defs>
+          <radialGradient id="sunGlowGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#34d399" stopOpacity="0.85" />
+            <stop offset="40%" stopColor="#10b981" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="#047857" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="hill1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#065f46" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#022c22" stopOpacity="0.95" />
+          </linearGradient>
+          <linearGradient id="hill2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#047857" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#064e3b" stopOpacity="0.98" />
+          </linearGradient>
+          <linearGradient id="riverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#6ee7b7" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#059669" stopOpacity="0.4" />
+          </linearGradient>
+        </defs>
+
+        <circle cx="160" cy="100" r="85" fill="url(#sunGlowGrad)" />
+        <circle cx="160" cy="102" r="34" fill="#5eead4" />
+
+        <path
+          d="M30 82 Q45 70 65 82 Q78 76 90 82 L90 90 L30 90 Z"
+          fill="#34d399"
+          fillOpacity="0.22"
+        />
+        <path
+          d="M200 74 Q215 64 235 74 Q248 68 260 74 L260 82 L200 82 Z"
+          fill="#34d399"
+          fillOpacity="0.18"
+        />
+
+        <path
+          d="M0 135 Q70 100 140 125 Q210 105 280 130 L280 180 L0 180 Z"
+          fill="url(#hill1Grad)"
+        />
+
+        <path
+          d="M0 152 Q80 132 160 148 Q230 132 280 146 L280 180 L0 180 Z"
+          fill="url(#hill2Grad)"
+        />
+
+        <path
+          d="M158 136 C152 144 172 152 160 162 C150 172 190 174 175 180 L205 180 C210 168 178 162 185 154 C192 144 172 138 166 136 Z"
+          fill="url(#riverGrad)"
+        />
+      </svg>
+    </div>
+  )
+}
+
+function PlanMapGraphic() {
+  return (
+    <div className="tm-bento-card__graphic-container" aria-hidden="true">
+      <svg
+        viewBox="0 0 280 180"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="tm-bento-card__graphic"
+        preserveAspectRatio="xMaxYMax meet"
+      >
+        <defs>
+          <linearGradient id="mapFold1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#064e3b" stopOpacity="0.65" />
+            <stop offset="100%" stopColor="#022c22" stopOpacity="0.85" />
+          </linearGradient>
+          <linearGradient id="mapFold2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#047857" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#065f46" stopOpacity="0.75" />
+          </linearGradient>
+          <filter id="pinGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#34d399" floodOpacity="0.5" />
+          </filter>
+        </defs>
+
+        <g transform="translate(10, 10)">
+          <polygon
+            points="15,65 75,45 75,160 15,180"
+            fill="url(#mapFold1)"
+            stroke="#10b981"
+            strokeOpacity="0.35"
+            strokeWidth="1"
+          />
+          <polygon
+            points="75,45 135,68 135,183 75,160"
+            fill="url(#mapFold2)"
+            stroke="#10b981"
+            strokeOpacity="0.35"
+            strokeWidth="1"
+          />
+          <polygon
+            points="135,68 195,45 195,160 135,183"
+            fill="url(#mapFold1)"
+            stroke="#10b981"
+            strokeOpacity="0.35"
+            strokeWidth="1"
+          />
+          <polygon
+            points="195,45 255,68 255,183 195,160"
+            fill="url(#mapFold2)"
+            stroke="#10b981"
+            strokeOpacity="0.35"
+            strokeWidth="1"
+          />
+
+          <line x1="75" y1="45" x2="75" y2="160" stroke="#34d399" strokeOpacity="0.25" strokeWidth="1.5" />
+          <line x1="135" y1="68" x2="135" y2="183" stroke="#34d399" strokeOpacity="0.25" strokeWidth="1.5" />
+          <line x1="195" y1="45" x2="195" y2="160" stroke="#34d399" strokeOpacity="0.25" strokeWidth="1.5" />
+
+          <path
+            d="M40 140 Q90 120 130 145 T215 95"
+            stroke="#34d399"
+            strokeWidth="2.5"
+            strokeDasharray="5 5"
+            strokeLinecap="round"
+          />
+
+          <g filter="url(#pinGlow)" transform="translate(196, 62)">
+            <path
+              d="M 18 0 C 8.05 0 0 8.05 0 18 C 0 29.7 18 46 18 46 C 18 46 36 29.7 36 18 C 36 8.05 27.95 0 18 0 Z"
+              fill="#10b981"
+            />
+            <circle cx="18" cy="16" r="6" fill="#022c22" />
+          </g>
+        </g>
+      </svg>
+    </div>
+  )
+}
+
 interface Card {
-  kind: 'action' | 'feature'
-  mode?: HomeMode
+  kind: 'action'
+  mode: HomeMode
   icon: IconName
-  label: string
   title: string
-  description: string
+  graphic: 'dream' | 'plan'
 }
 
 const CARDS: Card[] = [
@@ -37,47 +178,15 @@ const CARDS: Card[] = [
     kind: 'action',
     mode: 'dream',
     icon: 'sparkles',
-    label: 'Not sure where',
-    title: 'Dreaming a trip',
-    description:
-      'Answer a few quick questions and get matched with destinations that fit exactly how you like to travel.',
+    title: 'Dream a trip',
+    graphic: 'dream',
   },
   {
     kind: 'action',
     mode: 'describe',
     icon: 'map',
-    label: 'Know the place',
-    title: 'Describe your trip',
-    description:
-      'Tell TripMora where you’re headed in your own words and get an editable day-by-day itinerary back.',
-  },
-  {
-    kind: 'feature',
-    icon: 'calendar',
-    label: 'Structured',
-    title: 'Day-by-day plans',
-    description: 'Every trip laid out day by day, stop by stop.',
-  },
-  {
-    kind: 'feature',
-    icon: 'edit',
-    label: 'Editable',
-    title: 'Tweak everything',
-    description: 'Reorder stops, edit times, add or remove — it’s yours.',
-  },
-  {
-    kind: 'feature',
-    icon: 'wallet',
-    label: 'Practical',
-    title: 'Budgets & tips',
-    description: 'Cost breakdowns, packing lists and local know-how.',
-  },
-  {
-    kind: 'feature',
-    icon: 'bookmark',
-    label: 'Saved',
-    title: 'Always saved',
-    description: 'Your trips are stored so you can pick up any time.',
+    title: 'Plan a trip',
+    graphic: 'plan',
   },
 ]
 
@@ -503,7 +612,11 @@ const usePrefersReducedMotion = () => {
 const useMobileDetection = () => {
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT)
+    const check = () =>
+      setIsMobile(
+        window.innerWidth <= MOBILE_BREAKPOINT ||
+          ('ontouchstart' in window && window.innerWidth <= 1024),
+      )
     check()
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
@@ -558,7 +671,7 @@ export function PlanBento({
       )}
 
       <div className="tm-bento-grid tm-bento-section" ref={gridRef}>
-        {CARDS.map((card, index) => {
+        {CARDS.map((card) => {
           const cls = [
             'tm-bento-card',
             `tm-bento-card--${card.kind}`,
@@ -574,26 +687,23 @@ export function PlanBento({
             <>
               <div className="tm-bento-card__header">
                 <span className="tm-bento-card__icon">
-                  <Icon name={card.icon} size={card.kind === 'action' ? 22 : 18} />
+                  <Icon name={card.icon} size={22} />
                 </span>
-                <span className="tm-bento-card__label">{card.label}</span>
-                {card.kind === 'action' && (
-                  <span className="tm-bento-card__go" aria-hidden="true">
-                    <Icon name="arrow" size={18} />
-                  </span>
-                )}
+                <span className="tm-bento-card__go" aria-hidden="true">
+                  <Icon name="arrow" size={16} />
+                </span>
               </div>
               <div className="tm-bento-card__content">
-                <span className="tm-bento-card__title">{card.title}</span>
-                <span className="tm-bento-card__description">{card.description}</span>
+                <h3 className="tm-bento-card__title">{card.title}</h3>
               </div>
+              {card.graphic === 'dream' ? <DreamLandscapeGraphic /> : <PlanMapGraphic />}
             </>
           )
 
           if (enableStars) {
             return (
               <ParticleCard
-                key={index}
+                key={card.mode}
                 className={cls}
                 style={cardStyle}
                 disableAnimations={shouldDisableAnimations}
@@ -602,31 +712,27 @@ export function PlanBento({
                 enableTilt={enableTilt}
                 clickEffect={clickEffect}
                 enableMagnetism={enableMagnetism}
-                interactive={card.kind === 'action'}
-                ariaLabel={card.kind === 'action' ? card.title : undefined}
-                onActivate={card.mode ? () => onChoose(card.mode as HomeMode) : undefined}
+                interactive={true}
+                ariaLabel={card.title}
+                onActivate={() => onChoose(card.mode)}
               >
                 {body}
               </ParticleCard>
             )
           }
 
-          // No-particles fallback: still accessible actions, static features.
-          return card.kind === 'action' ? (
+          // No-particles fallback: accessible action buttons
+          return (
             <button
-              key={index}
+              key={card.mode}
               type="button"
               className={`${cls} tm-particle-container`}
               style={cardStyle}
               aria-label={card.title}
-              onClick={() => card.mode && onChoose(card.mode)}
+              onClick={() => onChoose(card.mode)}
             >
               {body}
             </button>
-          ) : (
-            <div key={index} className={`${cls} tm-particle-container`} style={cardStyle}>
-              {body}
-            </div>
           )
         })}
       </div>

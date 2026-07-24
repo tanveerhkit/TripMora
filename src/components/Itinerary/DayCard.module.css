@@ -9,6 +9,8 @@
   gap: var(--sp-3);
   box-shadow: var(--shadow-sm);
   animation: fadeInUp var(--dur-3) var(--ease-out) both;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 350px;
 }
 
 .header {

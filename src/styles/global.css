@@ -208,11 +208,15 @@
     --bg-elevated: #f6fbf8;
     --inset: #ffffff;
     --inset-hover: #ffffff;
+    --shadow-lg: 0 4px 14px rgba(6, 60, 38, 0.1);
+    --shadow-md: 0 2px 8px rgba(6, 60, 38, 0.08);
   }
   :root[data-theme='dark'] {
     --bg-elevated: #16291d;
     --inset: #1b3024;
     --inset-hover: #1b3024;
+    --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
   /* Strip out backdrop-filter on mobile to prevent compositing jank */
   *,
@@ -246,6 +250,8 @@
     --bg-elevated: #16291d;
     --inset: #1b3024;
     --inset-hover: #1b3024;
+    --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 }
 
