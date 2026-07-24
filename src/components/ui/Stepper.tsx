@@ -138,20 +138,40 @@ function StepContentWrapper({
   children: ReactNode
   className: string
 }) {
-  const [parentHeight, setParentHeight] = useState(0)
+  const [parentHeight, setParentHeight] = useState<number | 'auto'>('auto')
+  const [isAnimating, setIsAnimating] = useState(false)
 
   return (
     <motion.div
       className={className}
-      style={{ position: 'relative', overflow: 'hidden' }}
+      style={{
+        position: 'relative',
+        overflow: isAnimating ? 'hidden' : 'visible',
+      }}
       animate={{ height: parentHeight }}
       transition={{ type: 'spring', duration: 0.42, bounce: 0.14 }}
+      onAnimationComplete={() => {
+        setParentHeight('auto')
+        setIsAnimating(false)
+      }}
     >
-      <AnimatePresence initial={false} mode="sync" custom={direction}>
+      <AnimatePresence
+        initial={false}
+        mode="sync"
+        custom={direction}
+        onExitComplete={() => {
+          setParentHeight('auto')
+          setIsAnimating(false)
+        }}
+      >
         <SlideTransition
           key={currentStep}
           direction={direction}
-          onHeightReady={(height) => setParentHeight(height)}
+          onHeightReady={(height) => {
+            setIsAnimating(true)
+            setParentHeight(height)
+          }}
+          isAnimating={isAnimating}
         >
           {children}
         </SlideTransition>
@@ -164,15 +184,24 @@ function SlideTransition({
   children,
   direction,
   onHeightReady,
+  isAnimating,
 }: {
   children: ReactNode
   direction: number
   onHeightReady: (height: number) => void
+  isAnimating: boolean
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   useLayoutEffect(() => {
-    if (containerRef.current) onHeightReady(containerRef.current.offsetHeight)
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      const scrollH = containerRef.current.scrollHeight
+      const height = Math.max(rect.height, scrollH)
+      if (height > 0) {
+        onHeightReady(height)
+      }
+    }
   }, [children, onHeightReady])
 
   return (
@@ -184,7 +213,7 @@ function SlideTransition({
       animate="center"
       exit="exit"
       transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1] }}
-      className={styles.slide}
+      className={`${styles.slide} ${isAnimating ? styles.slideAnimating : ''}`}
     >
       {children}
     </motion.div>
