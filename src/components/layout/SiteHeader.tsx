@@ -17,7 +17,6 @@ interface Props {
   onOpenSidebar: () => void
   onNavPlanner: () => void
   onNavDestinations: () => void
-  onSearch: () => void
 }
 
 export function SiteHeader({
@@ -29,7 +28,6 @@ export function SiteHeader({
   onOpenSidebar,
   onNavPlanner,
   onNavDestinations,
-  onSearch,
 }: Props) {
   const [scrolled, setScrolled] = useState(false)
 
@@ -75,14 +73,6 @@ export function SiteHeader({
         )}
 
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.iconBtn}
-            onClick={onSearch}
-            aria-label="Search a destination"
-          >
-            <Icon name="map" size={18} />
-          </button>
           <button
             type="button"
             className={styles.iconBtn}
