@@ -381,10 +381,13 @@
   .search {
     max-width: none;
   }
+  .ctas .specularCta,
   .primary,
-  .secondary,
-  .specularCta {
-    flex: 1;
-    justify-content: center;
+  .secondary {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: fit-content;
+    padding: 10px 20px;
+    font-size: 0.88rem;
   }
 }

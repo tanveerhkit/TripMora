@@ -86,7 +86,7 @@ export function SiteHeader({
             onClick={onToggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={18} />
+            <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={20} />
           </button>
 
           {notHome ? (
@@ -105,7 +105,7 @@ export function SiteHeader({
             onClick={onOpenSidebar}
             aria-label="Menu and saved trips"
           >
-            <Icon name="menu" size={18} />
+            <Icon name="menu" size={22} />
           </button>
         </div>
       </div>

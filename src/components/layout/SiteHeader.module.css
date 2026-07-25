@@ -114,28 +114,34 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   flex: none;
+  margin-left: auto;
 }
 .iconBtn {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
   color: inherit;
-  transition: background var(--dur-1) ease, transform var(--dur-2) var(--ease-spring);
+  background: transparent;
+  border: none;
+  opacity: 0.88;
+  transition: opacity var(--dur-1) ease, background var(--dur-1) ease, transform var(--dur-2) var(--ease-spring);
 }
 .floating .iconBtn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  border: none;
 }
 @media (hover: hover) {
   .floating .iconBtn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    opacity: 1;
   }
   .solid .iconBtn:hover {
     background: var(--surface-2);
+    opacity: 1;
   }
 }
 .iconBtn:active {
