@@ -1,7 +1,6 @@
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type MouseEvent as ReactMouseEvent,
@@ -84,6 +83,11 @@ interface Props {
 export function FeaturedHero({ onOpenPlanner }: Props) {
   const count = DESTINATIONS.length
   const [isMobile, setIsMobile] = useState(getIsMobile)
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const reduce = useReducedMotion()
+  const heroRef = useRef<HTMLElement>(null)
+  const touchStartX = useRef<number | null>(null)
 
   useEffect(() => {
     const check = () => setIsMobile(getIsMobile())
@@ -91,50 +95,21 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  const repeatCount = isMobile ? 3 : 5
-  const extendedDestinations = Array.from({ length: repeatCount }, () => DESTINATIONS).flat()
-  const startOffset = count * Math.floor(repeatCount / 2)
+  const active = DESTINATIONS[index]
 
-  const [displayIndex, setDisplayIndex] = useState(startOffset)
-  const [paused, setPaused] = useState(false)
-  const reduce = useReducedMotion()
+  const goNext = useCallback(() => {
+    setIndex((prev) => (prev + 1) % count)
+  }, [count])
 
-  const realIndex = ((displayIndex % count) + count) % count
-  const active = DESTINATIONS[realIndex]
-
-  const heroRef = useRef<HTMLElement>(null)
-  const touchStartX = useRef<number | null>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [step, setStep] = useState(0)
-
-  const goNext = useCallback(() => setDisplayIndex((p) => p + 1), [])
-  const goPrev = useCallback(() => setDisplayIndex((p) => p - 1), [])
-
-  const goToRealIndex = useCallback(
-    (targetReal: number) => {
-      const currentReal = ((displayIndex % count) + count) % count
-      let diff = targetReal - currentReal
-      if (diff > count / 2) diff -= count
-      if (diff < -count / 2) diff += count
-      setDisplayIndex((prev) => prev + diff)
-    },
-    [displayIndex, count],
-  )
+  const goPrev = useCallback(() => {
+    setIndex((prev) => (prev - 1 + count) % count)
+  }, [count])
 
   useEffect(() => {
-    if (paused || reduce || isMobile) return
-    const id = window.setInterval(() => setDisplayIndex((p) => p + 1), ROTATE_MS)
+    if (paused || reduce) return
+    const id = window.setInterval(goNext, ROTATE_MS)
     return () => window.clearInterval(id)
-  }, [paused, reduce, isMobile])
-
-  useEffect(() => {
-    const minBound = count
-    const maxBound = count * (repeatCount - 1)
-    if (displayIndex >= maxBound || displayIndex <= minBound) {
-      const norm = count * Math.floor(repeatCount / 2) + realIndex
-      setDisplayIndex(norm)
-    }
-  }, [displayIndex, count, realIndex, repeatCount])
+  }, [paused, reduce, goNext])
 
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -154,23 +129,6 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
     my.set(0)
   }
 
-  useLayoutEffect(() => {
-    const el = trackRef.current
-    if (!el) return
-    const measure = () => {
-      const cards = el.children
-      if (cards.length < 2) return
-      const first = cards[0] as HTMLElement
-      const second = cards[1] as HTMLElement
-      setStep(second.offsetLeft - first.offsetLeft)
-    }
-    measure()
-    if (typeof ResizeObserver === 'undefined') return
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
   return (
     <section
       ref={heroRef}
@@ -185,13 +143,26 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
       }}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
+      onTouchStart={(e) => {
+        touchStartX.current = e.touches[0].clientX
+      }}
+      onTouchEnd={(e) => {
+        const start = touchStartX.current
+        touchStartX.current = null
+        if (start == null) return
+        const dx = e.changedTouches[0].clientX - start
+        if (Math.abs(dx) > 44) {
+          if (dx < 0) goNext()
+          else goPrev()
+        }
+      }}
     >
       <motion.div className={styles.bg} style={isMobile ? undefined : { x: bgX, y: bgY }} aria-hidden="true">
         {DESTINATIONS.map((d, i) => (
           <HeroLayer
             key={d.name}
             query={d.query}
-            active={i === realIndex}
+            active={i === index}
             reduce={Boolean(reduce)}
             isMobile={isMobile}
           />
@@ -207,15 +178,15 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
               key={d.name}
               type="button"
               tabIndex={-1}
-              className={`${styles.tick} ${i === realIndex ? styles.tickOn : ''}`}
-              onClick={() => goToRealIndex(i)}
+              className={`${styles.tick} ${i === index ? styles.tickOn : ''}`}
+              onClick={() => setIndex(i)}
             >
               <span className={styles.tickNum}>{String(i + 1).padStart(2, '0')}</span>
             </button>
           ))}
         </div>
         <span className={styles.railCount}>
-          <b>{String(realIndex + 1).padStart(2, '0')}</b> / {String(count).padStart(2, '0')}
+          <b>{String(index + 1).padStart(2, '0')}</b> / {String(count).padStart(2, '0')}
         </span>
       </div>
 
@@ -263,58 +234,16 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
               </span>
             </SpecularButton>
           </div>
-        </div>
-
-        <div
-          className={styles.right}
-          style={{ touchAction: 'pan-y' }}
-          onTouchStart={(e) => {
-            touchStartX.current = e.touches[0].clientX
-          }}
-          onTouchEnd={(e) => {
-            const start = touchStartX.current
-            touchStartX.current = null
-            if (start == null) return
-            const dx = e.changedTouches[0].clientX - start
-            if (Math.abs(dx) > 44) {
-              if (dx < 0) goNext()
-              else goPrev()
-            }
-          }}
-        >
-          <div className={styles.viewport} style={{ touchAction: 'pan-y' }}>
-            <motion.div
-              ref={trackRef}
-              className={styles.track}
-              style={{ touchAction: 'pan-y' }}
-              animate={{ x: -displayIndex * step }}
-              transition={{ duration: reduce || isMobile ? 0.25 : 0.7, ease: EASE }}
-            >
-              {extendedDestinations.map((d, i) => (
-                <DestinationCard
-                  key={`${d.name}-${i}`}
-                  dest={d}
-                  index={i}
-                  displayIndex={displayIndex}
-                  active={i === displayIndex}
-                  z={i === displayIndex ? count + 2 : Math.max(1, count - Math.abs(i - displayIndex))}
-                  reduce={Boolean(reduce)}
-                  isMobile={isMobile}
-                  onSelect={() => setDisplayIndex(i)}
-                />
-              ))}
-            </motion.div>
-          </div>
 
           <div className={styles.dots}>
             {DESTINATIONS.map((d, i) => (
               <button
                 key={d.name}
                 type="button"
-                className={`${styles.dot} ${i === realIndex ? styles.dotOn : ''}`}
-                onClick={() => goToRealIndex(i)}
+                className={`${styles.dot} ${i === index ? styles.dotOn : ''}`}
+                onClick={() => setIndex(i)}
                 aria-label={`Show ${d.name}`}
-                aria-current={i === realIndex}
+                aria-current={i === index}
               />
             ))}
           </div>
@@ -322,7 +251,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
       </div>
 
       <p className="sr-only" aria-live="polite">
-        Showing {active.name}, {active.country}. Destination {realIndex + 1} of {count}.
+        Showing {active.name}, {active.country}. Destination {index + 1} of {count}.
       </p>
     </section>
   )
@@ -341,8 +270,6 @@ function HeroLayer({
 }) {
   const { url } = useLocationImage(query, { size: isMobile ? 800 : 1600 })
 
-  if (isMobile && !active) return null
-
   return (
     <motion.div
       className={styles.bgLayer}
@@ -354,86 +281,6 @@ function HeroLayer({
         scale: { duration: reduce || isMobile ? 0 : 9, ease: 'easeOut' },
       }}
     />
-  )
-}
-
-function DestinationCard({
-  dest,
-  index,
-  displayIndex,
-  active,
-  z,
-  reduce,
-  isMobile,
-  onSelect,
-}: {
-  dest: Destination
-  index: number
-  displayIndex: number
-  active: boolean
-  z: number
-  reduce: boolean
-  isMobile: boolean
-  onSelect: () => void
-}) {
-  const isNear = Math.abs(index - displayIndex) <= (isMobile ? 2 : 4)
-  const { url } = useLocationImage(isNear ? dest.query : '', { size: isMobile ? 400 : 800 })
-
-  if (isMobile) {
-    return (
-      <button
-        type="button"
-        className={`${styles.card} ${active ? styles.cardOn : ''}`}
-        style={{ zIndex: z, touchAction: 'pan-y' }}
-        onClick={onSelect}
-        aria-label={`${dest.name}, ${dest.country}`}
-        aria-current={active}
-      >
-        <span
-          className={styles.cardImg}
-          style={url ? { backgroundImage: `url("${url}")` } : undefined}
-        >
-          {!url && (
-            <span className={styles.cardFallback} aria-hidden="true">
-              <Icon name="map" size={22} />
-            </span>
-          )}
-        </span>
-        <span className={styles.cardMeta}>
-          <b>{dest.name}</b>
-          <span>{dest.country}</span>
-        </span>
-      </button>
-    )
-  }
-
-  return (
-    <motion.button
-      type="button"
-      className={`${styles.card} ${active ? styles.cardOn : ''}`}
-      style={{ zIndex: z }}
-      onClick={onSelect}
-      aria-label={`${dest.name}, ${dest.country}`}
-      aria-current={active}
-      animate={reduce ? undefined : { scale: active ? 1.06 : 0.92, y: active ? -6 : 8 }}
-      whileHover={reduce ? undefined : { y: active ? -14 : 0 }}
-      transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-    >
-      <span
-        className={styles.cardImg}
-        style={url ? { backgroundImage: `url("${url}")` } : undefined}
-      >
-        {!url && (
-          <span className={styles.cardFallback} aria-hidden="true">
-            <Icon name="map" size={22} />
-          </span>
-        )}
-      </span>
-      <span className={styles.cardMeta}>
-        <b>{dest.name}</b>
-        <span>{dest.country}</span>
-      </span>
-    </motion.button>
   )
 }
 
