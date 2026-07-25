@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
 import { Logo } from '../ui/Logo'
+import { ShinyText } from '../ui/ShinyText'
 import type { ThemeChoice } from '../../lib/storage'
 import styles from './SiteHeader.module.css'
 
@@ -60,8 +61,15 @@ export function SiteHeader({
         <button type="button" className={styles.brand} onClick={onHome} aria-label="TripMora home">
           <Logo />
           <span className={styles.brandName}>
-            <b>TripMora</b>
-            <span>AI trip planner</span>
+            <b className={styles.brandTitle}>
+              <ShinyText
+                text="TripMora"
+                speed={3}
+                color={solid && theme === 'light' ? '#0d9488' : '#19d3a6'}
+                shineColor="#ffffff"
+                spread={120}
+              />
+            </b>
           </span>
         </button>
 

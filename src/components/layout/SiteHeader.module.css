@@ -24,10 +24,6 @@
   border-bottom: 1px solid transparent;
   color: #fff;
 }
-.floating .brandName b {
-  color: #fff;
-  -webkit-text-fill-color: #fff;
-}
 .floating .brandName span {
   color: rgba(255, 255, 255, 0.7);
 }
@@ -51,24 +47,15 @@
   flex: none;
 }
 .brandName {
-  display: grid;
-  line-height: 1.05;
+  display: flex;
+  align-items: center;
 }
 .brandName b {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.45rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  background: var(--brand-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.brandName span {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-faint);
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 /* ---------- nav ---------- */
