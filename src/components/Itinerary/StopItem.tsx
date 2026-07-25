@@ -6,6 +6,7 @@ import { formatDuration, formatMoney, googleImagesUrl, googleMapsUrl } from '../
 import type { Stop, StopCategory } from '../../types/itinerary'
 import { Icon } from '../ui/Icon'
 import { Button } from '../ui/Button'
+import BubbleMenu, { type MenuItem } from '../ui/BubbleMenu'
 import styles from './StopItem.module.css'
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 export function StopItem({ stop, currency, destination, onChange, onDelete }: Props) {
   const [expanded, setExpanded] = useState(true)
   const [editing, setEditing] = useState(false)
+  const [showWatchOutMenu, setShowWatchOutMenu] = useState(false)
 
   const {
     setNodeRef,
@@ -40,7 +42,24 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
   // Older saved trips (pre-watchOuts) load straight from storage without it.
   const watchOuts = stop.watchOuts ?? []
   const missed = stop.status === 'missed'
-  const hasDetails = Boolean(stop.description || stop.tip || watchOuts.length)
+  const hasDetails = Boolean(stop.description || stop.tip)
+
+  const watchOutItems: MenuItem[] = watchOuts.length > 0
+    ? watchOuts.map((w, idx) => ({
+        label: w,
+        rotation: idx % 2 === 0 ? -6 : 6,
+        hoverStyles: {
+          bgColor: idx % 3 === 0 ? '#ef4444' : idx % 3 === 1 ? '#f59e0b' : '#8b5cf6',
+          textColor: '#ffffff'
+        }
+      }))
+    : [
+        {
+          label: 'No specific watch-outs for this stop. Enjoy!',
+          rotation: 0,
+          hoverStyles: { bgColor: '#10b981', textColor: '#ffffff' }
+        }
+      ]
 
   return (
     <li
@@ -95,6 +114,17 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
                 aria-pressed={missed}
                 title={missed ? 'Unmark missed' : "Mark as missed — you didn't make it here"}
                 onClick={() => onChange({ status: missed ? 'planned' : 'missed' })}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                icon="eye"
+                iconOnly
+                className={watchOuts.length > 0 ? styles.watchOutBtnActive : undefined}
+                aria-label={watchOuts.length > 0 ? `View ${watchOuts.length} Watch-outs` : 'View Watch-outs'}
+                aria-pressed={showWatchOutMenu}
+                title={watchOuts.length > 0 ? `Watch-outs (${watchOuts.length})` : 'Watch-outs'}
+                onClick={() => setShowWatchOutMenu(true)}
               />
               <Button
                 variant="ghost"
@@ -179,19 +209,6 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
           {hasDetails && expanded && (
             <div className={styles.details}>
               {stop.description && <p className={styles.desc}>{stop.description}</p>}
-              {watchOuts.length > 0 && (
-                <div className={styles.watchOuts}>
-                  <span className={styles.watchHead}>
-                    <Icon name="warning" size={14} />
-                    Watch-outs
-                  </span>
-                  <ul className={styles.watchList}>
-                    {watchOuts.map((w, i) => (
-                      <li key={i}>{w}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
               {stop.tip && (
                 <p className={styles.tip}>
                   <Icon name="bulb" size={15} />
@@ -202,6 +219,21 @@ export function StopItem({ stop, currency, destination, onChange, onDelete }: Pr
           )}
         </div>
       )}
+      <BubbleMenu
+        isOpen={showWatchOutMenu}
+        onClose={() => setShowWatchOutMenu(false)}
+        hideNav
+        useFixedPosition
+        title={
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Icon name="warning" size={18} style={{ color: '#f59e0b' }} />
+            <span>Watch-outs: {stop.title}</span>
+          </span>
+        }
+        items={watchOutItems}
+        menuBg="#ffffff"
+        menuContentColor="#0f172a"
+      />
     </li>
   )
 }

@@ -136,6 +136,16 @@
   flex: none;
 }
 
+.watchOutBtnActive {
+  color: var(--warning) !important;
+  background: color-mix(in srgb, var(--warning) 12%, transparent) !important;
+}
+@media (hover: hover) {
+  .watchOutBtnActive:hover {
+    background: color-mix(in srgb, var(--warning) 22%, transparent) !important;
+  }
+}
+
 .disclosure {
   color: var(--text-muted);
   padding: 5px;

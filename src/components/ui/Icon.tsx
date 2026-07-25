@@ -52,6 +52,7 @@ export type IconName =
   | 'flag'
   | 'circleCheck'
   | 'flame'
+  | 'eye'
 
 const PATHS: Record<IconName, JSX.Element> = {
   compass: (
@@ -266,6 +267,12 @@ const PATHS: Record<IconName, JSX.Element> = {
   ),
   flame: (
     <path d="M12 3c3 3.4 5 5.8 5 8.9a5 5 0 0 1-10 0c0-1.6.7-3 1.9-4-.1 1.5.8 2.5 1.9 2.5 1.3 0 2-1.2 1.5-2.8C11.8 6.2 11.3 4.7 12 3Z" />
+  ),
+  eye: (
+    <>
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
   ),
 }
 
