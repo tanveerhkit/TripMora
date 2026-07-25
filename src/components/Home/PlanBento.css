@@ -214,3 +214,28 @@ button.tm-bento-card {
   z-index: 200 !important;
   pointer-events: none;
 }
+
+/* ---------- theme-aware bento card graphics ---------- */
+.tm-graphic-dark,
+.tm-graphic-light {
+  width: 100%;
+  height: 100%;
+}
+
+:root[data-theme='dark'] .tm-graphic-light,
+:root:not([data-theme]) .tm-graphic-light {
+  display: none !important;
+}
+
+:root[data-theme='dark'] .tm-graphic-dark,
+:root:not([data-theme]) .tm-graphic-dark {
+  display: block !important;
+}
+
+:root[data-theme='light'] .tm-graphic-dark {
+  display: none !important;
+}
+
+:root[data-theme='light'] .tm-graphic-light {
+  display: block !important;
+}

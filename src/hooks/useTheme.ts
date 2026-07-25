@@ -19,8 +19,24 @@ export function useTheme() {
     saveTheme(theme)
   }, [theme])
 
+  useEffect(() => {
+    const syncFromDOM = () => {
+      const current = document.documentElement.getAttribute('data-theme') as ThemeChoice
+      if (current && (current === 'light' || current === 'dark')) {
+        setTheme(current)
+      }
+    }
+    const observer = new MutationObserver(syncFromDOM)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
+
   const toggle = useCallback(() => {
-    setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
+    setTheme((t) => {
+      const next = t === 'dark' ? 'light' : 'dark'
+      document.documentElement.setAttribute('data-theme', next)
+      return next
+    })
   }, [])
 
   return { theme, toggle }

@@ -23,65 +23,205 @@ const DEFAULT_SPOTLIGHT_RADIUS = 300
 const DEFAULT_GLOW_COLOR = '52, 211, 153' // TripMora emerald (--brand-1)
 const MOBILE_BREAKPOINT = 768
 
+function DarkNightLandscape() {
+  return (
+    <svg
+      viewBox="0 0 280 180"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="tm-bento-card__graphic"
+      preserveAspectRatio="xMaxYMax meet"
+    >
+      <defs>
+        <radialGradient id="moonGlowGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#55d396" stopOpacity="0.75" />
+          <stop offset="50%" stopColor="#169a50" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#040605" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="nightHill1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#1e2c26" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#0c1410" stopOpacity="0.98" />
+        </linearGradient>
+        <linearGradient id="nightHill2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#153625" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#081812" stopOpacity="0.98" />
+        </linearGradient>
+        <linearGradient id="nightRiverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#55d396" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#169a50" stopOpacity="0.3" />
+        </linearGradient>
+      </defs>
+
+      {/* Moon Glow Aura */}
+      <circle cx="190" cy="65" r="75" fill="url(#moonGlowGrad)" />
+
+      {/* Crescent Moon */}
+      <g transform="translate(172, 45)">
+        <path
+          d="M 18 -18 A 24 24 0 1 0 36 22 A 20 20 0 1 1 18 -18 Z"
+          fill="#ffffff"
+          filter="drop-shadow(0px 0px 8px rgba(85, 211, 150, 0.8))"
+        />
+      </g>
+
+      {/* Twinkling Stars */}
+      <g fill="#ffffff">
+        {/* Star 1 */}
+        <path d="M 60 30 Q 60 36 66 36 Q 60 36 60 42 Q 60 36 54 36 Q 60 36 60 30 Z" fill="#55d396" />
+        {/* Star 2 */}
+        <path d="M 110 45 Q 110 49 114 49 Q 110 49 110 53 Q 110 49 106 49 Q 110 49 110 45 Z" fill="#ffffff" />
+        {/* Star 3 */}
+        <path d="M 235 35 Q 235 38 238 38 Q 235 38 235 41 Q 235 38 232 38 Q 235 38 235 35 Z" fill="#55d396" />
+        {/* Star 4 */}
+        <path d="M 40 70 Q 40 73 43 73 Q 40 73 40 76 Q 40 73 37 73 Q 40 73 40 70 Z" fill="#ffffff" />
+        {/* Star dots */}
+        <circle cx="85" cy="22" r="1.5" opacity="0.8" fill="#55d396" />
+        <circle cx="145" cy="30" r="1.2" opacity="0.9" />
+        <circle cx="215" cy="20" r="1.5" opacity="0.7" fill="#55d396" />
+        <circle cx="25" cy="45" r="1" opacity="0.6" />
+        <circle cx="130" cy="65" r="1.2" opacity="0.8" fill="#55d396" />
+      </g>
+
+      {/* Shooting Star Arc */}
+      <path
+        d="M 45 25 Q 85 20 115 35"
+        stroke="url(#nightRiverGrad)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+        strokeDasharray="2 4"
+      />
+
+      {/* Night Clouds */}
+      <path
+        d="M30 82 Q45 74 65 82 Q78 78 90 82 L90 90 L30 90 Z"
+        fill="#55d396"
+        fillOpacity="0.14"
+      />
+      <path
+        d="M200 74 Q215 66 235 74 Q248 70 260 74 L260 82 L200 82 Z"
+        fill="#55d396"
+        fillOpacity="0.1"
+      />
+
+      {/* Silhouetted Night Hills */}
+      <path
+        d="M0 135 Q70 100 140 125 Q210 105 280 130 L280 180 L0 180 Z"
+        fill="url(#nightHill1Grad)"
+      />
+      <path
+        d="M0 152 Q80 132 160 148 Q230 132 280 146 L280 180 L0 180 Z"
+        fill="url(#nightHill2Grad)"
+      />
+
+      {/* Moonlight River */}
+      <path
+        d="M158 136 C152 144 172 152 160 162 C150 172 190 174 175 180 L205 180 C210 168 178 162 185 154 C192 144 172 138 166 136 Z"
+        fill="url(#nightRiverGrad)"
+      />
+    </svg>
+  )
+}
+
+function LightDayLandscape() {
+  return (
+    <svg
+      viewBox="0 0 280 180"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="tm-bento-card__graphic"
+      preserveAspectRatio="xMaxYMax meet"
+    >
+      <defs>
+        <radialGradient id="daySunGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.85" />
+          <stop offset="50%" stopColor="#34d399" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#ecfdf5" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="dayHill1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#10b981" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#047857" stopOpacity="0.95" />
+        </linearGradient>
+        <linearGradient id="dayHill2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#34d399" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#059669" stopOpacity="0.98" />
+        </linearGradient>
+        <linearGradient id="dayRiverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#10b981" stopOpacity="0.5" />
+        </linearGradient>
+      </defs>
+
+      {/* Sun Glow */}
+      <circle cx="170" cy="75" r="75" fill="url(#daySunGlow)" />
+
+      {/* Sun Disc */}
+      <circle
+        cx="170"
+        cy="75"
+        r="28"
+        fill="#f59e0b"
+        filter="drop-shadow(0px 0px 10px rgba(245, 158, 11, 0.7))"
+      />
+
+      {/* Sun Rays */}
+      <g stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" opacity="0.75">
+        <line x1="170" y1="39" x2="170" y2="31" />
+        <line x1="170" y1="111" x2="170" y2="119" />
+        <line x1="134" y1="75" x2="126" y2="75" />
+        <line x1="206" y1="75" x2="214" y2="75" />
+        <line x1="144" y1="49" x2="138" y2="43" />
+        <line x1="196" y1="101" x2="202" y2="107" />
+        <line x1="144" y1="101" x2="138" y2="107" />
+        <line x1="196" y1="49" x2="202" y2="43" />
+      </g>
+
+      {/* Morning Birds */}
+      <g stroke="#047857" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.8">
+        <path d="M 45 40 Q 51 34 57 40 Q 63 34 69 40" />
+        <path d="M 75 52 Q 79 48 83 52 Q 87 48 91 52" />
+      </g>
+
+      {/* Morning Clouds */}
+      <path
+        d="M25 82 Q42 70 65 82 Q80 74 95 82 L95 90 L25 90 Z"
+        fill="#ffffff"
+        fillOpacity="0.75"
+      />
+      <path
+        d="M195 72 Q212 62 235 72 Q248 66 265 72 L265 80 L195 80 Z"
+        fill="#ffffff"
+        fillOpacity="0.65"
+      />
+
+      {/* Sunny Hills */}
+      <path
+        d="M0 135 Q70 100 140 125 Q210 105 280 130 L280 180 L0 180 Z"
+        fill="url(#dayHill1Grad)"
+      />
+      <path
+        d="M0 152 Q80 132 160 148 Q230 132 280 146 L280 180 L0 180 Z"
+        fill="url(#dayHill2Grad)"
+      />
+
+      {/* River */}
+      <path
+        d="M158 136 C152 144 172 152 160 162 C150 172 190 174 175 180 L205 180 C210 168 178 162 185 154 C192 144 172 138 166 136 Z"
+        fill="url(#dayRiverGrad)"
+      />
+    </svg>
+  )
+}
+
 function DreamLandscapeGraphic() {
   return (
     <div className="tm-bento-card__graphic-container" aria-hidden="true">
-      <svg
-        viewBox="0 0 280 180"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="tm-bento-card__graphic"
-        preserveAspectRatio="xMaxYMax meet"
-      >
-        <defs>
-          <radialGradient id="sunGlowGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#34d399" stopOpacity="0.85" />
-            <stop offset="40%" stopColor="#10b981" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#047857" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="hill1Grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#065f46" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#022c22" stopOpacity="0.95" />
-          </linearGradient>
-          <linearGradient id="hill2Grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#047857" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#064e3b" stopOpacity="0.98" />
-          </linearGradient>
-          <linearGradient id="riverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#6ee7b7" stopOpacity="0.95" />
-            <stop offset="100%" stopColor="#059669" stopOpacity="0.4" />
-          </linearGradient>
-        </defs>
-
-        <circle cx="160" cy="100" r="85" fill="url(#sunGlowGrad)" />
-        <circle cx="160" cy="102" r="34" fill="#5eead4" />
-
-        <path
-          d="M30 82 Q45 70 65 82 Q78 76 90 82 L90 90 L30 90 Z"
-          fill="#34d399"
-          fillOpacity="0.22"
-        />
-        <path
-          d="M200 74 Q215 64 235 74 Q248 68 260 74 L260 82 L200 82 Z"
-          fill="#34d399"
-          fillOpacity="0.18"
-        />
-
-        <path
-          d="M0 135 Q70 100 140 125 Q210 105 280 130 L280 180 L0 180 Z"
-          fill="url(#hill1Grad)"
-        />
-
-        <path
-          d="M0 152 Q80 132 160 148 Q230 132 280 146 L280 180 L0 180 Z"
-          fill="url(#hill2Grad)"
-        />
-
-        <path
-          d="M158 136 C152 144 172 152 160 162 C150 172 190 174 175 180 L205 180 C210 168 178 162 185 154 C192 144 172 138 166 136 Z"
-          fill="url(#riverGrad)"
-        />
-      </svg>
+      <div className="tm-graphic-dark">
+        <DarkNightLandscape />
+      </div>
+      <div className="tm-graphic-light">
+        <LightDayLandscape />
+      </div>
     </div>
   )
 }
