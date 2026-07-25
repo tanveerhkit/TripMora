@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '../ui/Button'
 import { Icon } from '../ui/Icon'
+import { Strands } from '../ui/Strands'
 import styles from './RefinementBar.module.css'
 
 interface Props {
@@ -41,16 +42,35 @@ export function RefinementBar({ onRefine, loading = false }: Props) {
           aria-label="Refine your itinerary"
           disabled={loading}
         />
-        <Button
-          type="submit"
-          variant="primary"
-          size="sm"
-          icon="send"
-          loading={loading}
-          disabled={!trimmed}
-        >
-          Refine
-        </Button>
+        {loading ? (
+          <div className={styles.strandsLoadingBtn} title="Refining trip...">
+            <Strands
+              colors={['#55d396', '#169a50', '#ffffff', '#34d399']}
+              count={3}
+              speed={0.8}
+              amplitude={1.2}
+              waviness={1.2}
+              thickness={0.85}
+              glow={2.8}
+              taper={2.5}
+              spread={1.2}
+              intensity={0.85}
+              saturation={1.6}
+              opacity={1}
+              scale={1.4}
+            />
+          </div>
+        ) : (
+          <Button
+            type="submit"
+            variant="primary"
+            size="sm"
+            icon="send"
+            disabled={!trimmed}
+          >
+            Refine
+          </Button>
+        )}
       </form>
       <div className={styles.suggestions}>
         {SUGGESTIONS.map((s) => (

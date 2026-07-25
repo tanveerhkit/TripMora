@@ -70,66 +70,71 @@ export function DayCard({
   return (
     <section className={styles.day} aria-label={`Day ${index + 1}: ${day.title}`}>
       <header className={styles.header}>
-        <span className={styles.dayNo} aria-hidden="true">
-          {index + 1}
-        </span>
-
-        <button
-          type="button"
-          className={styles.titleBtn}
-          onClick={onToggleCollapse}
-          aria-expanded={!collapsed}
-        >
-          <span className={styles.titleMain}>
-            <span className={styles.titleText}>{editing ? 'Editing day' : day.title}</span>
-            {!editing && day.summary && <span className={styles.summary}>{day.summary}</span>}
+        <div className={styles.headerTop}>
+          <span className={styles.dayNo} aria-hidden="true">
+            {index + 1}
           </span>
-          <Icon
-            name="chevron"
-            size={18}
-            className={`${styles.chev} ${collapsed ? '' : styles.chevOpen}`}
-          />
-        </button>
 
-        <div className={styles.headerActions}>
-          <div className={styles.moveGroup}>
+          <button
+            type="button"
+            className={styles.titleBtn}
+            onClick={onToggleCollapse}
+            aria-expanded={!collapsed}
+          >
+            <span className={styles.titleText}>{editing ? 'Editing day' : day.title}</span>
+            <Icon
+              name="chevron"
+              size={18}
+              className={`${styles.chev} ${collapsed ? '' : styles.chevOpen}`}
+            />
+          </button>
+
+          <div className={styles.headerActions}>
+            <div className={styles.moveGroup}>
+              <Button
+                variant="ghost"
+                size="sm"
+                icon="chevron"
+                iconOnly
+                aria-label="Move day up"
+                className={styles.up}
+                disabled={index === 0}
+                onClick={() => onMoveDay(-1)}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                icon="chevron"
+                iconOnly
+                aria-label="Move day down"
+                disabled={index === total - 1}
+                onClick={() => onMoveDay(1)}
+              />
+            </div>
             <Button
               variant="ghost"
               size="sm"
-              icon="chevron"
+              icon="edit"
               iconOnly
-              aria-label="Move day up"
-              className={styles.up}
-              disabled={index === 0}
-              onClick={() => onMoveDay(-1)}
+              aria-label="Edit day"
+              onClick={() => setEditing((v) => !v)}
             />
             <Button
-              variant="ghost"
+              variant="danger"
               size="sm"
-              icon="chevron"
+              icon="trash"
               iconOnly
-              aria-label="Move day down"
-              disabled={index === total - 1}
-              onClick={() => onMoveDay(1)}
+              aria-label="Delete day"
+              onClick={onDayDelete}
             />
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            icon="edit"
-            iconOnly
-            aria-label="Edit day"
-            onClick={() => setEditing((v) => !v)}
-          />
-          <Button
-            variant="danger"
-            size="sm"
-            icon="trash"
-            iconOnly
-            aria-label="Delete day"
-            onClick={onDayDelete}
-          />
         </div>
+
+        {!editing && day.summary && (
+          <p className={styles.summary} onClick={onToggleCollapse}>
+            {day.summary}
+          </p>
+        )}
       </header>
 
       {editing && (

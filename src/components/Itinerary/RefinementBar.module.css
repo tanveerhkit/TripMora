@@ -41,6 +41,21 @@
   color: var(--text-faint);
 }
 
+.strandsLoadingBtn {
+  position: relative;
+  width: 92px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  border: 1.5px solid var(--brand-1);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 16px rgba(85, 211, 150, 0.45);
+  flex: none;
+}
+
 .suggestions {
   display: flex;
   flex-wrap: wrap;
