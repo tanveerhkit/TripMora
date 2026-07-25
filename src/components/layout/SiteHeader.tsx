@@ -65,7 +65,7 @@ export function SiteHeader({
               <ShinyText
                 text="TripMora"
                 speed={3}
-                color={solid && theme === 'light' ? '#0d9488' : '#19d3a6'}
+                color={solid && theme === 'light' ? '#169a50' : '#55d396'}
                 shineColor="#ffffff"
                 spread={120}
               />

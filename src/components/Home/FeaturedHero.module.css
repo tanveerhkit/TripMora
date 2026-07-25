@@ -1,7 +1,7 @@
 .hero {
-  /* luxury teal palette, scoped to the hero only */
-  --h-primary: #19d3a6;
-  --h-bg: #081b15;
+  /* luxury palette, scoped to the hero only */
+  --h-primary: #55d396;
+  --h-bg: #040605;
   --h-glass: rgba(255, 255, 255, 0.08);
   --h-glass-2: rgba(255, 255, 255, 0.14);
   --h-border: rgba(255, 255, 255, 0.16);

@@ -218,11 +218,11 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
             <SpecularButton
               size="md"
               radius={100}
-              tint="#19d3a6"
+              tint="#55d396"
               tintOpacity={0.92}
-              textColor="#04140e"
+              textColor="#040605"
               lineColor="#ffffff"
-              baseColor="#0a3b2d"
+              baseColor="#169a50"
               intensity={1.1}
               proximity={280}
               className={styles.specularCta}

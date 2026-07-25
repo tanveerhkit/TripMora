@@ -162,10 +162,15 @@
   }
 }
 
-.card {
+.questionCardGlow {
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
+  border: none !important;
+}
+
+.card {
+  width: 100%;
   border-radius: 24px;
   border: 1px solid var(--glass-border);
   background:
@@ -239,6 +244,11 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-3);
+}
+
+.glowWrapper {
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .optionChip {

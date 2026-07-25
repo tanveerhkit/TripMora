@@ -30,7 +30,9 @@ export function ToggleQuestion({ value, onChange }: Props) {
         >
           <span className={styles.toggleLabel}>{item.label}</span>
           <span className={styles.toggleHint}>
-            {item.label === 'Yes' ? 'We will factor that into destination fit.' : 'We can optimize more freely.'}
+            {item.label === 'Yes'
+              ? 'We will factor that into destination fit.'
+              : 'We can optimize more freely.'}
           </span>
         </motion.button>
       ))}
