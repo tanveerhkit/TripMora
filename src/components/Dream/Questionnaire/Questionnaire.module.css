@@ -522,11 +522,64 @@
     min-width: 0;
   }
 
+  .optionList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
   .optionChip {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
     width: 100%;
     min-width: 0;
-    min-height: 48px;
-    padding: 10px 14px 10px 16px;
-    font-size: 0.92rem;
+    min-height: 42px;
+    padding: 8px 4px;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    color: var(--text);
+  }
+
+  .optionChipSelected {
+    border-color: transparent;
+    background: transparent;
+    color: var(--text);
+    box-shadow: none;
+  }
+
+  .optionChipIcon {
+    order: 0;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid color-mix(in srgb, var(--border-strong) 80%, transparent);
+    background: transparent;
+    transition: border-color var(--dur-1) ease, background var(--dur-1) ease, box-shadow var(--dur-1) ease;
+  }
+
+  .optionChipSelected .optionChipIcon {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(25, 211, 166, 0.4);
+  }
+
+  .optionChipLabel {
+    order: 1;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: color var(--dur-1) ease;
+  }
+
+  .optionChipSelected .optionChipLabel {
+    color: var(--text);
+    font-weight: 800;
   }
 }

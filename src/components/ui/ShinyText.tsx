@@ -96,8 +96,8 @@ export function ShinyText({
     progress.set(0)
   }, [direction])
 
-  // Transform: p=0 -> 150% (shine off right), p=100 -> -50% (shine off left)
-  const backgroundPosition = useTransform(progress, (p) => `${150 - p * 2}% center`)
+  // Transform: p=0 -> 100% (base color), p=100 -> -100% (shine passes across text)
+  const backgroundPosition = useTransform(progress, (p) => `${100 - p * 2}% center`)
 
   const handleMouseEnter = useCallback(() => {
     if (pauseOnHover) setIsPaused(true)
@@ -107,12 +107,14 @@ export function ShinyText({
     if (pauseOnHover) setIsPaused(false)
   }, [pauseOnHover])
 
-  const gradientStyle = {
-    backgroundImage: `linear-gradient(${spread}deg, ${color} 0%, ${color} 35%, ${shineColor} 50%, ${color} 65%, ${color} 100%)`,
-    backgroundSize: '200% auto',
+  const gradientStyle: React.CSSProperties = {
+    backgroundImage: `linear-gradient(${spread}deg, ${color} 0%, ${color} 40%, ${shineColor} 50%, ${color} 60%, ${color} 100%)`,
+    backgroundSize: '200% 100%',
+    backgroundRepeat: 'repeat',
     WebkitBackgroundClip: 'text',
     backgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
+    color: color,
   }
 
   return (
