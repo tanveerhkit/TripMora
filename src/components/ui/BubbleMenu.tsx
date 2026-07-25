@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, type CSSProperties, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { gsap } from 'gsap'
 import { Icon } from './Icon'
 import './BubbleMenu.css'
@@ -97,29 +98,78 @@ export default function BubbleMenu({
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const bubblesRef = useRef<(HTMLAnchorElement | HTMLButtonElement | null)[]>([])
   const labelRefs = useRef<(HTMLSpanElement | null)[]>([])
+  const pushedHistoryRef = useRef(false)
 
   const menuItems = items?.length ? items : DEFAULT_ITEMS
   const containerClassName = ['bubble-menu', useFixedPosition ? 'fixed' : 'absolute', className]
     .filter(Boolean)
     .join(' ')
 
+  const closeMenu = () => {
+    if (pushedHistoryRef.current) {
+      pushedHistoryRef.current = false
+      if (window.history.state?.bubbleMenuOpen) {
+        window.history.back()
+      }
+    }
+    if (isOpen === undefined) {
+      setInternalOpen(false)
+    }
+    onMenuClick?.(false)
+    onClose?.()
+  }
+
   const handleToggle = () => {
     const nextState = !isMenuOpen
-    if (nextState) setShowOverlay(true)
-    if (isOpen === undefined) {
-      setInternalOpen(nextState)
-    }
-    onMenuClick?.(nextState)
-    if (!nextState) {
-      onClose?.()
+    if (nextState) {
+      setShowOverlay(true)
+      if (isOpen === undefined) {
+        setInternalOpen(true)
+      }
+      onMenuClick?.(true)
+    } else {
+      closeMenu()
     }
   }
 
   useEffect(() => {
     if (isMenuOpen) {
       setShowOverlay(true)
+
+      if (!pushedHistoryRef.current) {
+        window.history.pushState({ bubbleMenuOpen: true }, '')
+        pushedHistoryRef.current = true
+      }
+
+      const handlePopState = () => {
+        pushedHistoryRef.current = false
+        if (isOpen === undefined) {
+          setInternalOpen(false)
+        }
+        onMenuClick?.(false)
+        onClose?.()
+      }
+
+      window.addEventListener('popstate', handlePopState)
+
+      return () => {
+        window.removeEventListener('popstate', handlePopState)
+        if (pushedHistoryRef.current) {
+          pushedHistoryRef.current = false
+          if (window.history.state?.bubbleMenuOpen) {
+            window.history.back()
+          }
+        }
+      }
+    } else {
+      if (pushedHistoryRef.current) {
+        pushedHistoryRef.current = false
+        if (window.history.state?.bubbleMenuOpen) {
+          window.history.back()
+        }
+      }
     }
-  }, [isMenuOpen])
+  }, [isMenuOpen, isOpen, onClose, onMenuClick])
 
   useEffect(() => {
     const overlay = overlayRef.current
@@ -196,6 +246,84 @@ export default function BubbleMenu({
     return () => window.removeEventListener('resize', handleResize)
   }, [isMenuOpen, menuItems])
 
+  const overlayNode = showOverlay ? (
+    <div
+      ref={overlayRef}
+      className={`bubble-menu-items ${useFixedPosition ? 'fixed' : 'absolute'}`}
+      aria-hidden={!isMenuOpen}
+      onClick={(e) => {
+        if (e.target === overlayRef.current) {
+          handleToggle()
+        }
+      }}
+    >
+      {title && (
+        <div className="bubble-menu-header">
+          <div className="bubble-menu-title-bubble">
+            {title}
+          </div>
+          <button
+            type="button"
+            className="bubble-menu-close-btn"
+            onClick={handleToggle}
+            aria-label="Close menu"
+          >
+            <Icon name="close" size={20} />
+          </button>
+        </div>
+      )}
+
+      <ul className="pill-list" role="menu" aria-label="Menu links">
+        {menuItems.map((item, idx) => {
+          const isLink = Boolean(item.href && item.href !== '#')
+          const Tag = isLink ? 'a' : 'button'
+          const tagProps = isLink
+            ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' }
+            : {
+                type: 'button' as const,
+                onClick: (e: React.MouseEvent) => {
+                  e.stopPropagation()
+                  item.onClick?.()
+                  handleToggle()
+                }
+              }
+
+          return (
+            <li key={idx} role="none" className="pill-col">
+              <Tag
+                role="menuitem"
+                {...tagProps}
+                aria-label={item.ariaLabel || item.label}
+                className="pill-link"
+                style={
+                  {
+                    '--item-rot': `${item.rotation ?? 0}deg`,
+                    '--pill-bg': menuBg,
+                    '--pill-color': menuContentColor,
+                    '--hover-bg': item.hoverStyles?.bgColor || '#f59e0b',
+                    '--hover-color': item.hoverStyles?.textColor || '#ffffff'
+                  } as CSSProperties
+                }
+                ref={(el: any) => {
+                  if (el) bubblesRef.current[idx] = el
+                }}
+              >
+                <span
+                  className="pill-label"
+                  ref={(el: HTMLSpanElement | null) => {
+                    if (el) labelRefs.current[idx] = el
+                  }}
+                >
+                  {item.label}
+                </span>
+              </Tag>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  ) : null
+
   return (
     <>
       {!hideNav && (
@@ -220,83 +348,9 @@ export default function BubbleMenu({
         </nav>
       )}
 
-      {showOverlay && (
-        <div
-          ref={overlayRef}
-          className={`bubble-menu-items ${useFixedPosition ? 'fixed' : 'absolute'}`}
-          aria-hidden={!isMenuOpen}
-          onClick={(e) => {
-            if (e.target === overlayRef.current) {
-              handleToggle()
-            }
-          }}
-        >
-          {title && (
-            <div className="bubble-menu-header">
-              <div className="bubble-menu-title-bubble">
-                {title}
-              </div>
-              <button
-                type="button"
-                className="bubble-menu-close-btn"
-                onClick={handleToggle}
-                aria-label="Close menu"
-              >
-                <Icon name="close" size={20} />
-              </button>
-            </div>
-          )}
-
-          <ul className="pill-list" role="menu" aria-label="Menu links">
-            {menuItems.map((item, idx) => {
-              const isLink = Boolean(item.href && item.href !== '#')
-              const Tag = isLink ? 'a' : 'button'
-              const tagProps = isLink
-                ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' }
-                : {
-                    type: 'button' as const,
-                    onClick: (e: React.MouseEvent) => {
-                      e.stopPropagation()
-                      item.onClick?.()
-                      handleToggle()
-                    }
-                  }
-
-              return (
-                <li key={idx} role="none" className="pill-col">
-                  <Tag
-                    role="menuitem"
-                    {...tagProps}
-                    aria-label={item.ariaLabel || item.label}
-                    className="pill-link"
-                    style={
-                      {
-                        '--item-rot': `${item.rotation ?? 0}deg`,
-                        '--pill-bg': menuBg,
-                        '--pill-color': menuContentColor,
-                        '--hover-bg': item.hoverStyles?.bgColor || '#f59e0b',
-                        '--hover-color': item.hoverStyles?.textColor || '#ffffff'
-                      } as CSSProperties
-                    }
-                    ref={(el: any) => {
-                      if (el) bubblesRef.current[idx] = el
-                    }}
-                  >
-                    <span
-                      className="pill-label"
-                      ref={(el: HTMLSpanElement | null) => {
-                        if (el) labelRefs.current[idx] = el
-                      }}
-                    >
-                      {item.label}
-                    </span>
-                  </Tag>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      )}
+      {useFixedPosition && overlayNode
+        ? createPortal(overlayNode, document.body)
+        : overlayNode}
     </>
   )
 }

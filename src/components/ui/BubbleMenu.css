@@ -176,19 +176,19 @@
 .bubble-menu-title-bubble {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 22px;
+  gap: 8px;
+  padding: 8px 16px;
   background: rgba(255, 255, 255, 0.95);
   color: #0f172a;
-  border-radius: 999px;
+  border-radius: 24px;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: clamp(0.82rem, 3.2vw, 0.98rem);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  max-width: calc(100% - 60px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: calc(100% - 54px);
+  line-height: 1.35;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .bubble-menu-close-btn {
