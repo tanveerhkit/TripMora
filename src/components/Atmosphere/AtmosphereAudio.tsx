@@ -83,6 +83,7 @@ export function AtmosphereAudio({ atmosphere }: Props) {
     }
 
     let usingFallback = false
+    let started = false
     let disposed = false
 
     const cleanup = () => {
@@ -101,8 +102,10 @@ export function AtmosphereAudio({ atmosphere }: Props) {
       if (disposed || requestId !== requestRef.current) return
       if (!usingFallback && !inactive.src.endsWith('.mp3')) {
         usingFallback = true
+        started = false
         inactive.src = AUDIO_SOURCES[atmosphere].mp3
         inactive.load()
+        if (inactive.readyState >= 3) startPlayback()
         return
       }
       failPlayback()
@@ -130,8 +133,15 @@ export function AtmosphereAudio({ atmosphere }: Props) {
     }
 
     const startPlayback = () => {
-      if (disposed || requestId !== requestRef.current || !enabledRef.current) return
-      const playResult = inactive.play?.()
+      if (started || disposed || requestId !== requestRef.current || !enabledRef.current) return
+      started = true
+      let playResult: Promise<void> | void
+      try {
+        playResult = inactive.play?.()
+      } catch {
+        handleError()
+        return
+      }
       if (playResult && typeof playResult.then === 'function') {
         playResult.then(startFade).catch(handleError)
       } else {
@@ -143,7 +153,9 @@ export function AtmosphereAudio({ atmosphere }: Props) {
     inactive.addEventListener('error', handleError)
     pendingCleanupRef.current = cleanup
     inactive.load()
-    if (inactive.readyState >= 3) startPlayback()
+    // Calling play() here both satisfies already-granted media permission and prompts
+    // browsers to fetch a deck whose preload was intentionally none while muted.
+    startPlayback()
 
     return () => {
       cleanup()
