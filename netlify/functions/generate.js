@@ -1,0 +1,51 @@
+import vercelHandler from '../../api/generate.js'
+
+export default async function handler(event) {
+  let body = event.body
+
+  if (event.isBase64Encoded && typeof body === 'string') {
+    body = Buffer.from(body, 'base64').toString('utf8')
+  }
+
+  const headers = {}
+  let statusCode = 200
+  let jsonBody = null
+  let ended = false
+
+  const req = {
+    method: event.httpMethod,
+    body,
+    async *[Symbol.asyncIterator]() {},
+  }
+
+  const res = {
+    setHeader(name, value) {
+      headers[name] = value
+    },
+    status(code) {
+      statusCode = code
+      return res
+    },
+    json(value) {
+      jsonBody = value
+      ended = true
+      return res
+    },
+  }
+
+  try {
+    await vercelHandler(req, res)
+  } catch (error) {
+    console.error('Netlify function error', error)
+    if (!ended) {
+      statusCode = 500
+      jsonBody = { error: 'Internal server error.' }
+    }
+  }
+
+  return {
+    statusCode,
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(jsonBody ?? {}),
+  }
+}
