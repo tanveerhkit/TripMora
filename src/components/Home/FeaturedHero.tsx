@@ -187,14 +187,15 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
       <div className={styles.scrim} aria-hidden="true" />
       <div className={styles.vignette} aria-hidden="true" />
 
-      <div className={styles.progress} aria-hidden="true">
+      <div className={styles.progress} role="group" aria-label="Choose featured destination">
         <div className={styles.rail}>
           {DESTINATIONS.map((d, i) => (
             <button
               key={d.name}
               type="button"
-              tabIndex={-1}
               className={`${styles.tick} ${i === index ? styles.tickOn : ''}`}
+              aria-label={`Show ${d.name}`}
+              aria-current={i === index ? 'true' : undefined}
               onClick={() => setIndex(i)}
             >
               <span className={styles.tickNum}>{String(i + 1).padStart(2, '0')}</span>
