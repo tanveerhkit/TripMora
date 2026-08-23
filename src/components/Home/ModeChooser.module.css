@@ -11,20 +11,23 @@
   display: grid;
   gap: var(--sp-3);
   padding: var(--sp-5);
-  background: var(--bg-elevated);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--accent) 8%, var(--bg-elevated)), var(--bg-elevated));
   backdrop-filter: blur(var(--blur)) saturate(150%);
   -webkit-backdrop-filter: blur(var(--blur)) saturate(150%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  transition: border-color var(--dur-1) ease, transform var(--dur-2) var(--ease-out),
-    box-shadow var(--dur-2) var(--ease-out);
+  transition: border-color var(--dur-2) ease, background var(--dur-3) var(--ease-in-out),
+    transform var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out);
 }
 @media (hover: hover) {
   .card:hover {
-    border-color: var(--accent);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    background:
+      linear-gradient(145deg, color-mix(in srgb, var(--accent) 16%, var(--bg-elevated)), var(--bg-elevated));
+    box-shadow: var(--shadow-md), 0 0 0 1px var(--accent-soft);
+    transform: translateY(-4px);
   }
 }
 .card:active {

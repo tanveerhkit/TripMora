@@ -1,11 +1,13 @@
 .hero {
-  /* luxury palette, scoped to the hero only */
-  --h-primary: #55d396;
-  --h-bg: #040605;
-  --h-glass: rgba(255, 255, 255, 0.08);
-  --h-glass-2: rgba(255, 255, 255, 0.14);
-  --h-border: rgba(255, 255, 255, 0.16);
-  --h-muted: rgba(255, 255, 255, 0.75);
+  /* Destination palette is intentionally scoped to the immersive hero. */
+  --h-primary: var(--hero-primary, #55d396);
+  --h-bg: var(--hero-bg, #040605);
+  --h-glass: var(--hero-glass, rgba(255, 255, 255, 0.08));
+  --h-glass-2: var(--hero-glass-2, rgba(255, 255, 255, 0.14));
+  --h-border: var(--hero-border, rgba(255, 255, 255, 0.16));
+  --h-muted: var(--hero-muted, rgba(255, 255, 255, 0.75));
+  --h-scrim: var(--hero-scrim, linear-gradient(100deg, rgba(4, 14, 11, 0.9) 0%, rgba(4, 14, 11, 0.62) 32%, rgba(4, 14, 11, 0.16) 62%, rgba(4, 14, 11, 0.04) 100%), linear-gradient(to top, rgba(4, 14, 11, 0.72) 0%, rgba(4, 14, 11, 0) 46%));
+  --h-vignette: var(--hero-vignette, radial-gradient(125% 105% at 50% 42%, transparent 55%, rgba(3, 10, 8, 0.55) 100%));
 
   position: relative;
   isolation: isolate;
@@ -16,6 +18,73 @@
   overflow: hidden;
   color: #fff;
   background: var(--h-bg);
+  transition: background-color 900ms var(--ease-in-out), color 500ms ease;
+}
+
+.hero[data-atmosphere='mountain'] {
+  --hero-primary: #a5e6ff;
+  --hero-bg: #071426;
+  --hero-glass: rgba(224, 242, 254, 0.1);
+  --hero-glass-2: rgba(147, 197, 253, 0.2);
+  --hero-border: rgba(191, 219, 254, 0.3);
+  --hero-muted: rgba(239, 248, 255, 0.78);
+  --hero-scrim: linear-gradient(100deg, rgba(5, 18, 39, 0.94) 0%, rgba(5, 18, 39, 0.66) 34%, rgba(5, 18, 39, 0.14) 68%, rgba(5, 18, 39, 0.02) 100%), linear-gradient(to top, rgba(5, 18, 39, 0.78), transparent 50%);
+  --hero-vignette: radial-gradient(125% 105% at 50% 42%, transparent 50%, rgba(2, 8, 22, 0.62) 100%);
+}
+
+.hero[data-atmosphere='rain'] {
+  --hero-primary: #7dd3fc;
+  --hero-bg: #0a1423;
+  --hero-glass: rgba(148, 163, 184, 0.12);
+  --hero-glass-2: rgba(96, 165, 250, 0.22);
+  --hero-border: rgba(186, 230, 253, 0.3);
+  --hero-muted: rgba(226, 232, 240, 0.78);
+  --hero-scrim: linear-gradient(100deg, rgba(8, 17, 30, 0.93) 0%, rgba(8, 17, 30, 0.7) 36%, rgba(8, 17, 30, 0.2) 70%, rgba(8, 17, 30, 0.04) 100%), linear-gradient(to top, rgba(5, 12, 23, 0.8), transparent 50%);
+  --hero-vignette: radial-gradient(125% 105% at 50% 42%, transparent 50%, rgba(1, 7, 17, 0.64) 100%);
+}
+
+.hero[data-atmosphere='forest'] {
+  --hero-primary: #86efac;
+  --hero-bg: #071811;
+  --hero-glass: rgba(187, 247, 208, 0.1);
+  --hero-glass-2: rgba(74, 222, 128, 0.18);
+  --hero-border: rgba(187, 247, 208, 0.26);
+  --hero-muted: rgba(236, 253, 245, 0.78);
+  --hero-scrim: linear-gradient(100deg, rgba(3, 15, 10, 0.93) 0%, rgba(3, 15, 10, 0.62) 36%, rgba(3, 15, 10, 0.12) 70%, rgba(3, 15, 10, 0.03) 100%), linear-gradient(to top, rgba(3, 15, 10, 0.76), transparent 50%);
+  --hero-vignette: radial-gradient(125% 105% at 50% 42%, transparent 51%, rgba(1, 9, 6, 0.6) 100%);
+}
+
+.hero[data-atmosphere='tropical'] {
+  --hero-primary: #67e8f9;
+  --hero-bg: #061d27;
+  --hero-glass: rgba(165, 243, 252, 0.11);
+  --hero-glass-2: rgba(34, 211, 238, 0.2);
+  --hero-border: rgba(165, 243, 252, 0.3);
+  --hero-muted: rgba(236, 254, 255, 0.82);
+  --hero-scrim: linear-gradient(100deg, rgba(3, 20, 27, 0.92) 0%, rgba(3, 20, 27, 0.6) 34%, rgba(3, 20, 27, 0.1) 70%, rgba(3, 20, 27, 0.02) 100%), linear-gradient(to top, rgba(3, 20, 27, 0.72), transparent 50%);
+  --hero-vignette: radial-gradient(125% 105% at 50% 42%, transparent 54%, rgba(1, 8, 12, 0.5) 100%);
+}
+
+.hero[data-atmosphere='desert'] {
+  --hero-primary: #fbbf24;
+  --hero-bg: #24120d;
+  --hero-glass: rgba(254, 215, 170, 0.11);
+  --hero-glass-2: rgba(251, 146, 60, 0.2);
+  --hero-border: rgba(254, 215, 170, 0.28);
+  --hero-muted: rgba(255, 247, 237, 0.82);
+  --hero-scrim: linear-gradient(100deg, rgba(29, 12, 7, 0.94) 0%, rgba(29, 12, 7, 0.66) 38%, rgba(29, 12, 7, 0.12) 70%, rgba(29, 12, 7, 0.02) 100%), linear-gradient(to top, rgba(29, 12, 7, 0.8), transparent 50%);
+  --hero-vignette: radial-gradient(125% 105% at 50% 42%, transparent 52%, rgba(14, 5, 3, 0.62) 100%);
+}
+
+.hero[data-atmosphere='city'] {
+  --hero-primary: #d8b4fe;
+  --hero-bg: #0b0719;
+  --hero-glass: rgba(196, 181, 253, 0.1);
+  --hero-glass-2: rgba(168, 85, 247, 0.2);
+  --hero-border: rgba(216, 180, 254, 0.3);
+  --hero-muted: rgba(245, 243, 255, 0.8);
+  --hero-scrim: linear-gradient(100deg, rgba(9, 5, 20, 0.94) 0%, rgba(9, 5, 20, 0.68) 36%, rgba(9, 5, 20, 0.14) 70%, rgba(9, 5, 20, 0.03) 100%), linear-gradient(to top, rgba(9, 5, 20, 0.78), transparent 50%);
+  --hero-vignette: radial-gradient(125% 105% at 50% 42%, transparent 52%, rgba(4, 2, 11, 0.68) 100%);
 }
 
 /* ---------- background ---------- */
@@ -39,22 +108,14 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background:
-    linear-gradient(
-      100deg,
-      rgba(4, 14, 11, 0.9) 0%,
-      rgba(4, 14, 11, 0.62) 32%,
-      rgba(4, 14, 11, 0.16) 62%,
-      rgba(4, 14, 11, 0.04) 100%
-    ),
-    linear-gradient(to top, rgba(4, 14, 11, 0.72) 0%, rgba(4, 14, 11, 0) 46%);
+  background: var(--h-scrim);
 }
 .vignette {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(125% 105% at 50% 42%, transparent 55%, rgba(3, 10, 8, 0.55) 100%);
+  background: var(--h-vignette);
 }
 
 /* ---------- vertical progress ---------- */

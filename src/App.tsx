@@ -3,6 +3,7 @@ import { useItinerary } from './hooks/useItinerary'
 import { useDream } from './hooks/useDream'
 import { useSessions } from './hooks/useSessions'
 import { useTheme } from './hooks/useTheme'
+import { getAtmosphere } from './lib/atmosphere'
 import { relativeTime } from './lib/format'
 import { countStops } from './lib/itineraryOps'
 import { destinationToPrompt } from './lib/dreamPrompt'
@@ -22,6 +23,7 @@ import { LoadingDream } from './components/states/LoadingDream'
 import { ErrorState } from './components/states/ErrorState'
 import { ItineraryView } from './components/Itinerary/ItineraryView'
 import { SessionSidebar } from './components/Sessions/SessionSidebar'
+import { AtmosphereBackdrop } from './components/Atmosphere/AtmosphereBackdrop'
 import styles from './App.module.css'
 
 type Screen = 'home' | 'describe' | 'dream'
@@ -120,9 +122,12 @@ export default function App() {
   const itineraryActive = hasItinerary || isGenerating || itinErrorNoItin
   const notHome = itineraryActive || screen !== 'home'
   const recent = sessions.slice(0, 3)
+  const atmosphereSource = itin.itinerary?.meta ?? (basePrompt || dreamAnswers)
+  const atmosphere = getAtmosphere(atmosphereSource)
 
   return (
-    <div className={styles.app}>
+    <div className={styles.app} data-atmosphere={atmosphere.id}>
+      <AtmosphereBackdrop atmosphere={atmosphere.id} />
       <SiteHeader
         immersive={!itineraryActive && screen === 'home'}
         notHome={notHome}

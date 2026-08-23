@@ -14,6 +14,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import { useLocationImage } from '../../hooks/useLocationImage'
+import { getAtmosphere } from '../../lib/atmosphere'
 import { Icon } from '../ui/Icon'
 import { SpecularButton } from '../ui/SpecularButton'
 import styles from './FeaturedHero.module.css'
@@ -96,6 +97,20 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
   }, [])
 
   const active = DESTINATIONS[index]
+  const atmosphere = getAtmosphere({
+    destination: active.name,
+    country: active.country,
+    summary: active.blurb,
+  })
+  const heroTint = {
+    explore: '#55d396',
+    mountain: '#a5e6ff',
+    rain: '#7dd3fc',
+    forest: '#86efac',
+    tropical: '#67e8f9',
+    desert: '#fbbf24',
+    city: '#d8b4fe',
+  }[atmosphere.id]
 
   const goNext = useCallback(() => {
     setIndex((prev) => (prev + 1) % count)
@@ -133,6 +148,7 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
     <section
       ref={heroRef}
       className={styles.hero}
+      data-atmosphere={atmosphere.id}
       aria-roledescription="carousel"
       aria-label="Featured destinations"
       onMouseMove={onMouseMove}
@@ -218,11 +234,11 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
             <SpecularButton
               size="md"
               radius={100}
-              tint="#55d396"
+              tint={heroTint}
               tintOpacity={0.92}
-              textColor="#040605"
+              textColor="#071510"
               lineColor="#ffffff"
-              baseColor="#169a50"
+              baseColor={heroTint}
               intensity={1.1}
               proximity={280}
               className={styles.specularCta}

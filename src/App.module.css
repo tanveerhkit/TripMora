@@ -1,7 +1,146 @@
 .app {
+  --atmo-base: #071510;
+  --atmo-wash-1: rgba(52, 211, 153, 0.24);
+  --atmo-wash-2: rgba(20, 184, 166, 0.16);
+  --atmo-wash-3: rgba(14, 116, 144, 0.14);
+  --atmo-glow: rgba(110, 231, 183, 0.32);
+  --atmo-glow-soft: rgba(45, 212, 191, 0.18);
+  --atmo-haze: rgba(167, 243, 208, 0.18);
+  --atmo-wave: rgba(52, 211, 153, 0.34);
+  --atmo-line: rgba(167, 243, 208, 0.4);
+  --atmo-particle: #a7f3d0;
+  --atmo-particle-glow: rgba(167, 243, 208, 0.55);
+  --atmo-grid: rgba(110, 231, 183, 0.14);
+  --accent: #34d399;
+  --accent-soft: rgba(52, 211, 153, 0.16);
+  --brand-1: #86efac;
+  --brand-2: #14b8a6;
+  --brand-grad: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  --border: color-mix(in srgb, var(--accent) 18%, transparent);
+  --border-strong: color-mix(in srgb, var(--accent) 34%, transparent);
+  --glass-border: color-mix(in srgb, var(--accent) 26%, rgba(255, 255, 255, 0.46));
+  --surface-2: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  --surface-hover: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  --glow-brand: 0 14px 36px -12px color-mix(in srgb, var(--accent) 62%, transparent);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  isolation: isolate;
+  transition: background-color 900ms var(--ease-in-out);
+}
+
+.app[data-atmosphere='mountain'] {
+  --atmo-base: #081528;
+  --atmo-wash-1: rgba(186, 230, 253, 0.22);
+  --atmo-wash-2: rgba(96, 165, 250, 0.18);
+  --atmo-wash-3: rgba(30, 64, 175, 0.2);
+  --atmo-glow: rgba(224, 242, 254, 0.38);
+  --atmo-glow-soft: rgba(125, 211, 252, 0.18);
+  --atmo-haze: rgba(224, 242, 254, 0.22);
+  --atmo-wave: rgba(147, 197, 253, 0.2);
+  --atmo-line: rgba(191, 219, 254, 0.35);
+  --atmo-particle: #e0f2fe;
+  --atmo-particle-glow: rgba(224, 242, 254, 0.72);
+  --atmo-grid: rgba(191, 219, 254, 0.1);
+  --accent: #7dd3fc;
+  --accent-soft: rgba(125, 211, 252, 0.17);
+  --brand-1: #e0f2fe;
+  --brand-2: #60a5fa;
+}
+
+.app[data-atmosphere='rain'] {
+  --atmo-base: #0b1420;
+  --atmo-wash-1: rgba(71, 85, 105, 0.26);
+  --atmo-wash-2: rgba(37, 99, 235, 0.2);
+  --atmo-wash-3: rgba(30, 41, 59, 0.28);
+  --atmo-glow: rgba(125, 211, 252, 0.2);
+  --atmo-glow-soft: rgba(96, 165, 250, 0.18);
+  --atmo-haze: rgba(148, 163, 184, 0.18);
+  --atmo-wave: rgba(125, 211, 252, 0.25);
+  --atmo-line: rgba(125, 211, 252, 0.3);
+  --atmo-particle: #bae6fd;
+  --atmo-particle-glow: rgba(125, 211, 252, 0.62);
+  --atmo-grid: rgba(147, 197, 253, 0.08);
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.17);
+  --brand-1: #bae6fd;
+  --brand-2: #2563eb;
+}
+
+.app[data-atmosphere='forest'] {
+  --atmo-base: #0b1b16;
+  --atmo-wash-1: rgba(74, 222, 128, 0.2);
+  --atmo-wash-2: rgba(22, 101, 52, 0.22);
+  --atmo-wash-3: rgba(120, 53, 15, 0.13);
+  --atmo-glow: rgba(187, 247, 208, 0.28);
+  --atmo-glow-soft: rgba(74, 222, 128, 0.2);
+  --atmo-haze: rgba(187, 247, 208, 0.15);
+  --atmo-wave: rgba(74, 222, 128, 0.22);
+  --atmo-line: rgba(187, 247, 208, 0.25);
+  --atmo-particle: #bbf7d0;
+  --atmo-particle-glow: rgba(187, 247, 208, 0.54);
+  --atmo-grid: rgba(187, 247, 208, 0.06);
+  --accent: #4ade80;
+  --accent-soft: rgba(74, 222, 128, 0.16);
+  --brand-1: #bbf7d0;
+  --brand-2: #16a34a;
+}
+
+.app[data-atmosphere='tropical'] {
+  --atmo-base: #06202a;
+  --atmo-wash-1: rgba(34, 211, 238, 0.25);
+  --atmo-wash-2: rgba(20, 184, 166, 0.22);
+  --atmo-wash-3: rgba(251, 191, 36, 0.14);
+  --atmo-glow: rgba(103, 232, 249, 0.32);
+  --atmo-glow-soft: rgba(45, 212, 191, 0.2);
+  --atmo-haze: rgba(165, 243, 252, 0.18);
+  --atmo-wave: rgba(34, 211, 238, 0.28);
+  --atmo-line: rgba(165, 243, 252, 0.35);
+  --atmo-particle: #cffafe;
+  --atmo-particle-glow: rgba(103, 232, 249, 0.65);
+  --atmo-grid: rgba(165, 243, 252, 0.08);
+  --accent: #22d3ee;
+  --accent-soft: rgba(34, 211, 238, 0.17);
+  --brand-1: #a5f3fc;
+  --brand-2: #0d9488;
+}
+
+.app[data-atmosphere='desert'] {
+  --atmo-base: #24130f;
+  --atmo-wash-1: rgba(251, 191, 36, 0.22);
+  --atmo-wash-2: rgba(234, 88, 12, 0.2);
+  --atmo-wash-3: rgba(190, 24, 93, 0.14);
+  --atmo-glow: rgba(253, 224, 71, 0.36);
+  --atmo-glow-soft: rgba(251, 146, 60, 0.18);
+  --atmo-haze: rgba(254, 215, 170, 0.16);
+  --atmo-wave: rgba(251, 191, 36, 0.2);
+  --atmo-line: rgba(254, 215, 170, 0.26);
+  --atmo-particle: #fed7aa;
+  --atmo-particle-glow: rgba(253, 186, 116, 0.6);
+  --atmo-grid: rgba(254, 215, 170, 0.06);
+  --accent: #f59e0b;
+  --accent-soft: rgba(245, 158, 11, 0.16);
+  --brand-1: #fde68a;
+  --brand-2: #ea580c;
+}
+
+.app[data-atmosphere='city'] {
+  --atmo-base: #0a0716;
+  --atmo-wash-1: rgba(168, 85, 247, 0.25);
+  --atmo-wash-2: rgba(14, 165, 233, 0.18);
+  --atmo-wash-3: rgba(236, 72, 153, 0.15);
+  --atmo-glow: rgba(216, 180, 254, 0.3);
+  --atmo-glow-soft: rgba(56, 189, 248, 0.2);
+  --atmo-haze: rgba(196, 181, 253, 0.15);
+  --atmo-wave: rgba(217, 70, 239, 0.2);
+  --atmo-line: rgba(216, 180, 254, 0.28);
+  --atmo-particle: #e9d5ff;
+  --atmo-particle-glow: rgba(216, 180, 254, 0.65);
+  --atmo-grid: rgba(125, 211, 252, 0.15);
+  --accent: #c084fc;
+  --accent-soft: rgba(192, 132, 252, 0.17);
+  --brand-1: #e9d5ff;
+  --brand-2: #c026d3;
 }
 
 .main {
@@ -45,11 +184,13 @@
 .secondaryTitle {
   font-size: clamp(2rem, 5.5vw, 2.75rem);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   color: var(--text, #ffffff);
+  text-wrap: balance;
 }
 .highlight {
-  color: #34d399;
+  color: var(--accent);
+  transition: color 700ms var(--ease-in-out);
 }
 .secondarySub {
   color: var(--text-muted, #9ca3af);

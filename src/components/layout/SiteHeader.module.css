@@ -30,12 +30,13 @@
 
 /* frosted bar once scrolled or off the home hero */
 .solid {
-  background: var(--bg-elevated);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, var(--atmo-base));
   backdrop-filter: saturate(160%) blur(var(--blur));
   -webkit-backdrop-filter: saturate(160%) blur(var(--blur));
   border-bottom: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   color: var(--text);
+  transition: background 900ms var(--ease-in-out), border-color 500ms ease, box-shadow 500ms ease;
 }
 
 /* ---------- brand ---------- */
@@ -73,7 +74,7 @@
   font-weight: 600;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
-  transition: opacity var(--dur-1) ease, background var(--dur-1) ease;
+  transition: opacity var(--dur-1) ease, background var(--dur-1) ease, color var(--dur-2) ease;
 }
 .navLink::after {
   content: '';
@@ -91,6 +92,8 @@
 @media (hover: hover) {
   .navLink:hover {
     opacity: 1;
+    color: var(--accent);
+    background: var(--accent-soft);
   }
   .navLink:hover::after {
     transform: scaleX(1);
@@ -113,9 +116,9 @@
   border-radius: var(--radius-sm);
   color: inherit;
   background: transparent;
-  border: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   opacity: 0.88;
-  transition: opacity var(--dur-1) ease, background var(--dur-1) ease, transform var(--dur-2) var(--ease-spring);
+  transition: opacity var(--dur-1) ease, background var(--dur-1) ease, border-color var(--dur-1) ease, transform var(--dur-2) var(--ease-spring);
 }
 .floating .iconBtn {
   background: transparent;
@@ -128,6 +131,7 @@
   }
   .solid .iconBtn:hover {
     background: var(--surface-2);
+    border-color: var(--accent);
     opacity: 1;
   }
 }
