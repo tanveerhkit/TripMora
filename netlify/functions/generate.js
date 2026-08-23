@@ -1,9 +1,11 @@
 import vercelHandler from '../../api/generate.js'
 
 export default async function handler(event) {
-  let body = event.body
+  const isRequest = typeof event?.method === 'string'
+  const method = isRequest ? event.method : event?.httpMethod
+  let body = isRequest ? await event.text() : event?.body
 
-  if (event.isBase64Encoded && typeof body === 'string') {
+  if (!isRequest && event?.isBase64Encoded && typeof body === 'string') {
     body = Buffer.from(body, 'base64').toString('utf8')
   }
 
@@ -13,7 +15,7 @@ export default async function handler(event) {
   let ended = false
 
   const req = {
-    method: event.httpMethod,
+    method,
     body,
     async *[Symbol.asyncIterator]() {},
   }
