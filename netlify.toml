@@ -6,6 +6,11 @@
 [build.environment]
   VITE_API_ENDPOINT = "/.netlify/functions/generate"
 
+[[headers]]
+  for = "/audio/*"
+  [headers.values]
+    Cache-Control = "public,max-age=31536000,immutable"
+
 [[redirects]]
   from = "/api/generate"
   to = "/.netlify/functions/generate"

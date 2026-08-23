@@ -21,6 +21,9 @@ if (!window.matchMedia) {
 // (Wikipedia) resolve to "no image" instead of making real network calls.
 // Re-applied before each test so it survives mock restoration.
 beforeEach(() => {
+  vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(() => Promise.resolve())
+  vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined)
+  vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => undefined)
   vi.stubGlobal(
     'fetch',
     vi.fn(async () => ({
