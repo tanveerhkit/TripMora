@@ -43,9 +43,8 @@ export default async function handler(event) {
     }
   }
 
-  return {
-    statusCode,
+  return new Response(JSON.stringify(jsonBody ?? {}), {
+    status: statusCode,
     headers: { 'Content-Type': 'application/json', ...headers },
-    body: JSON.stringify(jsonBody ?? {}),
-  }
+  })
 }
