@@ -157,6 +157,11 @@
   padding: calc(var(--header-h) + var(--sp-5)) var(--sp-4) var(--sp-5);
 }
 
+.itineraryContainer {
+  max-width: 1520px;
+  padding-inline: clamp(20px, 3vw, 40px);
+}
+
 /* ---------- hero / idle ---------- */
 .hero {
   max-width: 620px;
@@ -344,7 +349,8 @@
 }
 
 @media (max-width: 640px) {
-  .container {
+  .container,
+  .itineraryContainer {
     padding: calc(var(--header-h) + 12px) 12px 24px;
   }
 }

@@ -194,7 +194,7 @@ export default function App() {
             </section>
           </>
         ) : (
-          <div className={styles.container}>
+          <div className={`${styles.container} ${itineraryActive ? styles.itineraryContainer : ''}`}>
             {itineraryActive ? (
               <>
                 {isGenerating && <LoadingItinerary mode="generate" />}

@@ -39,8 +39,11 @@ describe('ItineraryView', () => {
       />,
     )
 
-    // overview
+    // overview and desktop navigation rail
     expect(screen.getByText('Lisbon, Portugal')).toBeTruthy()
+    expect(screen.getByRole('navigation', { name: 'Jump to day' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Day 1: Alfama & viewpoints' })).toBeTruthy()
+    expect(document.getElementById(`day-${parsed.itinerary.days[0].id}`)).toBeTruthy()
     // day + stop content
     expect(screen.getByText('Alfama & viewpoints')).toBeTruthy()
     expect(screen.getByText('Miradouro de Santa Luzia')).toBeTruthy()

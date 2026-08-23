@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   addDay,
   addPacking,
@@ -15,6 +15,7 @@ import {
 } from '../../lib/itineraryOps'
 import type { Day, Itinerary, Stop } from '../../types/itinerary'
 import { Button } from '../ui/Button'
+import { Icon } from '../ui/Icon'
 import { BudgetBlock } from './BudgetBlock'
 import { DayCard } from './DayCard'
 import { OverviewCard } from './OverviewCard'
@@ -42,6 +43,44 @@ export function ItineraryView({
   recovering,
 }: Props) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+  const [activeDayId, setActiveDayId] = useState(itinerary.days[0]?.id ?? '')
+
+  const totalStops = itinerary.days.reduce((total, day) => total + day.stops.length, 0)
+
+  useEffect(() => {
+    const firstDayId = itinerary.days[0]?.id ?? ''
+    setActiveDayId((current) =>
+      itinerary.days.some((day) => day.id === current) ? current : firstDayId,
+    )
+
+    if (typeof IntersectionObserver === 'undefined') return
+    const sections = itinerary.days
+      .map((day) => document.getElementById(`day-${day.id}`))
+      .filter((section): section is HTMLElement => Boolean(section))
+    if (sections.length === 0) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        const firstVisible = visible[0]?.target as HTMLElement | undefined
+        if (firstVisible) setActiveDayId(firstVisible.id.replace('day-', ''))
+      },
+      { rootMargin: '-96px 0px -62% 0px', threshold: [0, 0.15, 0.5] },
+    )
+    sections.forEach((section) => observer.observe(section))
+    return () => observer.disconnect()
+  }, [itinerary.days])
+
+  const scrollToDay = (dayId: string) => {
+    const section = document.getElementById(`day-${dayId}`)
+    section?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start',
+    })
+    setActiveDayId(dayId)
+  }
 
   const missedStops = itinerary.days.flatMap((d) =>
     d.stops.filter((s) => s.status === 'missed'),
@@ -103,6 +142,57 @@ export function ItineraryView({
 
   return (
     <div className={styles.layout}>
+      <aside className={styles.leftRail} aria-label="Trip overview">
+        <div className={styles.railCard}>
+          <div className={styles.railKicker}>
+            <Icon name="compass" size={15} />
+            <span>Trip guide</span>
+          </div>
+          <h1 className={styles.railDestination}>Your journey</h1>
+          <p className={styles.railSummary}>
+            {itinerary.meta.travelerType || 'A thoughtfully paced journey'}
+          </p>
+
+          <dl className={styles.railStats}>
+            <div>
+              <dt>Days</dt>
+              <dd>{itinerary.days.length}</dd>
+            </div>
+            <div>
+              <dt>Stops</dt>
+              <dd>{totalStops}</dd>
+            </div>
+          </dl>
+
+          <div className={styles.railDivider} />
+          <nav className={styles.dayNav} aria-label="Jump to day">
+            <span className={styles.dayNavLabel}>Your route</span>
+            {itinerary.days.map((day, index) => (
+              <button
+                key={day.id}
+                type="button"
+                className={`${styles.dayLink} ${activeDayId === day.id ? styles.dayLinkActive : ''}`}
+                aria-current={activeDayId === day.id ? 'location' : undefined}
+                aria-label={`Day ${index + 1}: ${day.title}`}
+                title={day.title}
+                onClick={() => scrollToDay(day.id)}
+              >
+                <span className={styles.dayLinkNumber}>{String(index + 1).padStart(2, '0')}</span>
+                <span className={styles.dayLinkCopy}>
+                  <strong>Day {index + 1}</strong>
+                  <small>{day.stops.length} {day.stops.length === 1 ? 'stop' : 'stops'}</small>
+                </span>
+              </button>
+            ))}
+          </nav>
+
+          <div className={styles.railFooter}>
+            <Icon name="route" size={15} />
+            <span>Follow the plan at your own pace.</span>
+          </div>
+        </div>
+      </aside>
+
       <div className={styles.main}>
         <OverviewCard itinerary={itinerary} />
         {missedStops.length > 0 && (
@@ -134,6 +224,7 @@ export function ItineraryView({
           {itinerary.days.map((day, index) => (
             <DayCard
               key={day.id}
+              id={`day-${day.id}`}
               day={day}
               index={index}
               total={itinerary.days.length}

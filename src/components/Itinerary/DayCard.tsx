@@ -20,6 +20,7 @@ import { StopItem } from './StopItem'
 import styles from './DayCard.module.css'
 
 interface Props {
+  id?: string
   day: Day
   index: number
   total: number
@@ -37,6 +38,7 @@ interface Props {
 }
 
 export function DayCard({
+  id,
   day,
   index,
   total,
@@ -68,7 +70,7 @@ export function DayCard({
   }
 
   return (
-    <section className={styles.day} aria-label={`Day ${index + 1}: ${day.title}`}>
+    <section id={id} className={styles.day} aria-label={`Day ${index + 1}: ${day.title}`}>
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <span className={styles.dayNo} aria-hidden="true">

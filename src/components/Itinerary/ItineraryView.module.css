@@ -1,7 +1,6 @@
 .layout {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sp-4);
+  gap: clamp(var(--sp-4), 2.5vw, var(--sp-6));
   align-items: start;
 }
 
@@ -11,6 +10,186 @@
   min-width: 0;
 }
 
+.leftRail {
+  display: none;
+  min-width: 0;
+}
+
+.railCard {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, var(--accent-soft));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.railKicker,
+.dayNavLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.railDestination {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.1vw, 1.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.railSummary {
+  margin: -4px 0 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.railStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin: var(--sp-1) 0 0;
+}
+
+.railStats div {
+  display: grid;
+  gap: 2px;
+  padding: var(--sp-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.railStats dt {
+  color: var(--text-faint);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.railStats dd {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.railDivider {
+  height: 1px;
+  margin: var(--sp-1) 0;
+  background: var(--border);
+}
+
+.dayNav {
+  display: grid;
+  gap: 5px;
+}
+
+.dayNavLabel {
+  margin-bottom: 3px;
+  color: var(--text-faint);
+  font-size: 0.68rem;
+}
+
+.dayLink {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 7px;
+  color: var(--text-muted);
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--dur-1) ease, border-color var(--dur-1) ease,
+    color var(--dur-1) ease, transform var(--dur-1) var(--ease-out);
+}
+
+.dayLink:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+  border-color: var(--border);
+}
+
+.dayLink:active {
+  transform: scale(0.98);
+}
+
+.dayLinkActive {
+  color: var(--text);
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.dayLinkNumber {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--surface-2);
+  border-radius: 7px;
+}
+
+.dayLinkActive .dayLinkNumber {
+  color: var(--bg-elevated);
+  background: var(--accent);
+}
+
+.dayLinkCopy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.dayLinkCopy strong,
+.dayLinkCopy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dayLinkCopy strong {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dayLinkCopy small {
+  color: var(--text-faint);
+  font-size: 0.68rem;
+}
+
+.railFooter {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding-top: var(--sp-1);
+  color: var(--text-faint);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.railFooter svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--accent);
+}
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -18,9 +197,11 @@
   gap: var(--sp-3);
   flex-wrap: wrap;
 }
+
 .daysTitle {
   font-size: 1.15rem;
 }
+
 .toolbarActions {
   display: flex;
   gap: var(--sp-2);
@@ -38,13 +219,47 @@
   min-width: 0;
 }
 
-/* two columns on wide screens; sidebar sticks alongside the days */
 @media (min-width: 900px) {
   .layout {
-    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-columns: minmax(0, 1fr) 340px;
   }
+
   .side {
     position: sticky;
-    top: 76px;
+    top: calc(var(--header-h) + var(--sp-4));
+    max-height: calc(100dvh - var(--header-h) - var(--sp-6));
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+@media (min-width: 1280px) {
+  .layout {
+    grid-template-columns: 224px minmax(0, 1fr) 340px;
+    gap: clamp(var(--sp-5), 2.6vw, var(--sp-7));
+  }
+
+  .leftRail {
+    display: block;
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-4));
+  }
+}
+
+@media (max-width: 899px) {
+  .side {
+    order: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .layout {
+    gap: var(--sp-4);
+  }
+
+  .toolbar {
+    align-items: flex-start;
   }
 }

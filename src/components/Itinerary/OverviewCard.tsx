@@ -61,19 +61,17 @@ export function OverviewCard({ itinerary }: Props) {
             font="600 26px Inter"
             scrollEase={0.03}
           />
-          <div className={styles.galleryOverlay}>{header}</div>
         </div>
       ) : (
         <LocationImage
           className={styles.hero}
           query={meta.destination}
           alt={`Photo of ${meta.destination}`}
-        >
-          {header}
-        </LocationImage>
+        />
       )}
 
       <div className={styles.content}>
+        <div className={styles.contentHeader}>{header}</div>
         {meta.summary && <p className={styles.summary}>{meta.summary}</p>}
 
         {(chips.length > 0 || meta.tags.length > 0) && (
