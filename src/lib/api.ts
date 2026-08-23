@@ -58,7 +58,7 @@ function itineraryForServer(itinerary: Itinerary): unknown {
 async function requestOnce(args: GenerateArgs): Promise<string> {
   let res: Response
   try {
-    res = await fetch('/api/generate', {
+    res = await fetch(API_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -93,6 +93,8 @@ async function requestOnce(args: GenerateArgs): Promise<string> {
   }
   return payload.content
 }
+
+const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT || '/api/generate'
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
