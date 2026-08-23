@@ -12,36 +12,36 @@
   --brand-2: #059669;
   --brand-grad: linear-gradient(135deg, var(--brand-1), var(--brand-2));
 
-  /* base + ambient wash the frosted panels blur against */
-  --bg: #e9f6ef;
+  /* bright foundation — soft atmosphere, crisp surfaces, readable type */
+  --bg: #f3f8f5;
   --app-bg:
-    radial-gradient(1100px 760px at 6% -14%, rgba(52, 211, 153, 0.34), transparent 58%),
-    radial-gradient(940px 700px at 110% 4%, rgba(5, 150, 105, 0.2), transparent 55%),
-    radial-gradient(820px 640px at 50% 122%, rgba(16, 185, 129, 0.18), transparent 60%);
+    radial-gradient(1100px 760px at 6% -14%, rgba(16, 185, 129, 0.18), transparent 58%),
+    radial-gradient(940px 700px at 110% 4%, rgba(13, 148, 136, 0.12), transparent 55%),
+    radial-gradient(820px 640px at 50% 122%, rgba(59, 130, 246, 0.08), transparent 60%);
 
   /* frosted glass — elevated panels/cards */
-  --bg-elevated: rgba(255, 255, 255, 0.62);
-  --glass-border: rgba(255, 255, 255, 0.72);
+  --bg-elevated: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(15, 61, 45, 0.14);
   --blur: 16px;
 
   /* solid control surfaces */
   --surface: #ffffff;
-  --surface-2: #e8f4ed;
-  --surface-hover: #ddefe5;
-  --border: rgba(6, 78, 47, 0.12);
-  --border-strong: rgba(6, 78, 47, 0.22);
+  --surface-2: #edf6f1;
+  --surface-hover: #e1efe8;
+  --border: rgba(15, 61, 45, 0.16);
+  --border-strong: rgba(15, 61, 45, 0.3);
 
   /* inset glass — translucent inner layer that sits on a frosted panel */
-  --inset: rgba(255, 255, 255, 0.5);
-  --inset-hover: rgba(255, 255, 255, 0.72);
-  --inset-border: rgba(6, 78, 47, 0.1);
+  --inset: rgba(255, 255, 255, 0.72);
+  --inset-hover: rgba(255, 255, 255, 0.96);
+  --inset-border: rgba(15, 61, 45, 0.14);
 
-  --text: #0d2018;
-  --text-muted: #466a5b;
-  --text-faint: #6f8c7e;
+  --text: #10231a;
+  --text-muted: #355447;
+  --text-faint: #587368;
 
-  --accent: #0f9d58;
-  --accent-soft: rgba(15, 157, 88, 0.13);
+  --accent: #047857;
+  --accent-soft: rgba(4, 120, 87, 0.13);
 
   --danger: #e5484d;
   --danger-soft: rgba(229, 72, 77, 0.12);
@@ -67,12 +67,12 @@
   --cat-adventure: #d9542b;
 
   /* elevation — soft, green-tinted, layered for depth */
-  --shadow-sm: 0 1px 2px rgba(6, 60, 38, 0.05), 0 2px 6px rgba(6, 60, 38, 0.05);
-  --shadow-md: 0 8px 24px rgba(6, 60, 38, 0.1), 0 2px 6px rgba(6, 60, 38, 0.06);
-  --shadow-lg: 0 24px 56px rgba(6, 60, 38, 0.16), 0 6px 16px rgba(6, 60, 38, 0.08);
+  --shadow-sm: 0 1px 2px rgba(15, 61, 45, 0.08), 0 3px 8px rgba(15, 61, 45, 0.06);
+  --shadow-md: 0 10px 26px rgba(15, 61, 45, 0.13), 0 3px 8px rgba(15, 61, 45, 0.08);
+  --shadow-lg: 0 24px 56px rgba(15, 61, 45, 0.18), 0 6px 16px rgba(15, 61, 45, 0.1);
   --shadow-focus: 0 0 0 3px var(--accent-soft);
-  /* soft brand glow for primary/interactive lifts */
-  --glow-brand: 0 10px 30px -8px rgba(5, 150, 105, 0.5);
+  /* readable brand glow for light surfaces */
+  --glow-brand: 0 10px 30px -8px rgba(4, 120, 87, 0.38);
   /* faint top-edge highlight that makes glass read as a real surface */
   --sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 40%);
 
