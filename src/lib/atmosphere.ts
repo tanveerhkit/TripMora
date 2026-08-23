@@ -8,6 +8,7 @@ export type AtmosphereId =
   | 'city'
 
 export interface AtmosphereInput {
+  atmosphere?: AtmosphereId
   destination?: string
   country?: string
   summary?: string
@@ -93,6 +94,9 @@ const MATCHERS: Array<[AtmosphereId, RegExp]> = [
 
 export function getAtmosphere(input: AtmosphereInput | string | null | undefined): AtmosphereTheme {
   if (!input) return ATMOSPHERES.explore
+  if (typeof input !== 'string' && input.atmosphere && input.atmosphere in ATMOSPHERES) {
+    return ATMOSPHERES[input.atmosphere]
+  }
 
   const text =
     typeof input === 'string'

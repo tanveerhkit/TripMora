@@ -14,7 +14,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import { useLocationImage } from '../../hooks/useLocationImage'
-import { getAtmosphere } from '../../lib/atmosphere'
+import { getAtmosphere, type AtmosphereId } from '../../lib/atmosphere'
 import { Icon } from '../ui/Icon'
 import { SpecularButton } from '../ui/SpecularButton'
 import styles from './FeaturedHero.module.css'
@@ -25,6 +25,8 @@ interface Destination {
   query: string
   days: number
   blurb: string
+  destinationType?: string
+  atmosphere?: AtmosphereId
 }
 
 const DESTINATIONS: Destination[] = [
@@ -49,6 +51,8 @@ const DESTINATIONS: Destination[] = [
     country: 'UAE',
     query: 'Dubai Marina',
     days: 5,
+    destinationType: 'city/nightlife',
+    atmosphere: 'city',
     blurb:
       'Glass towers soar above the desert, abras cross the creek to spice-scented souks and the Gulf coast unrolls into golden dunes - Dubai does glamour at full volume.',
   },
@@ -79,9 +83,10 @@ const getIsMobile = () =>
 
 interface Props {
   onOpenPlanner: () => void
+  onAtmosphereChange?: (atmosphere: AtmosphereId) => void
 }
 
-export function FeaturedHero({ onOpenPlanner }: Props) {
+export function FeaturedHero({ onOpenPlanner, onAtmosphereChange }: Props) {
   const count = DESTINATIONS.length
   const [isMobile, setIsMobile] = useState(getIsMobile)
   const [index, setIndex] = useState(0)
@@ -98,10 +103,17 @@ export function FeaturedHero({ onOpenPlanner }: Props) {
 
   const active = DESTINATIONS[index]
   const atmosphere = getAtmosphere({
+    atmosphere: active.atmosphere,
     destination: active.name,
     country: active.country,
     summary: active.blurb,
+    style: active.destinationType,
   })
+
+  useEffect(() => {
+    onAtmosphereChange?.(atmosphere.id)
+  }, [atmosphere.id, onAtmosphereChange])
+
   const heroTint = {
     explore: '#55d396',
     mountain: '#a5e6ff',

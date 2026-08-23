@@ -18,6 +18,7 @@ describe('getAtmosphere', () => {
   it('maps desert and urban destinations correctly', () => {
     expect(getAtmosphere('Golden dunes and Marrakech souks').id).toBe('desert')
     expect(getAtmosphere('A neon city nightlife weekend in Tokyo').id).toBe('city')
+    expect(getAtmosphere({ destination: 'Dubai', atmosphere: 'city' }).id).toBe('city')
   })
 
   it('falls back to open road for unknown input', () => {

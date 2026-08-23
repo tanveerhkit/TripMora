@@ -53,6 +53,8 @@ export type IconName =
   | 'circleCheck'
   | 'flame'
   | 'eye'
+  | 'volume'
+  | 'volumeOff'
 
 const PATHS: Record<IconName, JSX.Element> = {
   compass: (
@@ -272,6 +274,18 @@ const PATHS: Record<IconName, JSX.Element> = {
     <>
       <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
       <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  volume: (
+    <>
+      <path d="M4 10v4h3l4 3V7l-4 3H4Z" />
+      <path d="M15 9.5a4 4 0 0 1 0 5M17.5 7a7.5 7.5 0 0 1 0 10" />
+    </>
+  ),
+  volumeOff: (
+    <>
+      <path d="M4 10v4h3l4 3V7l-4 3H4Z" />
+      <path d="m16 10 5 5M21 10l-5 5" />
     </>
   ),
 }

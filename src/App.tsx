@@ -3,7 +3,7 @@ import { useItinerary } from './hooks/useItinerary'
 import { useDream } from './hooks/useDream'
 import { useSessions } from './hooks/useSessions'
 import { useTheme } from './hooks/useTheme'
-import { getAtmosphere } from './lib/atmosphere'
+import { getAtmosphere, type AtmosphereId } from './lib/atmosphere'
 import { relativeTime } from './lib/format'
 import { countStops } from './lib/itineraryOps'
 import { destinationToPrompt } from './lib/dreamPrompt'
@@ -24,6 +24,7 @@ import { ErrorState } from './components/states/ErrorState'
 import { ItineraryView } from './components/Itinerary/ItineraryView'
 import { SessionSidebar } from './components/Sessions/SessionSidebar'
 import { AtmosphereBackdrop } from './components/Atmosphere/AtmosphereBackdrop'
+import { AtmosphereAudio } from './components/Atmosphere/AtmosphereAudio'
 import styles from './App.module.css'
 
 type Screen = 'home' | 'describe' | 'dream'
@@ -38,6 +39,7 @@ export default function App() {
   const [basePrompt, setBasePrompt] = useState('')
   const [screen, setScreen] = useState<Screen>('home')
   const [dreamAnswers, setDreamAnswers] = useState<DreamAnswers | null>(null)
+  const [featuredAtmosphere, setFeaturedAtmosphere] = useState<AtmosphereId>('explore')
 
   const plannerRef = useRef<HTMLElement>(null)
   const openPlanner = useCallback(() => {
@@ -122,12 +124,13 @@ export default function App() {
   const itineraryActive = hasItinerary || isGenerating || itinErrorNoItin
   const notHome = itineraryActive || screen !== 'home'
   const recent = sessions.slice(0, 3)
-  const atmosphereSource = itin.itinerary?.meta ?? (basePrompt || dreamAnswers)
-  const atmosphere = getAtmosphere(atmosphereSource)
-
+    const atmosphereSource = itin.itinerary?.meta ?? (basePrompt || dreamAnswers)
+  const atmosphere = itineraryActive ? getAtmosphere(atmosphereSource) : getAtmosphere({ atmosphere: featuredAtmosphere })
   return (
     <div className={styles.app} data-atmosphere={atmosphere.id}>
       <AtmosphereBackdrop atmosphere={atmosphere.id} />
+      <AtmosphereAudio atmosphere={atmosphere.id} />
+
       <SiteHeader
         immersive={!itineraryActive && screen === 'home'}
         notHome={notHome}
@@ -142,7 +145,7 @@ export default function App() {
       <main className={styles.main}>
         {!itineraryActive && screen === 'home' ? (
           <>
-            <FeaturedHero onOpenPlanner={openPlanner} />
+            <FeaturedHero onOpenPlanner={openPlanner} onAtmosphereChange={setFeaturedAtmosphere} />
 
             <section ref={plannerRef} className={styles.homeSecondary}>
               <div className={styles.secondaryHead}>
