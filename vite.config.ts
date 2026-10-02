@@ -73,6 +73,7 @@ function apiDevServer(env: Record<string, string>): PluginOption {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
+    base: process.env.GITHUB_ACTIONS ? '/TripMora/' : '/',
     plugins: [react(), apiDevServer(env)],
   }
 })
